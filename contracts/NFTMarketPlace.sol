@@ -131,8 +131,8 @@ contract NftMarketplace is ReentrancyGuard{
         address owner,
         address nftAddress,
         uint256 tokenID
-    ) public view returns (uint256){
-        return s_listings[owner][nftAddress][tokenID].price;
+    ) public view returns (Listing memory){
+        return s_listings[owner][nftAddress][tokenID];
     }
 
     function getProceeds(address seller,address erc20TokenAddress) public view returns (uint256) {
@@ -241,6 +241,29 @@ contract NftMarketplace is ReentrancyGuard{
         delete (s_listings[msg.sender][nftAddress][tokenId]);
         emit NftMarketplace__ItemCanceled(msg.sender, nftAddress, tokenId);
     }
+
+    function updateListing(
+        address nftAddress,
+        uint256 tokenId,
+        address erc20TokenAddress,
+        uint256 newPrice
+    )
+        external
+        isOwner(nftAddress, tokenId, msg.sender)
+        isListed(msg.sender,nftAddress, tokenId)
+        nonReentrant
+    {
+        //We should check the value of `newPrice` and revert if it's below zero (like we also check in `listItem()`)
+        if (newPrice <= 0) {
+            revert NftMarketplace__PriceMustBeAboveZero();
+        }
+        IERC20Metadata erc20Token = IERC20Metadata(erc20TokenAddress);
+        string memory erc20TokenName = erc20Token.name();
+        Listing memory listing = Listing(newPrice,erc20TokenAddress,erc20TokenName);
+        s_listings[msg.sender][nftAddress][tokenId] = listing;
+        emit NftMarketplace__ItemListed(msg.sender, nftAddress, tokenId, listing);
+    }
+
 
     receive() external payable {
 

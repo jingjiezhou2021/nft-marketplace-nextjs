@@ -169,11 +169,13 @@ describe("NFTMarketPlace", () => {
         );
         await USDTContract.connect(buyer).approve(
           await NFTMarketPlaceContract.getAddress(),
-          await NFTMarketPlaceContract.getPrice(
-            seller,
-            await BasicNFTContract.getAddress(),
-            onlyTokenID
-          )
+          (
+            await NFTMarketPlaceContract.getPrice(
+              seller,
+              await BasicNFTContract.getAddress(),
+              onlyTokenID
+            )
+          )[0]
         );
         await buyerConnectedContract.buyItem(
           seller,
@@ -378,6 +380,175 @@ describe("NFTMarketPlace", () => {
             onlyTokenID
           )
         ).equal(false);
+      });
+    });
+  });
+  describe("update listing", () => {
+    it("needs be listed first", async () => {
+      await expect(
+        NFTMarketPlaceContract.updateListing(
+          await BasicNFTContract.getAddress(),
+          onlyTokenID,
+          await USDTContract.getAddress(),
+          standardSellingPriceUSDT * 2n
+        )
+      ).revertedWithCustomError(
+        NFTMarketPlaceContract,
+        "NftMarketplace__NotListed"
+      );
+
+      await expect(
+        NFTMarketPlaceContract.updateListing(
+          await BasicNFTContract.getAddress(),
+          onlyTokenID,
+          await WETHContract.getAddress(),
+          standardSellingPriceWETH * 2n
+        )
+      ).revertedWithCustomError(
+        NFTMarketPlaceContract,
+        "NftMarketplace__NotListed"
+      );
+    });
+    describe("trade with erc20 token", () => {
+      beforeEach(async () => {
+        await approveAndListItem(
+          onlyTokenID,
+          standardSellingPriceUSDT,
+          await USDTContract.getAddress()
+        );
+      });
+      it("updater is not the owner", async () => {
+        await expect(
+          NFTMarketPlaceContract.connect(buyer).updateListing(
+            await BasicNFTContract.getAddress(),
+            onlyTokenID,
+            await USDTContract.getAddress(),
+            standardSellingPriceUSDT * 2n
+          )
+        ).revertedWithCustomError(
+          NFTMarketPlaceContract,
+          "NftMarketplace__NotOwner"
+        );
+        await expect(
+          NFTMarketPlaceContract.connect(buyer).updateListing(
+            await BasicNFTContract.getAddress(),
+            onlyTokenID,
+            await WETHContract.getAddress(),
+            standardSellingPriceWETH * 2n
+          )
+        ).revertedWithCustomError(
+          NFTMarketPlaceContract,
+          "NftMarketplace__NotOwner"
+        );
+      });
+      it("adjust only price", async () => {
+        await NFTMarketPlaceContract.updateListing(
+          await BasicNFTContract.getAddress(),
+          onlyTokenID,
+          await USDTContract.getAddress(),
+          standardSellingPriceUSDT * 2n
+        );
+        expect(
+          await NFTMarketPlaceContract.getPrice(
+            seller,
+            await BasicNFTContract.getAddress(),
+            onlyTokenID
+          )
+        ).eql([
+          2n * standardSellingPriceUSDT,
+          await USDTContract.getAddress(),
+          "Tether USD",
+        ]);
+      });
+      it("adjust token and price", async () => {
+        await NFTMarketPlaceContract.updateListing(
+          await BasicNFTContract.getAddress(),
+          onlyTokenID,
+          await WETHContract.getAddress(),
+          standardSellingPriceWETH * 2n
+        );
+        expect(
+          await NFTMarketPlaceContract.getPrice(
+            seller,
+            await BasicNFTContract.getAddress(),
+            onlyTokenID
+          )
+        ).eql([
+          2n * standardSellingPriceWETH,
+          await WETHContract.getAddress(),
+          "Wrapped Ether",
+        ]);
+      });
+    });
+    describe("trade with native token", () => {
+      beforeEach(async () => {
+        await approveAndListItem(
+          onlyTokenID,
+          standardSellingPriceWETH,
+          await WETHContract.getAddress()
+        );
+      });
+      it("updater is not the owner", async () => {
+        await expect(
+          NFTMarketPlaceContract.connect(buyer).updateListing(
+            await BasicNFTContract.getAddress(),
+            onlyTokenID,
+            await WETHContract.getAddress(),
+            standardSellingPriceWETH * 2n
+          )
+        ).revertedWithCustomError(
+          NFTMarketPlaceContract,
+          "NftMarketplace__NotOwner"
+        );
+        await expect(
+          NFTMarketPlaceContract.connect(buyer).updateListing(
+            await BasicNFTContract.getAddress(),
+            onlyTokenID,
+            await USDTContract.getAddress(),
+            standardSellingPriceUSDT * 2n
+          )
+        ).revertedWithCustomError(
+          NFTMarketPlaceContract,
+          "NftMarketplace__NotOwner"
+        );
+      });
+      it("adjust only price", async () => {
+        await NFTMarketPlaceContract.updateListing(
+          await BasicNFTContract.getAddress(),
+          onlyTokenID,
+          await WETHContract.getAddress(),
+          standardSellingPriceWETH * 2n
+        );
+        expect(
+          await NFTMarketPlaceContract.getPrice(
+            seller,
+            await BasicNFTContract.getAddress(),
+            onlyTokenID
+          )
+        ).eql([
+          2n * standardSellingPriceWETH,
+          await WETHContract.getAddress(),
+          "Wrapped Ether",
+        ]);
+      });
+      it("adjust token and price", async () => {
+        await NFTMarketPlaceContract.updateListing(
+          await BasicNFTContract.getAddress(),
+          onlyTokenID,
+          await USDTContract.getAddress(),
+          standardSellingPriceUSDT * 2n
+        );
+        expect(
+          await NFTMarketPlaceContract.getPrice(
+            seller,
+            await BasicNFTContract.getAddress(),
+            onlyTokenID
+          )
+        ).eql([
+          2n * standardSellingPriceUSDT,
+          await USDTContract.getAddress(),
+          "Tether USD",
+        ]);
       });
     });
   });
