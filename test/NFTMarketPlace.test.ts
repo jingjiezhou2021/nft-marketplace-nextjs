@@ -200,6 +200,10 @@ describe("NFTMarketPlace", () => {
           standardSellingPriceUSDT
         );
         expect(await BasicNFTContract.ownerOf(0)).equal(buyer);
+        const USDTBalanceBeforeWithDraw=await USDTContract.balanceOf(seller);
+        await NFTMarketPlaceContract.withdrawProceeds(await USDTContract.getAddress());
+        const USDTBalanceAfterWithDraw=await USDTContract.balanceOf(seller);
+        expect(USDTBalanceAfterWithDraw-USDTBalanceBeforeWithDraw).equal(standardSellingPriceUSDT);
       });
     });
     describe("trade with native token", () => {
@@ -276,6 +280,12 @@ describe("NFTMarketPlace", () => {
           standardSellingPriceWETH
         );
         expect(await BasicNFTContract.ownerOf(0)).equal(buyer);
+        const ethBalanceBeforeWithdraw=await ethers.provider.getBalance(seller);
+        const withdrawTx=await NFTMarketPlaceContract.withdrawProceeds(await WETHContract.getAddress());
+        const withdrawTxReceipt=await withdrawTx.wait()
+        const withdrawGasCost=withdrawTxReceipt?.gasPrice!*withdrawTxReceipt?.gasUsed!;
+        const ethBalanceAfterWithdraw=await ethers.provider.getBalance(seller);
+        expect(ethBalanceAfterWithdraw).equal(ethBalanceBeforeWithdraw+standardSellingPriceWETH-withdrawGasCost);
       });
     });
   });

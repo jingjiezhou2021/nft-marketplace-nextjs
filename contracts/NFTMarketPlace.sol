@@ -227,4 +227,12 @@ contract NftMarketplace is ReentrancyGuard{
             erc20Token.transfer(msg.sender,proceeds);
         }
     }
+
+    receive() external payable {
+
+    }
+
+    fallback() external payable {
+
+    }
 }
