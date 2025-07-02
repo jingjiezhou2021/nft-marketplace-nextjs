@@ -9,7 +9,7 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 
 
 error NftMarketplace__PriceNotMet(address nftAddress, uint256 tokenId, uint256 price);
-error ItemNotForSale(address nftAddress, uint256 tokenId);
+error NftMarketplace__ItemNotForSale(address nftAddress, uint256 tokenId);
 error NftMarketplace__NotListed(
     address owner,
     address nftAddress,
@@ -20,7 +20,7 @@ error NftMarketplace__AlreadyListed(
     address nftAddress,
     uint256 tokenId
 );
-error NoProceeds();
+error NftMarketplace__NoProceeds();
 error NftMarketplace__NotOwner();
 error NftMarketplace__IsOwner();
 error NftMarketplace__NotApprovedForMarketplace();
@@ -35,7 +35,7 @@ contract NftMarketplace is ReentrancyGuard{
         uint256 indexed tokenId,
         Listing listing
     );
-    event ItemBought(
+    event NftMarketplace__ItemBought(
         address indexed buyer,
         address indexed nftAddress,
         uint256 indexed tokenId,
@@ -206,13 +206,13 @@ contract NftMarketplace is ReentrancyGuard{
             msg.sender,
             tokenId
         );
-        emit ItemBought(msg.sender, nftAddress, tokenId, listedItem);
+        emit NftMarketplace__ItemBought(msg.sender, nftAddress, tokenId, listedItem);
     }
 
     function withdrawProceeds(address erc20TokenAddress) external nonReentrant{
         uint256 proceeds = s_proceeds[msg.sender][erc20TokenAddress];
         if (proceeds <= 0) {
-            revert NoProceeds();
+            revert NftMarketplace__NoProceeds();
         }
         s_proceeds[msg.sender][erc20TokenAddress] = 0;
         if(erc20TokenAddress==address(i_weth)) {
