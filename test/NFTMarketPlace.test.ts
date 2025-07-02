@@ -200,10 +200,14 @@ describe("NFTMarketPlace", () => {
           standardSellingPriceUSDT
         );
         expect(await BasicNFTContract.ownerOf(0)).equal(buyer);
-        const USDTBalanceBeforeWithDraw=await USDTContract.balanceOf(seller);
-        await NFTMarketPlaceContract.withdrawProceeds(await USDTContract.getAddress());
-        const USDTBalanceAfterWithDraw=await USDTContract.balanceOf(seller);
-        expect(USDTBalanceAfterWithDraw-USDTBalanceBeforeWithDraw).equal(standardSellingPriceUSDT);
+        const USDTBalanceBeforeWithDraw = await USDTContract.balanceOf(seller);
+        await NFTMarketPlaceContract.withdrawProceeds(
+          await USDTContract.getAddress()
+        );
+        const USDTBalanceAfterWithDraw = await USDTContract.balanceOf(seller);
+        expect(USDTBalanceAfterWithDraw - USDTBalanceBeforeWithDraw).equal(
+          standardSellingPriceUSDT
+        );
       });
     });
     describe("trade with native token", () => {
@@ -280,12 +284,100 @@ describe("NFTMarketPlace", () => {
           standardSellingPriceWETH
         );
         expect(await BasicNFTContract.ownerOf(0)).equal(buyer);
-        const ethBalanceBeforeWithdraw=await ethers.provider.getBalance(seller);
-        const withdrawTx=await NFTMarketPlaceContract.withdrawProceeds(await WETHContract.getAddress());
-        const withdrawTxReceipt=await withdrawTx.wait()
-        const withdrawGasCost=withdrawTxReceipt?.gasPrice!*withdrawTxReceipt?.gasUsed!;
-        const ethBalanceAfterWithdraw=await ethers.provider.getBalance(seller);
-        expect(ethBalanceAfterWithdraw).equal(ethBalanceBeforeWithdraw+standardSellingPriceWETH-withdrawGasCost);
+        const ethBalanceBeforeWithdraw = await ethers.provider.getBalance(
+          seller
+        );
+        const withdrawTx = await NFTMarketPlaceContract.withdrawProceeds(
+          await WETHContract.getAddress()
+        );
+        const withdrawTxReceipt = await withdrawTx.wait();
+        const withdrawGasCost =
+          withdrawTxReceipt?.gasPrice! * withdrawTxReceipt?.gasUsed!;
+        const ethBalanceAfterWithdraw = await ethers.provider.getBalance(
+          seller
+        );
+        expect(ethBalanceAfterWithdraw).equal(
+          ethBalanceBeforeWithdraw + standardSellingPriceWETH - withdrawGasCost
+        );
+      });
+    });
+  });
+  describe("cancel listing", () => {
+    it("needs be listed first", async () => {
+      await expect(
+        NFTMarketPlaceContract.cancelListing(
+          await BasicNFTContract.getAddress(),
+          onlyTokenID
+        )
+      ).revertedWithCustomError(
+        NFTMarketPlaceContract,
+        "NftMarketplace__NotListed"
+      );
+    });
+    describe("trade with erc20 token", () => {
+      beforeEach(async () => {
+        await approveAndListItem(
+          onlyTokenID,
+          standardSellingPriceUSDT,
+          await USDTContract.getAddress()
+        );
+      });
+      it("canceler is not the owner", async () => {
+        await expect(
+          NFTMarketPlaceContract.connect(buyer).cancelListing(
+            await BasicNFTContract.getAddress(),
+            onlyTokenID
+          )
+        ).revertedWithCustomError(
+          NFTMarketPlaceContract,
+          "NftMarketplace__NotOwner"
+        );
+      });
+      it("cancel successful", async () => {
+        await NFTMarketPlaceContract.cancelListing(
+          await BasicNFTContract.getAddress(),
+          onlyTokenID
+        );
+        expect(
+          await NFTMarketPlaceContract.getIsListed(
+            seller,
+            await BasicNFTContract.getAddress(),
+            onlyTokenID
+          )
+        ).equal(false);
+      });
+    });
+    describe("trade with native token", () => {
+      beforeEach(async () => {
+        await approveAndListItem(
+          onlyTokenID,
+          standardSellingPriceWETH,
+          await WETHContract.getAddress()
+        );
+      });
+      it("canceler is not the owner", async () => {
+        await expect(
+          NFTMarketPlaceContract.connect(buyer).cancelListing(
+            await BasicNFTContract.getAddress(),
+            onlyTokenID
+          )
+        ).revertedWithCustomError(
+          NFTMarketPlaceContract,
+          "NftMarketplace__NotOwner"
+        );
+      });
+      it("cancel successful", async () => {
+        await NFTMarketPlaceContract.cancelListing(
+          await BasicNFTContract.getAddress(),
+          onlyTokenID
+        );
+        expect(
+          await NFTMarketPlaceContract.getIsListed(
+            seller,
+            await BasicNFTContract.getAddress(),
+            onlyTokenID
+          )
+        ).equal(false);
       });
     });
   });
