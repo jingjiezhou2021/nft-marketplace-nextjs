@@ -66,6 +66,31 @@ describe("NFTMarketPlace", () => {
       erc20TokenAddress
     );
   }
+  async function makeOffer(
+    nftMarketPlaceContract: NftMarketplace,
+    tokenID: number | bigint,
+    price: bigint,
+    erc20TokenAddress: string
+  ) {
+    nftMarketPlaceContract.makeOffer(
+      await BasicNFTContract.getAddress(),
+      onlyTokenID,
+      standardSellingPriceUSDT / 2n,
+      await USDTContract.getAddress()
+    );
+    const offerInfo = await new Promise<{
+      offerId: bigint;
+      offer: NftMarketplace.OfferStructOutput;
+    }>((res) => {
+      nftMarketPlaceContract.on(
+        nftMarketPlaceContract.getEvent("NftMarketplace__ItemOfferMade"),
+        (offerId, offer) => {
+          res({ offerId, offer });
+        }
+      );
+    });
+    return offerInfo;
+  }
   describe("list item", () => {
     it("needs approve", async () => {
       await expect(
@@ -127,7 +152,7 @@ describe("NFTMarketPlace", () => {
       );
     });
     describe("trade with erc20 token", () => {
-      it("buyer is not the owner", async () => {
+      it("buyer should not be the owner", async () => {
         await approveAndListItem(
           onlyTokenID,
           standardSellingPriceUSDT,
@@ -213,7 +238,7 @@ describe("NFTMarketPlace", () => {
       });
     });
     describe("trade with native token", () => {
-      it("buyer is not the owner", async () => {
+      it("buyer should not be the owner", async () => {
         await approveAndListItem(
           onlyTokenID,
           standardSellingPriceWETH,
@@ -324,7 +349,7 @@ describe("NFTMarketPlace", () => {
           await USDTContract.getAddress()
         );
       });
-      it("canceler is not the owner", async () => {
+      it("canceler should be the owner", async () => {
         await expect(
           NFTMarketPlaceContract.connect(buyer).cancelListing(
             await BasicNFTContract.getAddress(),
@@ -357,7 +382,7 @@ describe("NFTMarketPlace", () => {
           await WETHContract.getAddress()
         );
       });
-      it("canceler is not the owner", async () => {
+      it("canceler should be the owner", async () => {
         await expect(
           NFTMarketPlaceContract.connect(buyer).cancelListing(
             await BasicNFTContract.getAddress(),
@@ -417,7 +442,7 @@ describe("NFTMarketPlace", () => {
           await USDTContract.getAddress()
         );
       });
-      it("updater is not the owner", async () => {
+      it("updater should be the owner", async () => {
         await expect(
           NFTMarketPlaceContract.connect(buyer).updateListing(
             await BasicNFTContract.getAddress(),
@@ -488,7 +513,7 @@ describe("NFTMarketPlace", () => {
           await WETHContract.getAddress()
         );
       });
-      it("updater is not the owner", async () => {
+      it("updater should be the owner", async () => {
         await expect(
           NFTMarketPlaceContract.connect(buyer).updateListing(
             await BasicNFTContract.getAddress(),
@@ -549,6 +574,252 @@ describe("NFTMarketPlace", () => {
           await USDTContract.getAddress(),
           "Tether USD",
         ]);
+      });
+    });
+  });
+  describe("make offer", () => {
+    let buyerConnectedContract: NftMarketplace;
+    beforeEach(async () => {
+      buyerConnectedContract = NFTMarketPlaceContract.connect(buyer);
+    });
+    it("buyer should not be the owner", async () => {
+      await approveAndListItem(
+        onlyTokenID,
+        standardSellingPriceUSDT,
+        await USDTContract.getAddress()
+      );
+      await expect(
+        NFTMarketPlaceContract.makeOffer(
+          await BasicNFTContract.getAddress(),
+          onlyTokenID,
+          standardSellingPriceUSDT / 2n,
+          await USDTContract.getAddress()
+        )
+      ).revertedWithCustomError(
+        NFTMarketPlaceContract,
+        "NftMarketplace__IsOwner"
+      );
+    });
+    it("needs allowance", async () => {
+      await approveAndListItem(
+        onlyTokenID,
+        standardSellingPriceUSDT,
+        await USDTContract.getAddress()
+      );
+      await expect(
+        buyerConnectedContract.makeOffer(
+          await BasicNFTContract.getAddress(),
+          onlyTokenID,
+          standardSellingPriceUSDT / 2n,
+          await USDTContract.getAddress()
+        )
+      ).revertedWithCustomError(
+        NFTMarketPlaceContract,
+        "NftMarketplace__ERC20TokenAllowanceNotEnough"
+      );
+    });
+    it("make offer successful", async () => {
+      await approveAndListItem(
+        onlyTokenID,
+        standardSellingPriceUSDT,
+        await USDTContract.getAddress()
+      );
+      await USDTContract.connect(buyer).approve(
+        await NFTMarketPlaceContract.getAddress(),
+        standardSellingPriceUSDT / 2n
+      );
+      const offerInfo = await makeOffer(
+        buyerConnectedContract,
+        onlyTokenID,
+        standardSellingPriceUSDT / 2n,
+        await USDTContract.getAddress()
+      );
+      expect(offerInfo.offer[1]).equal(await BasicNFTContract.getAddress());
+      expect(offerInfo.offer[2]).equal(onlyTokenID);
+      expect(offerInfo.offer[3][0]).equal(standardSellingPriceUSDT / 2n);
+      expect(offerInfo.offer[3][1]).equal(await USDTContract.getAddress());
+      expect(await buyerConnectedContract.getOffer(offerInfo.offerId)).eql(
+        offerInfo.offer
+      );
+      expect(
+        await NFTMarketPlaceContract.getIsListed(
+          seller,
+          await BasicNFTContract.getAddress(),
+          onlyTokenID
+        )
+      ).equal(true);
+      expect(
+        await NFTMarketPlaceContract.getProceeds(
+          seller,
+          await USDTContract.getAddress()
+        )
+      ).equal(0n);
+      expect(await USDTContract.balanceOf(NFTMarketPlaceContract)).equal(0n);
+      expect(await BasicNFTContract.ownerOf(0)).equal(seller);
+    });
+    it("make offer successful without list item", async () => {
+      await USDTContract.connect(buyer).approve(
+        await NFTMarketPlaceContract.getAddress(),
+        standardSellingPriceUSDT / 2n
+      );
+      const offerInfo = await makeOffer(
+        buyerConnectedContract,
+        onlyTokenID,
+        standardSellingPriceUSDT / 2n,
+        await USDTContract.getAddress()
+      );
+      expect(offerInfo.offer[1]).equal(await BasicNFTContract.getAddress());
+      expect(offerInfo.offer[2]).equal(onlyTokenID);
+      expect(offerInfo.offer[3][0]).equal(standardSellingPriceUSDT / 2n);
+      expect(offerInfo.offer[3][1]).equal(await USDTContract.getAddress());
+      expect(await buyerConnectedContract.getOffer(offerInfo.offerId)).eql(
+        offerInfo.offer
+      );
+      expect(
+        await NFTMarketPlaceContract.getIsListed(
+          seller,
+          await BasicNFTContract.getAddress(),
+          onlyTokenID
+        )
+      ).equal(false);
+      expect(
+        await NFTMarketPlaceContract.getProceeds(
+          seller,
+          await USDTContract.getAddress()
+        )
+      ).equal(0n);
+      expect(await USDTContract.balanceOf(NFTMarketPlaceContract)).equal(0n);
+      expect(await BasicNFTContract.ownerOf(0)).equal(seller);
+    });
+  });
+  describe("accept offer", () => {
+    let buyerConnectedContract: NftMarketplace;
+    beforeEach(async () => {
+      buyerConnectedContract = NFTMarketPlaceContract.connect(buyer);
+    });
+    it("offer should exist", async () => {
+      await expect(
+        NFTMarketPlaceContract.acceptOffer(
+          await BasicNFTContract.getAddress(),
+          onlyTokenID,
+          0
+        )
+      ).revertedWithCustomError(
+        NFTMarketPlaceContract,
+        "NftMarketplace__OfferNotExist"
+      );
+    });
+    describe("offer exist", () => {
+      let offerId: bigint;
+      beforeEach(async () => {
+        await USDTContract.connect(buyer).approve(
+          await NFTMarketPlaceContract.getAddress(),
+          standardSellingPriceUSDT / 2n
+        );
+        const offerInfo = await makeOffer(
+          buyerConnectedContract,
+          onlyTokenID,
+          standardSellingPriceUSDT / 2n,
+          await USDTContract.getAddress()
+        );
+        offerId = offerInfo.offerId;
+      });
+      it("only the owner can accept offer", async () => {
+        await expect(
+          buyerConnectedContract.acceptOffer(
+            await BasicNFTContract.getAddress(),
+            onlyTokenID,
+            offerId
+          )
+        ).revertedWithCustomError(
+          buyerConnectedContract,
+          "NftMarketplace__NotOwner"
+        );
+      });
+      it("nft should be approved to the marketplace", async () => {
+        await expect(
+          NFTMarketPlaceContract.acceptOffer(
+            await BasicNFTContract.getAddress(),
+            onlyTokenID,
+            offerId
+          )
+        ).revertedWithCustomError(
+          NFTMarketPlaceContract,
+          "NftMarketplace__NotApprovedForMarketplace"
+        );
+      });
+      describe("nft approved", () => {
+        beforeEach(async () => {
+          await BasicNFTContract.approve(
+            await NFTMarketPlaceContract.getAddress(),
+            onlyTokenID
+          );
+        });
+        it("allowance should be enough", async () => {
+          await USDTContract.connect(buyer).approve(NFTMarketPlaceContract, 0n);
+          await expect(
+            NFTMarketPlaceContract.acceptOffer(
+              await BasicNFTContract.getAddress(),
+              onlyTokenID,
+              offerId
+            )
+          ).revertedWithCustomError(
+            NFTMarketPlaceContract,
+            "NftMarketplace__ERC20TokenAllowanceNotEnough"
+          );
+        });
+        it("balance should be enough", async () => {
+          await USDTContract.connect(buyer).transfer(
+            seller,
+            initialBalanceUSDT
+          );
+          await expect(
+            NFTMarketPlaceContract.acceptOffer(
+              await BasicNFTContract.getAddress(),
+              onlyTokenID,
+              offerId
+            )
+          ).revertedWithCustomError(
+            NFTMarketPlaceContract,
+            "NftMarketplace__ERC20TokenBalanceNotEnough"
+          );
+        });
+        it("accept offer successful", async () => {
+          await NFTMarketPlaceContract.acceptOffer(
+            await BasicNFTContract.getAddress(),
+            onlyTokenID,
+            offerId
+          );
+          expect(
+            await NFTMarketPlaceContract.getProceeds(
+              seller,
+              await USDTContract.getAddress()
+            )
+          ).equal(standardSellingPriceUSDT / 2n);
+          expect(await USDTContract.balanceOf(NFTMarketPlaceContract)).equal(
+            standardSellingPriceUSDT / 2n
+          );
+          expect(await BasicNFTContract.ownerOf(onlyTokenID)).equal(buyer.address);
+        });
+        it("accept offer successful will delete existing listing", async () => {
+          await approveAndListItem(
+            onlyTokenID,
+            standardSellingPriceUSDT,
+            await USDTContract.getAddress()
+          );
+          await NFTMarketPlaceContract.acceptOffer(
+            await BasicNFTContract.getAddress(),
+            onlyTokenID,
+            offerId
+          );
+          expect(
+            await NFTMarketPlaceContract.getIsListed(
+              seller,
+              await BasicNFTContract.getAddress(),
+              onlyTokenID
+            )
+          ).equal(false);
+        });
       });
     });
   });

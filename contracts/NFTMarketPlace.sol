@@ -26,6 +26,8 @@ error NftMarketplace__IsOwner();
 error NftMarketplace__NotApprovedForMarketplace();
 error NftMarketplace__PriceMustBeAboveZero();
 error NftMarketplace__ERC20TokenAllowanceNotEnough();
+error NftMarketplace__ERC20TokenBalanceNotEnough();
+error NftMarketplace__OfferNotExist(uint256 offerId);
 error NftMarketplace__WithdrawFailed();
 
 contract NftMarketplace is ReentrancyGuard{
@@ -46,11 +48,22 @@ contract NftMarketplace is ReentrancyGuard{
         address indexed nftAddress,
         uint256 indexed tokenId
     );
+    event NftMarketplace__ItemOfferMade (
+        uint256 indexed offerId,
+        Offer offer
+    );
 
     struct Listing {
         uint256 price;
         address erc20TokenAddress;
         string erc20TokenName;
+    }
+
+    struct Offer {
+        address buyer;
+        address nftAddress;
+        uint256 tokenId;
+        Listing listing;
     }
 
     modifier notListed(
@@ -102,6 +115,10 @@ contract NftMarketplace is ReentrancyGuard{
 
     mapping(address => mapping(address => uint256)) private s_proceeds;
 
+    mapping(uint256 => Offer) private s_offers;
+
+    uint256 private s_offer_counter=0;
+
     WETH9 internal immutable i_weth;
 
     constructor(address payable wETHAddress) {
@@ -137,6 +154,15 @@ contract NftMarketplace is ReentrancyGuard{
 
     function getProceeds(address seller,address erc20TokenAddress) public view returns (uint256) {
         return s_proceeds[seller][erc20TokenAddress];
+    }
+
+    function getOffer(uint256 offerId) public view returns (Offer memory) {
+        return s_offers[offerId];
+    }
+
+    function getOfferExist(uint256 offerId) public view returns (bool) {
+        Offer memory offer = getOffer(offerId);
+        return offer.listing.price>0;
     }
 
     function listItem(
@@ -262,6 +288,73 @@ contract NftMarketplace is ReentrancyGuard{
         Listing memory listing = Listing(newPrice,erc20TokenAddress,erc20TokenName);
         s_listings[msg.sender][nftAddress][tokenId] = listing;
         emit NftMarketplace__ItemListed(msg.sender, nftAddress, tokenId, listing);
+    }
+
+    function makeOffer(
+        address nftAddress,
+        uint256 tokenId,
+        uint256 price,
+        address erc20TokenAddress
+    ) 
+        external
+        payable
+        isNotOwner(nftAddress, tokenId, msg.sender)
+        nonReentrant {
+        IERC20Metadata erc20Token = IERC20Metadata(erc20TokenAddress);
+        uint256 allowance = erc20Token.allowance(msg.sender, address(this));
+        if(allowance < price) {
+            revert NftMarketplace__ERC20TokenAllowanceNotEnough();            
+        }
+        else {
+            string memory erc20TokenName = erc20Token.name();
+            Listing memory listing = Listing(
+                price,
+                erc20TokenAddress,
+                erc20TokenName
+            );
+            Offer memory offer = Offer(
+                msg.sender,
+                nftAddress,
+                tokenId,
+                listing
+            );
+            emit NftMarketplace__ItemOfferMade(s_offer_counter,offer);
+            s_offers[s_offer_counter++]=offer;
+        }
+    }
+
+    function acceptOffer(address nftAddress,uint256 tokenId,uint256 offerId) 
+        external 
+        isOwner(nftAddress,tokenId,msg.sender)
+        nonReentrant {
+        if(!getOfferExist(offerId)) {
+            revert NftMarketplace__OfferNotExist(offerId);
+        }
+        IERC721 nft = IERC721(nftAddress);
+        if (nft.getApproved(tokenId) != address(this)) {
+            revert NftMarketplace__NotApprovedForMarketplace();
+        }
+        Offer memory offer = getOffer(offerId);
+        IERC20 erc20Token = IERC20(offer.listing.erc20TokenAddress);
+        uint256 allowance = erc20Token.allowance(offer.buyer, address(this));
+        uint256 balance = erc20Token.balanceOf(offer.buyer);
+        if (allowance < offer.listing.price) {
+            revert NftMarketplace__ERC20TokenAllowanceNotEnough();
+        } else if (balance < offer.listing.price) {
+            revert NftMarketplace__ERC20TokenBalanceNotEnough();
+        } else {
+            erc20Token.transferFrom(offer.buyer, address(this), offer.listing.price);
+        }
+        if(getIsListed(msg.sender,nftAddress,tokenId)) {
+            delete s_listings[msg.sender][nftAddress][tokenId];
+        }
+        s_proceeds[msg.sender][offer.listing.erc20TokenAddress] += offer.listing.price;
+        IERC721(nftAddress).safeTransferFrom(
+            msg.sender,
+            offer.buyer,
+            tokenId
+        );
+        emit NftMarketplace__ItemBought(offer.buyer, nftAddress, tokenId, offer.listing);
     }
 
 
