@@ -1,5 +1,6 @@
 import { InferGetStaticPropsType } from 'next';
 import { useTranslation } from 'next-i18next';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 export async function getStaticProps({ locale }) {
 	return {
@@ -13,5 +14,10 @@ export default function Page(
 	_props: InferGetStaticPropsType<typeof getStaticProps>,
 ) {
 	const { t } = useTranslation('common');
-	return <h1>{t('Hello, Next.js!')}</h1>;
+	return (
+		<div>
+			<h1>{t('Hello, Next.js!')}</h1>
+			<ConnectButton />
+		</div>
+	);
 }
