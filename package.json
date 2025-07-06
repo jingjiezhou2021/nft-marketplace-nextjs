@@ -2,7 +2,8 @@
     "name": "nft-marketplace",
     "private": "true",
     "workspaces": [
-        "packages/smart-contract"
+        "packages/smart-contract",
+        "packages/front-end"
     ],
     "devDependencies": {
         "minimatch": "^10.0.3",
