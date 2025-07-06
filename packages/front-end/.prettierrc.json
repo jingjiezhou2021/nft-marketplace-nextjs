@@ -2,5 +2,8 @@
     "useTabs": true,
     "endOfLine": "lf",
     "semi": true,
-    "singleQuote": true
+    "singleQuote": true,
+    "tabWidth": 4,
+    "trailingComma": "all",
+    "singleAttributePerLine": true
 }

@@ -1,5 +1,5 @@
 module.exports = {
-	locales: ['en','zh'],
+	locales: ['en', 'zh'],
 	defaultNamespace: 'common',
 	defaultValue: (locale: string, namespace: string, key: string) => {
 		if (locale === 'en') {
