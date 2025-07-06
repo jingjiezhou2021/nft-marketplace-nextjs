@@ -5,6 +5,7 @@
         "packages/smart-contract"
     ],
     "devDependencies": {
-        "minimatch": "^10.0.3"
+        "minimatch": "^10.0.3",
+        "tsx": "^4.20.3"
     }
 }
