@@ -1,3 +1,7 @@
 import NFTMarketPlaceArtifacts from "./artifacts/contracts/NFTMarketPlace.sol/NftMarketplace.json";
 import * as TypeChain from "./typechain-types/index";
-export { NFTMarketPlaceArtifacts,TypeChain };
+import DeployedAddress31337 from "@/ignition/deployments/chain-31337/deployed_addresses.json";
+const DeployedAddresses = {
+  "31337": DeployedAddress31337,
+};
+export { NFTMarketPlaceArtifacts, TypeChain, DeployedAddresses };
