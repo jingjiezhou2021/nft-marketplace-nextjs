@@ -1,5 +1,5 @@
 import express from "express";
-import { PrismaClient } from "./prisma/generated/prisma";
+import { PrismaClient } from "../prisma/generated/prisma";
 import { TypeChain } from "smart-contract";
 import { ethers } from "ethers";
 import { DeployedAddresses } from "smart-contract";

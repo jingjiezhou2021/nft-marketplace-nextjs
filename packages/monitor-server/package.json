@@ -1,7 +1,6 @@
 {
   "name": "monitor-server",
   "version": "1.0.0",
-  "main": "index.js",
   "devDependencies": {
     "@prisma/client": "^6.11.1",
     "@types/express": "^5.0.3",
@@ -10,7 +9,9 @@
     "express": "^5.1.0",
     "prisma": "^6.11.1"
   },
-  "scripts": {},
+  "scripts": {
+    "dev":"tsx src/index.ts"
+  },
   "author": "",
   "license": "ISC",
   "description": ""
