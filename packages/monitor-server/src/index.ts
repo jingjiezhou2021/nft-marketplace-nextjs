@@ -11,9 +11,9 @@ import cors from "cors";
 import path from "path";
 import BigIntScalar from "../graphql/BigIntScalar";
 import { Server } from "http";
-import { SignalConstants } from "os";
 const prisma = new PrismaClient();
 const app = express();
+let apolloServer: ApolloServer;
 let server: Server;
 const port = process.env.PORT || 3000;
 
@@ -61,7 +61,7 @@ async function setUpApolloServer() {
       loaders: [new GraphQLFileLoader()],
     }
   );
-  const apolloServer = new ApolloServer({
+  apolloServer = new ApolloServer({
     typeDefs,
     resolvers: {
       BigInt: BigIntScalar,
@@ -98,6 +98,7 @@ async function setUpApolloServer() {
 setUpApolloServer();
 process.on("SIGINT", async () => {
   console.log("🛑 Shutting down...");
+  await apolloServer.stop();
   await deleteAllData();
   await prisma.$disconnect();
   process.exit();
