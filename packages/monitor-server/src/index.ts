@@ -48,6 +48,7 @@ function setUpEventListener() {
             erc20TokenAddress: listing[1],
             erc20TokenName: listing[2],
           },
+          chainId:provider._network.chainId
         },
       });
     }

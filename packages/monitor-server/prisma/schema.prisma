@@ -26,4 +26,5 @@ model NftMarketplace__ItemListed {
   nftAddress String
   tokenId BigInt
   listing Listing
+  chainId BigInt @default(31337)
 }

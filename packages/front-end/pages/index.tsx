@@ -18,6 +18,7 @@ export const getStaticProps = async ({ locale }) => {
 				nftAddress
 				seller
 				tokenId
+				chainId
 			}
 		}
 	`);

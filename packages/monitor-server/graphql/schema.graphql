@@ -12,6 +12,7 @@ type NftMarketplace__ItemListed {
   nftAddress: String!
   tokenId: BigInt!
   listing: Listing!
+  chainId: BigInt!
 }
 
 type Query {
