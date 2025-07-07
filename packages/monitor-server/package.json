@@ -2,15 +2,21 @@
   "name": "monitor-server",
   "version": "1.0.0",
   "devDependencies": {
+    "@apollo/server": "^4.12.2",
+    "@as-integrations/express5": "^1.1.0",
+    "@graphql-tools/graphql-file-loader": "^8.0.20",
+    "@graphql-tools/load": "^8.1.0",
     "@prisma/client": "^6.11.1",
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.10",
+    "cors": "^2.8.5",
     "ethers": "^6.15.0",
     "express": "^5.1.0",
+    "graphql": "^16.11.0",
     "prisma": "^6.11.1"
   },
   "scripts": {
-    "dev":"tsx src/index.ts"
+    "dev": "tsx src/index.ts"
   },
   "author": "",
   "license": "ISC",

@@ -3,8 +3,18 @@ import { PrismaClient } from "../prisma/generated/prisma";
 import { TypeChain } from "smart-contract";
 import { ethers } from "ethers";
 import { DeployedAddresses } from "smart-contract";
+import { ApolloServer } from "@apollo/server";
+import { expressMiddleware } from "@as-integrations/express5";
+import { loadSchema } from "@graphql-tools/load";
+import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader";
+import cors from "cors";
+import path from "path";
+import BigIntScalar from "../graphql/BigIntScalar";
+import { Server } from "http";
+import { SignalConstants } from "os";
 const prisma = new PrismaClient();
 const app = express();
+let server: Server;
 const port = process.env.PORT || 3000;
 
 async function deleteAllData() {
@@ -13,7 +23,7 @@ async function deleteAllData() {
     console.log("✅ All data deleted.");
   } catch (err) {
     console.error("❌ Failed to delete data:", err);
-  } 
+  }
 }
 
 function setUpEventListener() {
@@ -26,7 +36,7 @@ function setUpEventListener() {
   );
   marketContract.on(
     marketContract.getEvent("NftMarketplace__ItemListed"),
-    async (seller, nftAddress, tokenId, listing,_) => {
+    async (seller, nftAddress, tokenId, listing, _) => {
       console.log("event captured!");
       await prisma.nftMarketplace__ItemListed.create({
         data: {
@@ -44,15 +54,48 @@ function setUpEventListener() {
   );
 }
 
-app.listen(port, () => {
-  console.log(`🚀 Express server running on http://localhost:${port}`);
-  try {
-    setUpEventListener();
-  } catch (err) {
-    console.error("❌ Error setting up event listener:", err);
-  }
-});
-// Graceful shutdown
+async function setUpApolloServer() {
+  const typeDefs = await loadSchema(
+    path.join(process.cwd(), "graphql", "schema.graphql"),
+    {
+      loaders: [new GraphQLFileLoader()],
+    }
+  );
+  const apolloServer = new ApolloServer({
+    typeDefs,
+    resolvers: {
+      BigInt: BigIntScalar,
+      Query: {
+        itemListedEvents: async (_: any, __: any) => {
+          return prisma.nftMarketplace__ItemListed.findMany();
+        },
+      },
+    },
+  });
+  await apolloServer.start();
+  app.use(
+    "/graphql",
+    cors<cors.CorsRequest>(),
+    express.json(),
+    expressMiddleware(apolloServer, {
+      async context({ req, res }) {
+        return {
+          // prisma,
+        };
+      },
+    })
+  );
+  server = app.listen(port, () => {
+    console.log(`🚀 Express server running on http://localhost:${port}`);
+    try {
+      setUpEventListener();
+    } catch (err) {
+      console.error("❌ Error setting up event listener:", err);
+    }
+  });
+}
+
+setUpApolloServer();
 process.on("SIGINT", async () => {
   console.log("🛑 Shutting down...");
   await deleteAllData();

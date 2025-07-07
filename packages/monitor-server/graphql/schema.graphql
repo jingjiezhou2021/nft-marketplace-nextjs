@@ -1,0 +1,19 @@
+scalar BigInt
+
+type Listing {
+  price: BigInt!
+  erc20TokenAddress: String!
+  erc20TokenName: String!
+}
+
+type NftMarketplace__ItemListed {
+  id: ID!
+  seller: String!
+  nftAddress: String!
+  tokenId: BigInt!
+  listing: Listing!
+}
+
+type Query {
+  itemListedEvents: [NftMarketplace__ItemListed!]!
+}
