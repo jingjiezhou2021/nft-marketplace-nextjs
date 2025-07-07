@@ -1,6 +1,8 @@
 import "dotenv/config";
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import "tsconfig-paths/register";
+
 
 const config: HardhatUserConfig = {
   solidity: {
