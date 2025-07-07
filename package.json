@@ -3,7 +3,8 @@
     "private": "true",
     "workspaces": [
         "packages/smart-contract",
-        "packages/front-end"
+        "packages/front-end",
+        "packages/monitor-server"
     ],
     "devDependencies": {
         "minimatch": "^10.0.3",

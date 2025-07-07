@@ -1,0 +1,14 @@
+{
+  "name": "monitor-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {
+    "@prisma/client": "^6.11.1",
+    "@types/node": "^24.0.10",
+    "prisma": "^6.11.1"
+  },
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
