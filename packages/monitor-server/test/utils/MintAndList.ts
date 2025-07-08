@@ -1,9 +1,9 @@
-import { BasicNFT, IERC20Metadata, NftMarketplace } from "@/typechain-types";
+import { TypeChain } from "smart-contract";
 
 export async function mintAndList(
-  market: NftMarketplace,
-  basicNFT: BasicNFT,
-  erc20TokenContract: IERC20Metadata,
+  market: TypeChain.NftMarketplace,
+  basicNFT: TypeChain.BasicNFT,
+  erc20TokenContract: TypeChain.IERC20Metadata,
   price: bigint
 ) {
   basicNFT.mint();

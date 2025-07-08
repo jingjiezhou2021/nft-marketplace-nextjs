@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "target": "es2021",
+        "module": "commonjs",
+        "lib": [
+            "es2021"
+        ],
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "esModuleInterop": true,
+        "plugins": [
+            {
+                "name": "@0no-co/graphqlsp",
+                "schema": "./graphql/types/schema.graphql"
+            }
+        ]
+    },
+}
