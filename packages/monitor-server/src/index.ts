@@ -11,6 +11,7 @@ import cors from "cors";
 import path from "path";
 import BigIntScalar from "../graphql/BigIntScalar";
 import { Server } from "http";
+import type { Resolvers } from "../graphql/types/resolvers-types";
 const prisma = new PrismaClient();
 const app = express();
 let apolloServer: ApolloServer;
@@ -75,19 +76,20 @@ async function setUpApolloServer() {
       loaders: [new GraphQLFileLoader()],
     }
   );
-  apolloServer = new ApolloServer({
-    typeDefs,
-    resolvers: {
-      BigInt: BigIntScalar,
-      Query: {
-        itemListedEvents: async (_: any, __: any) => {
-          return prisma.nftMarketplace__ItemListed.findMany();
-        },
-        itemCanceledEvents: async () => {
-          return prisma.nftMarketplace__ItemCanceled.findMany();
-        }
+  const resolvers: Resolvers = {
+    BigInt: BigIntScalar,
+    Query: {
+      itemListedEvents: async (_: any, __: any) => {
+        return prisma.nftMarketplace__ItemListed.findMany();
+      },
+      itemCanceledEvents: async () => {
+        return prisma.nftMarketplace__ItemCanceled.findMany();
       },
     },
+  };
+  apolloServer = new ApolloServer({
+    typeDefs,
+    resolvers,
   });
   await apolloServer.start();
   app.use(
