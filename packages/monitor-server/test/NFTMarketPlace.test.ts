@@ -159,7 +159,7 @@ describe("NFTMarketPlace local log event to db", () => {
   it("NftMarketplace__ItemBought", async () => {
     const priceUSDT = ethers.parseUnits("1200", await usdt.decimals());
     const priceWETH = ethers.parseUnits("0.4", await weth.decimals());
-    await weth.connect(buyer).deposit({ value: ethers.parseEther("1") });
+    await weth.connect(buyer).deposit({ value: priceWETH });
     await usdt.connect(buyer).mint(priceUSDT);
     const tokenIdUSDT = await mintAndList(market, basicNFT, usdt, priceUSDT);
     const tokenIdWETH = await mintAndList(market, basicNFT, weth, priceWETH);
@@ -209,7 +209,7 @@ describe("NFTMarketPlace local log event to db", () => {
         nftAddress: await basicNFT.getAddress(),
         tokenId: tokenIdWETH,
         listing: {
-          __typename:"Listing",
+          __typename: "Listing",
           price: priceWETH,
           erc20TokenAddress: await weth.getAddress(),
           erc20TokenName: await weth.name(),
@@ -218,5 +218,65 @@ describe("NFTMarketPlace local log event to db", () => {
       },
     ]);
   });
-  it("NftMarketplace__ItemOfferMade", async () => {});
+  it("NftMarketplace__ItemOfferMade", async () => {
+    const price = ethers.parseUnits("0.3", await weth.decimals());
+    await weth.connect(buyer).deposit({ value: price });
+    await weth.connect(buyer).approve(market, price);
+    const tokenId = await mintAndList(market, basicNFT, weth, price);
+    market
+      .connect(buyer)
+      .makeOffer(
+        await basicNFT.getAddress(),
+        tokenId,
+        price,
+        await weth.getAddress()
+      );
+    const offerId = await new Promise<bigint>((res) => {
+      market.on(market.getEvent("NftMarketplace__ItemOfferMade"), (offerId) => {
+        res(offerId);
+      });
+    });
+    await sleep(5000);
+    const { data } = await client.query({
+      query: graphql(`
+        query Query4 {
+          nftMarketplace__ItemOfferMades {
+            offerId
+            offer {
+              buyer
+              nftAddress
+              tokenId
+              listing {
+                price
+                erc20TokenAddress
+                erc20TokenName
+              }
+            }
+            chainId
+          }
+        }
+      `),
+    });
+    expect(data.nftMarketplace__ItemOfferMades).toEqual<
+      typeof data.nftMarketplace__ItemOfferMades
+    >([
+      {
+        __typename: "NftMarketplace__ItemOfferMade",
+        offerId,
+        offer: {
+          __typename:"Offer",
+          buyer: buyer.address,
+          nftAddress: await basicNFT.getAddress(),
+          tokenId,
+          listing: {
+            __typename:"Listing",
+            price,
+            erc20TokenAddress: await weth.getAddress(),
+            erc20TokenName: await weth.name(),
+          },
+        },
+        chainId: provider._network.chainId,
+      },
+    ]);
+  });
 });
