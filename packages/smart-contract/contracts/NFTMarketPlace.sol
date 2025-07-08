@@ -323,18 +323,20 @@ contract NftMarketplace is ReentrancyGuard{
         }
     }
 
-    function acceptOffer(address nftAddress,uint256 tokenId,uint256 offerId) 
+    function acceptOffer(uint256 offerId) 
         external 
-        isOwner(nftAddress,tokenId,msg.sender)
         nonReentrant {
         if(!getOfferExist(offerId)) {
             revert NftMarketplace__OfferNotExist(offerId);
         }
-        IERC721 nft = IERC721(nftAddress);
-        if (nft.getApproved(tokenId) != address(this)) {
+        Offer memory offer = getOffer(offerId);
+        if(!getIsOwner(offer.nftAddress,offer.tokenId,msg.sender)) {
+            revert NftMarketplace__NotOwner();
+        }
+        IERC721 nft = IERC721(offer.nftAddress);
+        if (nft.getApproved(offer.tokenId) != address(this)) {
             revert NftMarketplace__NotApprovedForMarketplace();
         }
-        Offer memory offer = getOffer(offerId);
         IERC20 erc20Token = IERC20(offer.listing.erc20TokenAddress);
         uint256 allowance = erc20Token.allowance(offer.buyer, address(this));
         uint256 balance = erc20Token.balanceOf(offer.buyer);
@@ -345,16 +347,16 @@ contract NftMarketplace is ReentrancyGuard{
         } else {
             erc20Token.transferFrom(offer.buyer, address(this), offer.listing.price);
         }
-        if(getIsListed(msg.sender,nftAddress,tokenId)) {
-            delete s_listings[msg.sender][nftAddress][tokenId];
+        if(getIsListed(msg.sender,offer.nftAddress,offer.tokenId)) {
+            delete s_listings[msg.sender][offer.nftAddress][offer.tokenId];
         }
         s_proceeds[msg.sender][offer.listing.erc20TokenAddress] += offer.listing.price;
-        IERC721(nftAddress).safeTransferFrom(
+        IERC721(offer.nftAddress).safeTransferFrom(
             msg.sender,
             offer.buyer,
-            tokenId
+            offer.tokenId
         );
-        emit NftMarketplace__ItemBought(offer.buyer, nftAddress, tokenId, offer.listing);
+        emit NftMarketplace__ItemBought(offer.buyer, offer.nftAddress, offer.tokenId, offer.listing);
     }
 
 

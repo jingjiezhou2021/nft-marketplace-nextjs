@@ -16,9 +16,8 @@ describe("NFTMarketPlace", () => {
   let initialBalanceUSDT: bigint;
   let onlyTokenID: bigint;
   beforeEach(async () => {
-    const { USDT, WETH, NFTMarketPlace, BasicNFT } = await ignition.deploy(
-      NFTMarketPlaceDev
-    );
+    const { USDT, WETH, NFTMarketPlace, BasicNFT } =
+      await ignition.deploy(NFTMarketPlaceDev);
     USDTContract = USDT as unknown as MockUSDT;
     WETHContract = WETH as unknown as WETH9;
     NFTMarketPlaceContract = NFTMarketPlace as unknown as NftMarketplace;
@@ -311,18 +310,16 @@ describe("NFTMarketPlace", () => {
           standardSellingPriceWETH
         );
         expect(await BasicNFTContract.ownerOf(0)).equal(buyer);
-        const ethBalanceBeforeWithdraw = await ethers.provider.getBalance(
-          seller
-        );
+        const ethBalanceBeforeWithdraw =
+          await ethers.provider.getBalance(seller);
         const withdrawTx = await NFTMarketPlaceContract.withdrawProceeds(
           await WETHContract.getAddress()
         );
         const withdrawTxReceipt = await withdrawTx.wait();
         const withdrawGasCost =
           withdrawTxReceipt?.gasPrice! * withdrawTxReceipt?.gasUsed!;
-        const ethBalanceAfterWithdraw = await ethers.provider.getBalance(
-          seller
-        );
+        const ethBalanceAfterWithdraw =
+          await ethers.provider.getBalance(seller);
         expect(ethBalanceAfterWithdraw).equal(
           ethBalanceBeforeWithdraw + standardSellingPriceWETH - withdrawGasCost
         );
@@ -699,11 +696,7 @@ describe("NFTMarketPlace", () => {
     });
     it("offer should exist", async () => {
       await expect(
-        NFTMarketPlaceContract.acceptOffer(
-          await BasicNFTContract.getAddress(),
-          onlyTokenID,
-          0
-        )
+        NFTMarketPlaceContract.acceptOffer(0)
       ).revertedWithCustomError(
         NFTMarketPlaceContract,
         "NftMarketplace__OfferNotExist"
@@ -726,11 +719,7 @@ describe("NFTMarketPlace", () => {
       });
       it("only the owner can accept offer", async () => {
         await expect(
-          buyerConnectedContract.acceptOffer(
-            await BasicNFTContract.getAddress(),
-            onlyTokenID,
-            offerId
-          )
+          buyerConnectedContract.acceptOffer(offerId)
         ).revertedWithCustomError(
           buyerConnectedContract,
           "NftMarketplace__NotOwner"
@@ -738,11 +727,7 @@ describe("NFTMarketPlace", () => {
       });
       it("nft should be approved to the marketplace", async () => {
         await expect(
-          NFTMarketPlaceContract.acceptOffer(
-            await BasicNFTContract.getAddress(),
-            onlyTokenID,
-            offerId
-          )
+          NFTMarketPlaceContract.acceptOffer(offerId)
         ).revertedWithCustomError(
           NFTMarketPlaceContract,
           "NftMarketplace__NotApprovedForMarketplace"
@@ -758,11 +743,7 @@ describe("NFTMarketPlace", () => {
         it("allowance should be enough", async () => {
           await USDTContract.connect(buyer).approve(NFTMarketPlaceContract, 0n);
           await expect(
-            NFTMarketPlaceContract.acceptOffer(
-              await BasicNFTContract.getAddress(),
-              onlyTokenID,
-              offerId
-            )
+            NFTMarketPlaceContract.acceptOffer(offerId)
           ).revertedWithCustomError(
             NFTMarketPlaceContract,
             "NftMarketplace__ERC20TokenAllowanceNotEnough"
@@ -774,22 +755,14 @@ describe("NFTMarketPlace", () => {
             initialBalanceUSDT
           );
           await expect(
-            NFTMarketPlaceContract.acceptOffer(
-              await BasicNFTContract.getAddress(),
-              onlyTokenID,
-              offerId
-            )
+            NFTMarketPlaceContract.acceptOffer(offerId)
           ).revertedWithCustomError(
             NFTMarketPlaceContract,
             "NftMarketplace__ERC20TokenBalanceNotEnough"
           );
         });
         it("accept offer successful", async () => {
-          await NFTMarketPlaceContract.acceptOffer(
-            await BasicNFTContract.getAddress(),
-            onlyTokenID,
-            offerId
-          );
+          await NFTMarketPlaceContract.acceptOffer(offerId);
           expect(
             await NFTMarketPlaceContract.getProceeds(
               seller,
@@ -799,7 +772,9 @@ describe("NFTMarketPlace", () => {
           expect(await USDTContract.balanceOf(NFTMarketPlaceContract)).equal(
             standardSellingPriceUSDT / 2n
           );
-          expect(await BasicNFTContract.ownerOf(onlyTokenID)).equal(buyer.address);
+          expect(await BasicNFTContract.ownerOf(onlyTokenID)).equal(
+            buyer.address
+          );
         });
         it("accept offer successful will delete existing listing", async () => {
           await approveAndListItem(
@@ -807,11 +782,7 @@ describe("NFTMarketPlace", () => {
             standardSellingPriceUSDT,
             await USDTContract.getAddress()
           );
-          await NFTMarketPlaceContract.acceptOffer(
-            await BasicNFTContract.getAddress(),
-            onlyTokenID,
-            offerId
-          );
+          await NFTMarketPlaceContract.acceptOffer(offerId);
           expect(
             await NFTMarketPlaceContract.getIsListed(
               seller,
