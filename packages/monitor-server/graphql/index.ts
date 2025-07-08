@@ -1,13 +1,9 @@
-import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader";
-import { loadSchema } from "@graphql-tools/load";
-import path from "path";
-import { Resolvers } from "./types/resolvers-types";
-import BigIntScalar from "./BigIntScalar";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@as-integrations/express5";
 import { Prisma, PrismaClient } from "../prisma/generated/prisma";
 import { DefaultArgs } from "../prisma/generated/prisma/runtime/library";
-interface MyContext {
+import getSchema from "./schema";
+interface Context {
   prisma: MyPrismaClient;
 }
 type MyPrismaClient = PrismaClient<
@@ -33,34 +29,18 @@ export function getApolloServerMiddleware() {
     process.exit(0);
   });
   const prisma = new PrismaClient();
-  let apolloServer: ApolloServer<MyContext>;
-  return loadSchema(path.join(process.cwd(), "graphql", "schema.graphql"), {
-    loaders: [new GraphQLFileLoader()],
-  })
-    .then((typeDefs) => {
-      const resolvers: Resolvers<MyContext> = {
-        BigInt: BigIntScalar,
-        Query: {
-          itemListedEvents: async (_: any, __: any, { prisma }) => {
-            return prisma.nftMarketplace__ItemListed.findMany();
-          },
-          itemCanceledEvents: async (_: any, __: any, { prisma }) => {
-            return prisma.nftMarketplace__ItemCanceled.findMany();
-          },
-        },
-      };
+  let apolloServer: ApolloServer<Context>;
+  return getSchema()
+    .then((schema) => {
       apolloServer = new ApolloServer({
-        typeDefs,
-        resolvers,
+        schema,
       });
       return apolloServer.start();
     })
     .then(() => {
-      return expressMiddleware(apolloServer, {
+      return expressMiddleware<Context>(apolloServer, {
         async context({ req, res }) {
-          return {
-            prisma,
-          };
+          return { prisma };
         },
       });
     });

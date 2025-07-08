@@ -8,6 +8,9 @@ generator client {
   provider = "prisma-client-js"
   output   = "./generated/prisma"
 }
+generator typegraphql {
+  provider = "typegraphql-prisma"
+}
 
 datasource db {
   provider = "mongodb"
