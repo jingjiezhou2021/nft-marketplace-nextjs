@@ -39,3 +39,12 @@ model NftMarketplace__ItemCanceled {
   tokenId BigInt
   chainId BigInt @default(31337)
 }
+
+model NftMarketplace__ItemBought {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  buyer String
+  nftAddress String
+  tokenId BigInt
+  listing Listing
+  chainId BigInt @default(31337)
+}

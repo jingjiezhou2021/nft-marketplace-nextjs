@@ -9,7 +9,7 @@ export async function setUpEventListener() {
     DeployedAddresses["31337"]["NFTMarketPlaceDev#NftMarketplace"],
     wallet
   );
-  const prisma=new PrismaClient();
+  const prisma = new PrismaClient();
   marketContract.on(
     marketContract.getEvent("NftMarketplace__ItemListed"),
     async (seller, nftAddress, tokenId, listing, _) => {
@@ -36,6 +36,24 @@ export async function setUpEventListener() {
           seller,
           nftAddress,
           tokenId,
+          chainId: provider._network.chainId,
+        },
+      });
+    }
+  );
+  marketContract.on(
+    marketContract.getEvent("NftMarketplace__ItemBought"),
+    async (buyer, nftAddress, tokenId, listing) => {
+      await prisma.nftMarketplace__ItemBought.create({
+        data: {
+          buyer,
+          nftAddress,
+          tokenId,
+          listing: {
+            price: listing[0],
+            erc20TokenAddress: listing[1],
+            erc20TokenName: listing[2],
+          },
           chainId: provider._network.chainId,
         },
       });
