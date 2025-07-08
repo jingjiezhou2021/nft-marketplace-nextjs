@@ -37,7 +37,6 @@ function setUpEventListener() {
   marketContract.on(
     marketContract.getEvent("NftMarketplace__ItemListed"),
     async (seller, nftAddress, tokenId, listing, _) => {
-      console.log("event captured!");
       await prisma.nftMarketplace__ItemListed.create({
         data: {
           seller,
@@ -48,7 +47,20 @@ function setUpEventListener() {
             erc20TokenAddress: listing[1],
             erc20TokenName: listing[2],
           },
-          chainId:provider._network.chainId
+          chainId: provider._network.chainId,
+        },
+      });
+    }
+  );
+  marketContract.on(
+    marketContract.getEvent("NftMarketplace__ItemCanceled"),
+    async (seller, nftAddress, tokenId) => {
+      await prisma.nftMarketplace__ItemCanceled.create({
+        data: {
+          seller,
+          nftAddress,
+          tokenId,
+          chainId: provider._network.chainId,
         },
       });
     }

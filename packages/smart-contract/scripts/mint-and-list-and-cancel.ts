@@ -1,12 +1,9 @@
 import { ethers } from "hardhat";
 import DeployedAddresses from "@/ignition/deployments/chain-31337/deployed_addresses.json";
 import {
-  BasicNFT,
   BasicNFT__factory,
-  IERC20Metadata,
-  MockUSDT__factory,
-  NftMarketplace,
   NftMarketplace__factory,
+  WETH9__factory,
 } from "@/typechain-types";
 import { mintAndList } from "./utils/MintAndList";
 async function main() {
@@ -18,18 +15,18 @@ async function main() {
     DeployedAddresses["NFTMarketPlaceDev#NftMarketplace"],
     (await ethers.getSigners())[0]
   );
-  const usdt = MockUSDT__factory.connect(
-    DeployedAddresses["NFTMarketPlaceDev#MockUSDT"],
+  const weth = WETH9__factory.connect(
+    DeployedAddresses["NFTMarketPlaceDev#WETH9"],
     (await ethers.getSigners())[0]
   );
-  await mintAndList(
+  const tokenId=await mintAndList(
     market,
     basicNFT,
-    usdt,
-    ethers.parseUnits("1000", await usdt.decimals())
+    weth,
+    ethers.parseUnits("0.3", await weth.decimals())
   );
+  await market.cancelListing(basicNFT,tokenId);
 }
-
 main()
   .catch((error) => {
     console.error(error);
