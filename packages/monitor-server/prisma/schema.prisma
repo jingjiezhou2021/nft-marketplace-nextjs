@@ -23,6 +23,13 @@ type Listing {
   erc20TokenName    String
 }
 
+type Offer {
+  buyer String
+  nftAddress String
+  tokenId BigInt
+  listing Listing
+}
+
 model NftMarketplace__ItemListed {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   seller String
@@ -46,5 +53,12 @@ model NftMarketplace__ItemBought {
   nftAddress String
   tokenId BigInt
   listing Listing
+  chainId BigInt @default(31337)
+}
+
+model NftMarketplace__ItemOfferMade {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  offerId BigInt
+  offer Offer
   chainId BigInt @default(31337)
 }

@@ -59,4 +59,16 @@ export async function setUpEventListener() {
       });
     }
   );
+  marketContract.on(
+    marketContract.getEvent("NftMarketplace__ItemOfferMade"),
+    async (offerId,offer) => {
+      await prisma.nftMarketplace__ItemOfferMade.create({
+        data:{
+          offerId,
+          offer,
+          chainId:provider._network.chainId
+        }
+      })
+    }
+  )
 }
