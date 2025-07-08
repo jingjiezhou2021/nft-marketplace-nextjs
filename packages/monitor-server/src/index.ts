@@ -20,6 +20,7 @@ const port = process.env.PORT || 3000;
 async function deleteAllData() {
   try {
     await prisma.nftMarketplace__ItemListed.deleteMany({});
+    await prisma.nftMarketplace__ItemCanceled.deleteMany({});
     console.log("✅ All data deleted.");
   } catch (err) {
     console.error("❌ Failed to delete data:", err);
@@ -82,6 +83,9 @@ async function setUpApolloServer() {
         itemListedEvents: async (_: any, __: any) => {
           return prisma.nftMarketplace__ItemListed.findMany();
         },
+        itemCanceledEvents: async () => {
+          return prisma.nftMarketplace__ItemCanceled.findMany();
+        }
       },
     },
   });

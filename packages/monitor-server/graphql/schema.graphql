@@ -15,6 +15,15 @@ type NftMarketplace__ItemListed {
   chainId: BigInt!
 }
 
+type NftMarketplace__ItemCanceled {
+  id:ID!
+  seller: String!
+  nftAddress: String!
+  tokenId: BigInt!
+  chainId: BigInt!
+}
+
 type Query {
   itemListedEvents: [NftMarketplace__ItemListed!]!
+  itemCanceledEvents: [NftMarketplace__ItemCanceled!]!
 }
