@@ -118,6 +118,20 @@ describe("NFTMarketPlace", () => {
         )
       ).equal(true);
     });
+    it("list item successful", async () => {
+      await approveAndListItem(
+        onlyTokenID,
+        standardSellingPriceUSDT,
+        await USDTContract.getAddress()
+      );
+      expect(
+        await NFTMarketPlaceContract.getIsListed(
+          seller,
+          await BasicNFTContract.getAddress(),
+          onlyTokenID
+        )
+      ).equal(true);
+    });
     it("suppot native price", async () => {
       await approveAndListItem(
         onlyTokenID,
