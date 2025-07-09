@@ -62,3 +62,12 @@ model NftMarketplace__ItemOfferMade {
   offer Offer
   chainId BigInt @default(31337)
 }
+
+model ActiveItem {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  seller String
+  nftAddress String
+  tokenId BigInt
+  listing Listing
+  chainId BigInt @default(31337) 
+}

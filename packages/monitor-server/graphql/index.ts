@@ -17,6 +17,7 @@ async function deleteAllData(prisma: MyPrismaClient) {
     await prisma.nftMarketplace__ItemCanceled.deleteMany({});
     await prisma.nftMarketplace__ItemBought.deleteMany({});
     await prisma.nftMarketplace__ItemOfferMade.deleteMany({});
+    await prisma.activeItem.deleteMany({});
     console.log("✅ All data deleted.");
   } catch (err) {
     console.error("❌ Failed to delete data:", err);
