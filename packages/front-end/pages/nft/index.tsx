@@ -1,32 +1,10 @@
 import { InferGetStaticPropsType } from 'next';
 import { useTranslation } from 'next-i18next';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import createApolloClient from '@/apollo';
-import { graphql } from '@/apollo/gql/gql';
 export const getStaticProps = async ({ locale }) => {
-	const client = createApolloClient();
-	const exampleQuery = graphql(`
-		query ExampleQuery {
-			activeItems {
-				seller
-				nftAddress
-				tokenId
-				listing {
-					price
-					erc20TokenAddress
-					erc20TokenName
-				}
-			}
-		}
-	`);
-	const { data } = await client.query({
-		query: exampleQuery,
-	});
 	return {
 		props: {
 			...(await serverSideTranslations(locale, ['common'])),
-			data,
 			// Will be passed to the page component as props
 		},
 		revalidate: 60,
@@ -38,8 +16,7 @@ export default function Page(
 	const { t } = useTranslation('common');
 	return (
 		<div>
-			<h1>{t('Hello, Next.js!')}</h1>
-			<ConnectButton />
+			<h1>{t('Welcome to NFT page')}</h1>
 		</div>
 	);
 }
