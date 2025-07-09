@@ -23,6 +23,7 @@
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
+    "@0no-co/graphqlsp": "^1.14.0",
     "@apollo/client": "^3.13.8",
     "@graphql-codegen/cli": "^5.0.7",
     "@graphql-codegen/schema-ast": "^4.1.0",

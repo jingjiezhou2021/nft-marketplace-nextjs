@@ -4,9 +4,16 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 const config: CodegenConfig = {
 	schema: process.env.APOLLO_SERVER_ENDPOINT,
 	documents: ['pages/**/*.tsx'],
+	ignoreNoDocuments: true, // for better experience with the watcher
 	generates: {
 		'./apollo/gql/': {
 			preset: 'client',
+		},
+		'./apollo/gql/schema.graphql': {
+			plugins: ['schema-ast'],
+			config: {
+				includeDirectives: true,
+			},
 		},
 	},
 };
