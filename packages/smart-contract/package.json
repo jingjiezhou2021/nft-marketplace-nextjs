@@ -8,7 +8,8 @@
   },
   "scripts": {
     "build":"tsc && tsc-alias",
-    "deploy-dev":"hardhat ignition deploy ignition/modules/NFTMarketPlaceDev.ts --network localhost"
+    "deploy-dev":"hardhat ignition deploy ignition/modules/NFTMarketPlaceDev.ts --network localhost",
+    "test":"hardhat test"
   },
   "devDependencies": {
     "@aave/core-v3": "^1.19.3",

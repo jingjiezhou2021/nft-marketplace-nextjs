@@ -146,6 +146,20 @@ describe("NFTMarketPlace", () => {
         )
       ).equal(true);
     });
+    it("emit event", async () => {
+      await BasicNFTContract.approve(
+        await NFTMarketPlaceContract.getAddress(),
+        onlyTokenID
+      );
+      await expect(
+        NFTMarketPlaceContract.listItem(
+          await BasicNFTContract.getAddress(),
+          onlyTokenID,
+          standardSellingPriceUSDT,
+          await USDTContract.getAddress()
+        )
+      ).to.emit(NFTMarketPlaceContract, "NftMarketplace__ItemListed");
+    });
   });
   describe("buy item", () => {
     let buyerConnectedContract: NftMarketplace;
@@ -249,6 +263,30 @@ describe("NFTMarketPlace", () => {
           standardSellingPriceUSDT
         );
       });
+      it("emit event", async () => {
+        await approveAndListItem(
+          onlyTokenID,
+          standardSellingPriceUSDT,
+          await USDTContract.getAddress()
+        );
+        await USDTContract.connect(buyer).approve(
+          await NFTMarketPlaceContract.getAddress(),
+          (
+            await NFTMarketPlaceContract.getPrice(
+              seller,
+              await BasicNFTContract.getAddress(),
+              onlyTokenID
+            )
+          )[0]
+        );
+        await expect(
+          buyerConnectedContract.buyItem(
+            seller,
+            await BasicNFTContract.getAddress(),
+            onlyTokenID
+          )
+        ).to.emit(buyerConnectedContract, "NftMarketplace__ItemBought");
+      });
     });
     describe("trade with native token", () => {
       it("buyer should not be the owner", async () => {
@@ -338,6 +376,21 @@ describe("NFTMarketPlace", () => {
           ethBalanceBeforeWithdraw + standardSellingPriceWETH - withdrawGasCost
         );
       });
+      it("emit event", async () => {
+        await approveAndListItem(
+          onlyTokenID,
+          standardSellingPriceWETH,
+          await WETHContract.getAddress()
+        );
+        await expect(
+          buyerConnectedContract.buyItem(
+            seller,
+            await BasicNFTContract.getAddress(),
+            onlyTokenID,
+            { value: standardSellingPriceWETH }
+          )
+        ).to.emit(buyerConnectedContract, "NftMarketplace__ItemBought");
+      });
     });
   });
   describe("cancel listing", () => {
@@ -384,6 +437,14 @@ describe("NFTMarketPlace", () => {
           )
         ).equal(false);
       });
+      it("emit event", async () => {
+        await expect(
+          NFTMarketPlaceContract.cancelListing(
+            await BasicNFTContract.getAddress(),
+            onlyTokenID
+          )
+        ).to.emit(NFTMarketPlaceContract, "NftMarketplace__ItemCanceled");
+      });
     });
     describe("trade with native token", () => {
       beforeEach(async () => {
@@ -416,6 +477,14 @@ describe("NFTMarketPlace", () => {
             onlyTokenID
           )
         ).equal(false);
+      });
+      it("emit event", async () => {
+        await expect(
+          NFTMarketPlaceContract.cancelListing(
+            await BasicNFTContract.getAddress(),
+            onlyTokenID
+          )
+        ).to.emit(NFTMarketPlaceContract, "NftMarketplace__ItemCanceled");
       });
     });
   });
@@ -515,6 +584,16 @@ describe("NFTMarketPlace", () => {
           "Wrapped Ether",
         ]);
       });
+      it("emit event", async () => {
+        await expect(
+          NFTMarketPlaceContract.updateListing(
+            await BasicNFTContract.getAddress(),
+            onlyTokenID,
+            await USDTContract.getAddress(),
+            standardSellingPriceUSDT * 2n
+          )
+        ).to.emit(NFTMarketPlaceContract, "NftMarketplace__ItemListed");
+      });
     });
     describe("trade with native token", () => {
       beforeEach(async () => {
@@ -585,6 +664,16 @@ describe("NFTMarketPlace", () => {
           await USDTContract.getAddress(),
           "Tether USD",
         ]);
+      });
+      it("emit event", async () => {
+        await expect(
+          NFTMarketPlaceContract.updateListing(
+            await BasicNFTContract.getAddress(),
+            onlyTokenID,
+            await WETHContract.getAddress(),
+            standardSellingPriceWETH * 2n
+          )
+        ).to.emit(NFTMarketPlaceContract, "NftMarketplace__ItemListed");
       });
     });
   });
@@ -702,6 +791,20 @@ describe("NFTMarketPlace", () => {
       expect(await USDTContract.balanceOf(NFTMarketPlaceContract)).equal(0n);
       expect(await BasicNFTContract.ownerOf(0)).equal(seller);
     });
+    it("emit event", async () => {
+      await USDTContract.connect(buyer).approve(
+        await NFTMarketPlaceContract.getAddress(),
+        standardSellingPriceUSDT / 2n
+      );
+      await expect(
+        buyerConnectedContract.makeOffer(
+          await BasicNFTContract.getAddress(),
+          onlyTokenID,
+          standardSellingPriceUSDT / 2n,
+          await USDTContract.getAddress()
+        )
+      ).to.emit(buyerConnectedContract, "NftMarketplace__ItemOfferMade");
+    });
   });
   describe("accept offer", () => {
     let buyerConnectedContract: NftMarketplace;
@@ -804,6 +907,17 @@ describe("NFTMarketPlace", () => {
               onlyTokenID
             )
           ).equal(false);
+        });
+        it("emit event", async () => {
+          await approveAndListItem(
+            onlyTokenID,
+            standardSellingPriceUSDT,
+            await USDTContract.getAddress()
+          );
+          await expect(NFTMarketPlaceContract.acceptOffer(offerId)).to.emit(
+            NFTMarketPlaceContract,
+            "NftMarketplace__ItemBought"
+          );
         });
       });
     });
