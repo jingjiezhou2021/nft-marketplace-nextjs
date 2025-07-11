@@ -96,9 +96,6 @@ describe("NFTMarketPlace Monitor Server", () => {
       `),
     });
   }
-  beforeEach(async () => {
-    await clear();
-  });
   afterEach(async () => {
     await clear();
   });
