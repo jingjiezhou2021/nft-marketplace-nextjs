@@ -1,16 +1,26 @@
-import { Calendar, Home, Inbox, Search, Settings } from 'lucide-react';
-
+import {
+	Home,
+	Inbox,
+	Search,
+	Settings,
+	Store,
+	ChartBar,
+	CircleUser,
+} from 'lucide-react';
 import {
 	Sidebar,
 	SidebarContent,
+	SidebarFooter,
 	SidebarGroup,
 	SidebarGroupContent,
 	SidebarGroupLabel,
+	SidebarHeader,
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
+import { NavUser } from './nav-user';
 
 // Menu items.
 const items = [
@@ -25,14 +35,14 @@ const items = [
 		icon: Inbox,
 	},
 	{
-		title: 'Calendar',
-		url: '/calendar',
-		icon: Calendar,
+		title: 'Activity',
+		url: '/activity',
+		icon: ChartBar,
 	},
 	{
-		title: 'Search',
-		url: '/search',
-		icon: Search,
+		title: 'Profile',
+		url: '/profile',
+		icon: CircleUser,
 	},
 	{
 		title: 'Settings',
@@ -41,9 +51,32 @@ const items = [
 	},
 ];
 
-export function AppSidebar() {
+const user = {
+	name: 'shadcn',
+	email: 'm@example.com',
+	avatar: '/avatars/shadcn.jpg',
+};
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	return (
-		<Sidebar>
+		<Sidebar collapsible="icon">
+			<SidebarHeader>
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<SidebarMenuButton
+							asChild
+							className="data-[slot=sidebar-menu-button]:!p-1.5"
+						>
+							<a href="#">
+								<Store className="!size-5" />
+								<span className="text-base font-semibold">
+									NFT Marketplace Demo
+								</span>
+							</a>
+						</SidebarMenuButton>
+					</SidebarMenuItem>
+				</SidebarMenu>
+			</SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup>
 					<SidebarGroupLabel>Application</SidebarGroupLabel>
@@ -63,6 +96,9 @@ export function AppSidebar() {
 					</SidebarGroupContent>
 				</SidebarGroup>
 			</SidebarContent>
+			<SidebarFooter>
+				<NavUser user={user} />
+			</SidebarFooter>
 		</Sidebar>
 	);
 }
