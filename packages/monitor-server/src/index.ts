@@ -1,10 +1,11 @@
+import "dotenv/config"
 import express from "express";
 import cors from "cors";
 import { getApolloServerMiddleware } from "../graphql";
 import { setUpEventListener } from "./utils/events";
 function main() {
   const app = express();
-  const port = process.env.PORT || 3000;
+  const port = process.env.port || 3000;
   const server = app.listen(port, () => {
     console.log(`🚀 Express server running on http://localhost:${port}`);
   });
