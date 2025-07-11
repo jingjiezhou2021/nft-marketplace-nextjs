@@ -9,7 +9,7 @@ module.exports = {
 		}
 	},
 	output: 'public/locales/$LOCALE/$NAMESPACE.json',
-	input: ['pages/**/*.{js,jsx,ts,tsx}'],
+	input: ['pages/**/*.{js,jsx,ts,tsx}', 'components/**/*.{js,jsx,ts,tsx}'],
 	createOldCatalogs: false,
 	keepRemoved: false,
 	sort: true,

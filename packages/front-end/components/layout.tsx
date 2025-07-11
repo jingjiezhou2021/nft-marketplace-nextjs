@@ -1,5 +1,5 @@
 import { AppSidebar } from './app-sidebar';
-import { SidebarProvider, SidebarTrigger } from './ui/sidebar';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from './ui/sidebar';
 
 export default function Layout({ children }) {
 	return (
@@ -13,10 +13,10 @@ export default function Layout({ children }) {
 				}
 			>
 				<AppSidebar variant="inset" />
-				<main>
+				<SidebarInset>
 					<SidebarTrigger />
 					{children}
-				</main>
+				</SidebarInset>
 			</SidebarProvider>
 		</div>
 	);

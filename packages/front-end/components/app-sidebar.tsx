@@ -21,35 +21,7 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { NavUser } from './nav-user';
-
-// Menu items.
-const items = [
-	{
-		title: 'Home',
-		url: '/',
-		icon: Home,
-	},
-	{
-		title: 'NFT',
-		url: '/nft',
-		icon: Inbox,
-	},
-	{
-		title: 'Activity',
-		url: '/activity',
-		icon: ChartBar,
-	},
-	{
-		title: 'Profile',
-		url: '/profile',
-		icon: CircleUser,
-	},
-	{
-		title: 'Settings',
-		url: '/settings',
-		icon: Settings,
-	},
-];
+import { useTranslation } from 'next-i18next';
 
 const user = {
 	name: 'shadcn',
@@ -58,8 +30,41 @@ const user = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+	debugger;
+	const { t } = useTranslation('common');
+	// Menu items.
+	const items = [
+		{
+			title: t('Home'),
+			url: '/',
+			icon: Home,
+		},
+		{
+			title: t('NFT'),
+			url: '/nft',
+			icon: Inbox,
+		},
+		{
+			title: t('Activity'),
+			url: '/activity',
+			icon: ChartBar,
+		},
+		{
+			title: t('Profile'),
+			url: '/profile',
+			icon: CircleUser,
+		},
+		{
+			title: t('Settings'),
+			url: '/settings',
+			icon: Settings,
+		},
+	];
 	return (
-		<Sidebar collapsible="icon">
+		<Sidebar
+			collapsible="icon"
+			variant="inset"
+		>
 			<SidebarHeader>
 				<SidebarMenu>
 					<SidebarMenuItem>
@@ -68,9 +73,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 							className="data-[slot=sidebar-menu-button]:!p-1.5"
 						>
 							<a href="#">
-								<Store className="!size-5" />
+								<Store className="!size-5 text-fuchsia-700" />
 								<span className="text-base font-semibold">
-									NFT Marketplace Demo
+									{t('NFT Marketplace Demo')}
 								</span>
 							</a>
 						</SidebarMenuButton>
@@ -86,7 +91,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 								<SidebarMenuItem key={item.title}>
 									<SidebarMenuButton asChild>
 										<Link href={item.url}>
-											<item.icon />
+											<item.icon className="text-fuchsia-700" />
 											<span>{item.title}</span>
 										</Link>
 									</SidebarMenuButton>

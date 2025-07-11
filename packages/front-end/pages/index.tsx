@@ -1,6 +1,5 @@
 import { InferGetStaticPropsType } from 'next';
 import { useTranslation } from 'next-i18next';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import createApolloClient from '@/apollo';
 import { graphql } from '@/apollo/gql/gql';

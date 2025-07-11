@@ -1,4 +1,10 @@
 {
+  "Activity": "Activity",
+  "Home": "Home",
+  "NFT": "NFT",
+  "NFT Marketplace Demo": "NFT Marketplace Demo",
+  "Profile": "Profile",
+  "Settings": "Settings",
   "this is home page": "this is home page",
   "Welcome to NFT page": "Welcome to NFT page"
 }
