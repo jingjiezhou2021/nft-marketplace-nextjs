@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build":"tsc && tsc-alias",
-    "deploy-dev":"hardhat ignition deploy ignition/modules/NFTMarketPlaceDev.ts --network localhost",
+    "deploy-dev":"hardhat ignition deploy ignition/modules/NFTMarketPlaceDev.ts --network localhost && yarn build",
     "test":"hardhat test"
   },
   "devDependencies": {
