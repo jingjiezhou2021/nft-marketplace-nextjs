@@ -95,21 +95,21 @@ export function NavUser({
 						<DropdownMenuSeparator />
 						<DropdownMenuGroup>
 							<DropdownMenuItem>
-								<IconUserCircle className="text-fuchsia-700" />
+								<IconUserCircle className="text-primary" />
 								Account
 							</DropdownMenuItem>
 							<DropdownMenuItem>
-								<IconCreditCard className="text-fuchsia-700" />
+								<IconCreditCard className="text-primary" />
 								Billing
 							</DropdownMenuItem>
 							<DropdownMenuItem>
-								<IconNotification className="text-fuchsia-700" />
+								<IconNotification className="text-primary" />
 								Notifications
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem>
-							<IconLogout className="text-fuchsia-700" />
+							<IconLogout className="text-primary" />
 							Log out
 						</DropdownMenuItem>
 					</DropdownMenuContent>
