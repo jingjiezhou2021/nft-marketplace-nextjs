@@ -30,7 +30,6 @@ const user = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-	debugger;
 	const { t } = useTranslation('common');
 	// Menu items.
 	const items = [
@@ -73,7 +72,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 							className="data-[slot=sidebar-menu-button]:!p-1.5"
 						>
 							<a href="#">
-								<Store className="!size-5 text-fuchsia-700" />
+								<Store className="!size-5 text-primary" />
 								<span className="text-base font-semibold">
 									{t('NFT Marketplace Demo')}
 								</span>
@@ -91,7 +90,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 								<SidebarMenuItem key={item.title}>
 									<SidebarMenuButton asChild>
 										<Link href={item.url}>
-											<item.icon className="text-fuchsia-700" />
+											<item.icon className="text-primary" />
 											<span>{item.title}</span>
 										</Link>
 									</SidebarMenuButton>
