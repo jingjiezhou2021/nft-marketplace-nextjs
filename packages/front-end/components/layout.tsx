@@ -1,6 +1,6 @@
 import { AppSidebar } from './app-sidebar';
-import { SidebarInset, SidebarProvider, SidebarTrigger } from './ui/sidebar';
-
+import { SidebarInset, SidebarProvider } from './ui/sidebar';
+import { SiteHeader } from './site-header';
 export default function Layout({ children }) {
 	return (
 		<div>
@@ -8,13 +8,13 @@ export default function Layout({ children }) {
 				style={
 					{
 						'--sidebar-width': 'calc(var(--spacing) * 72)',
-						'--header-height': 'calc(var(--spacing) * 12)',
+						'--header-height': 'calc(var(--spacing) * 18)',
 					} as React.CSSProperties
 				}
 			>
 				<AppSidebar variant="inset" />
 				<SidebarInset>
-					<SidebarTrigger />
+					<SiteHeader />
 					{children}
 				</SidebarInset>
 			</SidebarProvider>
