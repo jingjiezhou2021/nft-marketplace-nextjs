@@ -64,7 +64,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			collapsible="icon"
 			variant="inset"
 		>
-			<SidebarHeader>
+			<SidebarHeader className="pt-5">
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<SidebarMenuButton
