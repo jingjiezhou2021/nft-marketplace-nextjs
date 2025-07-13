@@ -13,6 +13,7 @@
   "description": "",
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-select": "^2.2.5",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.7",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@0no-co/graphqlsp": "^1.14.0",
+    "@ant-design/web3-icons": "^1.14.0",
     "@apollo/client": "^3.13.8",
     "@graphql-codegen/cli": "^5.0.7",
     "@graphql-codegen/schema-ast": "^4.1.0",
@@ -45,6 +47,7 @@
     "@tabler/icons-react": "^3.34.0",
     "@tanstack/react-query": "^5.81.5",
     "@types/react": "19.1.8",
+    "antd": "^5.26.4",
     "class-variance-authority": "^0.7.1",
     "dotenv": "^17.0.1",
     "eslint": "^9",

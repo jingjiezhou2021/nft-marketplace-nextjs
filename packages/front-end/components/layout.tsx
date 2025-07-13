@@ -3,7 +3,7 @@ import { SidebarInset, SidebarProvider } from './ui/sidebar';
 import { SiteHeader } from './site-header';
 export default function Layout({ children }) {
 	return (
-		<div>
+		<div className="overflow-hidden">
 			<SidebarProvider
 				style={
 					{
@@ -15,7 +15,7 @@ export default function Layout({ children }) {
 				<AppSidebar variant="inset" />
 				<SidebarInset>
 					<SiteHeader />
-					{children}
+					<div className="ml-4 mt-4 h-full mr-2">{children}</div>
 				</SidebarInset>
 			</SidebarProvider>
 		</div>

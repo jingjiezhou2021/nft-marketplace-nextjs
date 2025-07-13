@@ -1,10 +1,16 @@
 {
   "Activity": "Activity",
+  "All": "All",
+  "Art": "Art",
+  "Gaming": "Gaming",
+  "Genres": "Genres",
   "Home": "Home",
+  "More": "More",
   "NFT": "NFT",
   "NFT Marketplace Demo": "NFT Marketplace Demo",
+  "PFPs": "PFPs",
+  "Photography": "Photography",
   "Profile": "Profile",
   "Settings": "Settings",
-  "this is home page": "this is home page",
   "Welcome to NFT page": "Welcome to NFT page"
 }

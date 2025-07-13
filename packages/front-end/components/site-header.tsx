@@ -13,7 +13,7 @@ export function SiteHeader() {
 					orientation="vertical"
 					className="mx-1 data-[orientation=vertical]:h-4"
 				/>
-				<div className="px-2 grow">
+				<div className="px-2 grow min-w-0">
 					<SearchInput />
 				</div>
 				{/* <Input /> */}
