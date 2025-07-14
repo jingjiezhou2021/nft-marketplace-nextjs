@@ -45,43 +45,17 @@ export default function Page(
 				nftBanners={[
 					{
 						banner: '/example1.avif',
+						name: 'Creatures',
+						author: 'CreatureWorld',
 						nftExamples: [
 							'/example1-1.avif',
 							'/example1-2.avif',
 							'/example1-3.avif',
 						],
-					},
-					{
-						banner: '/example1.avif',
-						nftExamples: [
-							'/example1-1.avif',
-							'/example1-2.avif',
-							'/example1-3.avif',
-						],
-					},
-					{
-						banner: '/example1.avif',
-						nftExamples: [
-							'/example1-1.avif',
-							'/example1-2.avif',
-							'/example1-3.avif',
-						],
-					},
-					{
-						banner: '/example1.avif',
-						nftExamples: [
-							'/example1-1.avif',
-							'/example1-2.avif',
-							'/example1-3.avif',
-						],
-					},
-					{
-						banner: '/example1.avif',
-						nftExamples: [
-							'/example1-1.avif',
-							'/example1-2.avif',
-							'/example1-3.avif',
-						],
+						floorPrice: '0.0213 ETH',
+						amount: 9999n,
+						totalVolume: '36.5K ETH',
+						listedPercentage: 1,
 					},
 				]}
 			/>

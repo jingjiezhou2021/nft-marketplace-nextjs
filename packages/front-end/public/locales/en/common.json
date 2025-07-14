@@ -2,9 +2,13 @@
   "Activity": "Activity",
   "All": "All",
   "Art": "Art",
+  "By": "By",
+  "FLOOR PRICE": "FLOOR PRICE",
   "Gaming": "Gaming",
   "Genres": "Genres",
   "Home": "Home",
+  "ITEMS": "ITEMS",
+  "LISTED": "LISTED",
   "More": "More",
   "NFT": "NFT",
   "NFT Marketplace Demo": "NFT Marketplace Demo",
@@ -12,5 +16,6 @@
   "Photography": "Photography",
   "Profile": "Profile",
   "Settings": "Settings",
+  "TOTAL VOLUMN": "TOTAL VOLUMN",
   "Welcome to NFT page": "Welcome to NFT page"
 }
