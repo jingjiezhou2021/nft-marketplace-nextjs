@@ -56,7 +56,7 @@ export default function CarouselMain(props: PropsType) {
 					WheelGesturesPlugin(),
 				]}
 			>
-				<CarouselContent className="aspect-16/9 xl:h-[400px] w-full relative ml-0">
+				<CarouselContent className="aspect-6/7 sm:aspect-4/3 md:aspect-16/9 xl:h-[400px] w-full relative ml-0">
 					{props.contents.map((item, index) => (
 						<CarouselItem
 							key={index}

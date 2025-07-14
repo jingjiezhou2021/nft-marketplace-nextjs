@@ -42,7 +42,7 @@ export default function CarouselBanner(props: PropsType) {
 									size={14}
 								/>
 							</div>
-							<div className="text-xs flex gap-4 px-4 py-3 bg-(--color-frosted) mt-3 rounded-xl border border-(--color-frosted)">
+							<div className="text-xs flex gap-1 sm:gap-4 px-4 py-3 bg-(--color-frosted) mt-3 rounded-xl border border-(--color-frosted)">
 								{[
 									[t('FLOOR PRICE'), nb.floorPrice],
 									[
@@ -61,7 +61,7 @@ export default function CarouselBanner(props: PropsType) {
 												<div className="text-muted-foreground mb-2">
 													{item[0]}
 												</div>
-												<div className="text-sm">
+												<div className="sm:text-sm">
 													{item[1]}
 												</div>
 											</div>
@@ -76,7 +76,7 @@ export default function CarouselBanner(props: PropsType) {
 								})}
 							</div>
 						</div>
-						<div className="absolute right-4 bottom-4 z-10 flex gap-2">
+						<div className="absolute right-4 bottom-4 z-10 hidden sm:flex gap-2">
 							{nb.nftExamples.map((e) => {
 								return (
 									<Image
