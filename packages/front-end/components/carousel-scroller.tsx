@@ -37,7 +37,6 @@ export default function CarouselScroller(props: PropsType) {
 		const widthObserver = new ResizeObserver((entries) => {
 			for (const entry of entries) {
 				const width = entry.contentRect.width;
-				console.log('width changed', width);
 				setWidthCarousel(width);
 			}
 		});
@@ -86,9 +85,6 @@ export default function CarouselScroller(props: PropsType) {
 				}
 			},
 		);
-		console.log('total distance:', totalDistance);
-		console.log('zone:', zone);
-		console.log('new in zone:', newInzone);
 		setInZone(newInzone);
 	}, [widthCarousel, scrolledDistance]);
 	return (
@@ -131,7 +127,7 @@ export default function CarouselScroller(props: PropsType) {
 				</CarouselContent>
 				<div
 					onClick={() => {
-						// api.plugins().autoplay.reset();
+						api.plugins().autoplay.reset();
 					}}
 					className="hidden sm:block"
 				>
@@ -141,7 +137,7 @@ export default function CarouselScroller(props: PropsType) {
 				</div>
 				<div
 					onClick={() => {
-						// api.plugins().autoplay.reset();
+						api.plugins().autoplay.reset();
 					}}
 					className="hidden sm:block"
 				>
