@@ -66,7 +66,7 @@ export default function HighlyWeekSales(props: {
 						</div>
 					</div>
 					<div className="text-xs font-extralight">
-						<p className="leading-[1.7] line-clamp-7 md:line-clamp-4">
+						<div className="leading-[1.7] line-clamp-7 md:line-clamp-4">
 							{props.description.split('\\n').map((paragraph) => {
 								return (
 									<>
@@ -75,7 +75,7 @@ export default function HighlyWeekSales(props: {
 									</>
 								);
 							})}
-						</p>
+						</div>
 					</div>
 				</div>
 				<div className="mt-8 md:mt-0 md:col-span-1 flex items-center">
