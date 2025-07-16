@@ -26,7 +26,15 @@ function SampleCard({
 		</Card>
 	);
 }
-export default function HighlyWeekSales(props: {
+export default function HighlyWeekSales({
+	banner,
+	cover,
+	title,
+	subtitle,
+	description,
+	samples,
+	...props
+}: {
 	banner: string;
 	cover: string;
 	title: string;
@@ -36,38 +44,37 @@ export default function HighlyWeekSales(props: {
 		Parameters<typeof SampleCard>[0],
 		Parameters<typeof SampleCard>[0],
 	];
-}) {
+} & React.ComponentProps<'div'>) {
 	return (
 		<BlurryBackground
 			bg={
 				<Image
-					src={props.banner}
+					src={banner}
 					fill
 					alt="blurred-bg"
 				></Image>
 			}
 			className="cursor-pointer"
+			{...props}
 		>
 			<div className="w-full flex flex-col md:grid md:grid-cols-2 md:gap-6 dark">
 				<div className="grid grid-cols-2 gap-4 md:block text-wrap w-full md:w-auto md:col-span-1">
 					<div className="mb-8">
 						<Image
-							src={props.cover}
+							src={cover}
 							width={92}
 							height={92}
 							alt="avatar"
 							className="mb-6"
 						/>
-						<h3 className="text-xl pb-4 font-bold">
-							{props.title}
-						</h3>
+						<h3 className="text-xl pb-4 font-bold">{title}</h3>
 						<div className="text-sm font-light font-mono">
-							{props.subtitle}
+							{subtitle}
 						</div>
 					</div>
 					<div className="text-xs font-extralight">
 						<div className="leading-[1.7] line-clamp-7 md:line-clamp-4">
-							{props.description.split('\\n').map((paragraph) => {
+							{description.split('\\n').map((paragraph) => {
 								return (
 									<>
 										<p key={paragraph}>{paragraph}</p>
@@ -80,7 +87,7 @@ export default function HighlyWeekSales(props: {
 				</div>
 				<div className="mt-8 md:mt-0 md:col-span-1 flex items-center">
 					<div className="grid grid-cols-2 gap-4">
-						{props.samples.map((s) => {
+						{samples.map((s) => {
 							return (
 								<SampleCard
 									{...s}
