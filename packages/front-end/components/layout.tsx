@@ -13,9 +13,11 @@ export default function Layout({ children }) {
 				}
 			>
 				<AppSidebar variant="inset" />
-				<SidebarInset>
+				<SidebarInset className="h-lvh lg:h-[calc(100vh-8px)]">
 					<SiteHeader />
-					<div className="ml-4 mt-4 h-full mr-2">{children}</div>
+					<div className="ml-4 mt-4 grow-1 pr-2 overflow-scroll">
+						{children}
+					</div>
 				</SidebarInset>
 			</SidebarProvider>
 		</div>
