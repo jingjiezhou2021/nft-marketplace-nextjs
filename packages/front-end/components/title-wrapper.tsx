@@ -1,13 +1,13 @@
 import { ReactNode } from 'react';
 
-export default function CarouselTitleWrapper({
+export default function TitleWrapper({
 	children,
 	title,
 	subtitle,
 }: {
 	children: ReactNode;
 	title: string;
-	subtitle: string;
+	subtitle?: string;
 }) {
 	return (
 		<div>
