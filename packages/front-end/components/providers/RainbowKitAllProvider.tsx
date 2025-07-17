@@ -3,6 +3,7 @@ import {
 	darkTheme,
 	getDefaultConfig,
 	lightTheme,
+	Locale,
 	RainbowKitProvider,
 } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
@@ -11,6 +12,7 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 import { RainbowKitProviderProps } from '@rainbow-me/rainbowkit/dist/components/RainbowKitProvider/RainbowKitProvider';
 import { useTheme } from 'next-themes';
+import { useRouter } from 'next/router';
 
 const config = getDefaultConfig({
 	projectId: '51647972c0a9da02ca0e99a6bafefc81',
@@ -25,10 +27,12 @@ const RainbowKitAllProvider = (
 	props: RainbowKitProviderProps & { children: ReactNode },
 ) => {
 	const { theme } = useTheme();
+	const { locale } = useRouter();
 	return (
 		<WagmiProvider config={config}>
 			<QueryClientProvider client={queryClient}>
 				<RainbowKitProvider
+					locale={locale as Locale}
 					{...props}
 					theme={
 						theme === 'light'

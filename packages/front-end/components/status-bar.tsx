@@ -9,8 +9,10 @@ import {
 import ButtonSwitch from './button-switch';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function StatusBar(props: React.ComponentProps<'div'>) {
+	const { t } = useTranslation('common');
 	const { theme, setTheme } = useTheme();
 	const [themeChoice, setThemeChoice] = useState(0);
 	const [currencyChoice, setCurrencyChoice] = useState(0);
@@ -31,7 +33,7 @@ export default function StatusBar(props: React.ComponentProps<'div'>) {
 						<span className="rounded-full bg-primary absolute inline-flex size-full animate-ping opacity-75"></span>
 						<span className="rounded-full bg-primary relative inline-flex size-2"></span>
 					</span>
-					<span className="leading-normal">Live</span>
+					<span className="leading-normal">{t('Live')}</span>
 				</div>
 				<Separator
 					orientation="vertical"
@@ -43,7 +45,7 @@ export default function StatusBar(props: React.ComponentProps<'div'>) {
 					href="/tos"
 				>
 					<span className="leading-normal text-text-secondary">
-						Terms of Service
+						{t('Terms of Service')}
 					</span>
 				</a>
 				<Separator
@@ -55,7 +57,7 @@ export default function StatusBar(props: React.ComponentProps<'div'>) {
 					href="/privacy"
 				>
 					<span className="leading-normal text-text-secondary">
-						Privacy Policy
+						{t('Privacy Policy')}
 					</span>
 				</a>
 			</div>
@@ -103,7 +105,7 @@ export default function StatusBar(props: React.ComponentProps<'div'>) {
 						choice={themeChoice}
 					/>
 					<ButtonSwitch
-						buttons={['Crypto', 'USD'].map((item, index) => ({
+						buttons={[t('Crypto'), t('USD')].map((item, index) => ({
 							content: (
 								<span
 									className="text-xs font-light"
