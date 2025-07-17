@@ -5,20 +5,23 @@ import '@/global.css';
 import createApolloClient from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
 import Layout from '@/components/layout';
-import { lightTheme } from '@rainbow-me/rainbowkit';
+import { ThemeProvider } from '@/components/theme-provider';
 const client = createApolloClient();
 function App({ Component, pageProps }: AppProps) {
 	return (
 		<ApolloProvider client={client}>
-			<RainbowKitAllProvider
-				theme={lightTheme({
-					accentColor: '#7e22ce',
-				})}
+			<ThemeProvider
+				attribute="class"
+				defaultTheme="system"
+				enableSystem
+				disableTransitionOnChange
 			>
-				<Layout>
-					<Component {...pageProps} />
-				</Layout>
-			</RainbowKitAllProvider>
+				<RainbowKitAllProvider>
+					<Layout>
+						<Component {...pageProps} />
+					</Layout>
+				</RainbowKitAllProvider>
+			</ThemeProvider>
 		</ApolloProvider>
 	);
 }

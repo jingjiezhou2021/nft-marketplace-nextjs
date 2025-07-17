@@ -7,8 +7,16 @@ import {
 	IconSun,
 } from '@tabler/icons-react';
 import ButtonSwitch from './button-switch';
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
 
 export default function StatusBar(props: React.ComponentProps<'div'>) {
+	const { theme, setTheme } = useTheme();
+	const [themeChoice, setThemeChoice] = useState(0);
+	const [currencyChoice, setCurrencyChoice] = useState(0);
+	useEffect(() => {
+		setThemeChoice(theme === 'light' ? 0 : 1);
+	}, [theme]);
 	return (
 		<div
 			{...props}
@@ -81,19 +89,34 @@ export default function StatusBar(props: React.ComponentProps<'div'>) {
 				<div className="flex items-center gap-2">
 					<ButtonSwitch
 						buttons={[
-							<IconSun key={'sun'} />,
-							<IconMoon key={'moon'} />,
-						]}
+							<IconSun key="sun" />,
+							<IconMoon key="moon" />,
+						].map((icon, index) => {
+							return {
+								content: icon,
+								clickCb() {
+									setThemeChoice(index);
+									setTheme(index === 0 ? 'light' : 'dark');
+								},
+							};
+						})}
+						choice={themeChoice}
 					/>
 					<ButtonSwitch
-						buttons={['Crypto', 'USD'].map((item) => (
-							<span
-								className="text-xs font-light"
-								key={item}
-							>
-								{item}
-							</span>
-						))}
+						buttons={['Crypto', 'USD'].map((item, index) => ({
+							content: (
+								<span
+									className="text-xs font-light"
+									key={item}
+								>
+									{item}
+								</span>
+							),
+							clickCb() {
+								setCurrencyChoice(index);
+							},
+						}))}
+						choice={currencyChoice}
 					/>
 				</div>
 			</div>
