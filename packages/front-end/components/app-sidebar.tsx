@@ -22,6 +22,8 @@ import {
 import Link from 'next/link';
 import { NavUser } from './nav-user';
 import { useTranslation } from 'next-i18next';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 const user = {
 	name: 'shadcn',
@@ -30,6 +32,7 @@ const user = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+	const pathname = usePathname();
 	const { t } = useTranslation('common');
 	// Menu items.
 	const items = [
@@ -71,12 +74,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 							asChild
 							className="data-[slot=sidebar-menu-button]:!p-1.5"
 						>
-							<a href="#">
+							<Link href="/">
 								<Store className="!size-5 text-primary" />
 								<span className="text-base font-semibold">
 									{t('NFT Marketplace Demo')}
 								</span>
-							</a>
+							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
 				</SidebarMenu>
@@ -86,16 +89,35 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 					<SidebarGroupLabel>Application</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{items.map((item) => (
-								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton asChild>
-										<Link href={item.url}>
-											<item.icon className="text-primary" />
-											<span>{item.title}</span>
-										</Link>
-									</SidebarMenuButton>
-								</SidebarMenuItem>
-							))}
+							{items.map((item) => {
+								const current =
+									(pathname === '/' && item.url === '/') ||
+									(item.url !== '/' &&
+										pathname.startsWith(item.url));
+								return (
+									<SidebarMenuItem key={item.title}>
+										<SidebarMenuButton
+											asChild
+											className={cn(
+												'transition-colors duration-300 ease-in-out',
+												current &&
+													'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground',
+											)}
+										>
+											<Link href={item.url}>
+												<item.icon
+													className={cn(
+														current
+															? 'text-primary-foreground'
+															: 'text-primary',
+													)}
+												/>
+												<span>{item.title}</span>
+											</Link>
+										</SidebarMenuButton>
+									</SidebarMenuItem>
+								);
+							})}
 						</SidebarMenu>
 					</SidebarGroupContent>
 				</SidebarGroup>
