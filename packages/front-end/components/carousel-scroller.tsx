@@ -14,11 +14,7 @@ import { WheelGesturesPlugin } from 'embla-carousel-wheel-gestures';
 import { cn } from '@/lib/utils';
 
 interface PropsType {
-	contents: {
-		content: ReactNode;
-		caption: ReactNode;
-	}[];
-	shadow?: boolean;
+	contents: ReactNode[];
 	loop?: boolean;
 }
 export default function CarouselScroller(props: PropsType) {
@@ -110,31 +106,19 @@ export default function CarouselScroller(props: PropsType) {
 				]}
 			>
 				<CarouselContent
-					className="w-full relative ml-0 pb-8"
+					className="w-full relative ml-0 pb-8 pt-1"
 					ref={refCarousel}
 				>
 					{props.contents.map((item, index) => (
-						<>
-							<CarouselItem
-								key={index}
-								className={cn(
-									'pl-0 basis-[calc(100%-76px)] lg:basis-[315px] aspect-3/2 mr-3 md:mr-4 transition-opacity ease-in-out duration-200 relative cursor-pointer',
-									!inZone[index] && 'opacity-20',
-								)}
-							>
-								<Card className="h-full p-0 border-0 rounded-xl overflow-hidden">
-									<CardContent className="flex items-center justify-center h-full p-0 relative">
-										{item.content}
-										{props.shadow && (
-											<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)0%,rgba(0,0,0,0.35)25%,rgba(0,0,0,0.65)65%,rgba(0,0,0,0.8)100%)]"></div>
-										)}
-									</CardContent>
-								</Card>
-								<div className="absolute -bottom-8 font-bold left-0 text-foreground">
-									{item.caption}
-								</div>
-							</CarouselItem>
-						</>
+						<CarouselItem
+							key={index}
+							className={cn(
+								'pl-0 basis-[calc(100%-76px)] lg:basis-[315px] aspect-3/2 mr-3 md:mr-4 transition-opacity ease-in-out duration-200 relative cursor-pointer',
+								!inZone[index] && 'opacity-20',
+							)}
+						>
+							{item}
+						</CarouselItem>
 					))}
 				</CarouselContent>
 				<div
