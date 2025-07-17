@@ -14,7 +14,7 @@ import { WheelGesturesPlugin } from 'embla-carousel-wheel-gestures';
 import { cn } from '@/lib/utils';
 
 interface PropsType {
-	contents: ReactNode[];
+	contents: { render: (inZone: boolean) => ReactNode }[];
 	loop?: boolean;
 }
 export default function CarouselScroller(props: PropsType) {
@@ -109,17 +109,9 @@ export default function CarouselScroller(props: PropsType) {
 					className="w-full relative ml-0 pb-8 pt-1"
 					ref={refCarousel}
 				>
-					{props.contents.map((item, index) => (
-						<CarouselItem
-							key={index}
-							className={cn(
-								'pl-0 basis-[calc(100%-76px)] lg:basis-[315px] aspect-3/2 mr-3 md:mr-4 transition-opacity ease-in-out duration-200 relative cursor-pointer',
-								!inZone[index] && 'opacity-20',
-							)}
-						>
-							{item}
-						</CarouselItem>
-					))}
+					{props.contents.map((item, index) =>
+						item.render(inZone[index]),
+					)}
 				</CarouselContent>
 				<div
 					onClick={() => {
