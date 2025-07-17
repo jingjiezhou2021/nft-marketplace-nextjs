@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import BlurryBackground from './blurry-background';
 import { Card, CardContent, CardFooter } from './ui/card';
 import Image from 'next/image';
@@ -54,8 +55,8 @@ export default function HighlyWeekSales({
 					alt="blurred-bg"
 				></Image>
 			}
-			className="cursor-pointer"
 			{...props}
+			className={cn('cursor-pointer', props.className)}
 		>
 			<div className="w-full flex flex-col md:grid md:grid-cols-2 md:gap-6 dark">
 				<div className="grid grid-cols-2 gap-4 md:block text-wrap w-full md:w-auto md:col-span-1">
