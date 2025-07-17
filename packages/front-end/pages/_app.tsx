@@ -14,7 +14,6 @@ function App({ Component, pageProps }: AppProps) {
 				attribute="class"
 				defaultTheme="system"
 				enableSystem
-				disableTransitionOnChange
 			>
 				<RainbowKitAllProvider>
 					<Layout>
