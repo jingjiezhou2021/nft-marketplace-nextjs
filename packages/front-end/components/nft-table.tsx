@@ -1,10 +1,43 @@
 import { ColumnDef } from '@tanstack/react-table';
 import CustomTable, { CustomTableHeaderFilterButton } from './custom-table';
 import Image from 'next/image';
-import { IconStar } from '@tabler/icons-react';
+import {
+	IconBaselineDensitySmall,
+	IconFilter2,
+	IconMedal,
+	IconStar,
+} from '@tabler/icons-react';
 import { cn } from '@/lib/utils';
 import { produce } from 'immer';
 import { useState } from 'react';
+import { Button } from './ui/button';
+import {
+	Drawer,
+	DrawerClose,
+	DrawerContent,
+	DrawerFooter,
+	DrawerTrigger,
+} from './ui/drawer';
+import {
+	BaseCircleColorful,
+	EthereumCircleColorful,
+} from '@ant-design/web3-icons';
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from './ui/collapsible';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectLabel,
+	SelectTrigger,
+	SelectValue,
+} from './ui/select';
+import { Input } from './ui/input';
 interface NFT {
 	cover: string;
 	id: bigint;
@@ -40,6 +73,88 @@ function PriceCell({ n }: { n: number | bigint }) {
 		<div className="font-light font-mono">
 			{formatted !== '-' && <span>$</span>}
 			{formatted}
+		</div>
+	);
+}
+function NFTTableFilter() {
+	function PriceFilter({ title }: { title: string }) {
+		const [open, setOpen] = useState(false);
+		return (
+			<Collapsible
+				open={open}
+				onOpenChange={setOpen}
+			>
+				<CollapsibleTrigger asChild>
+					<Button
+						variant="ghost"
+						size="icon"
+						className="w-full justify-between text-base font-normal hover:bg-transparent!"
+					>
+						{title}
+						<ChevronDown
+							className={cn(
+								open && 'rotate-180',
+								'transition-transform ease-in-out duration-200',
+							)}
+						/>
+					</Button>
+				</CollapsibleTrigger>
+				<CollapsibleContent className="flex flex-col gap-4 py-3">
+					<Select defaultValue="ETH">
+						<SelectTrigger className="w-full group">
+							<SelectValue></SelectValue>
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="ETH">ETH</SelectItem>
+							<SelectItem value="USD">USD</SelectItem>
+						</SelectContent>
+					</Select>
+					<div className="flex items-center">
+						<Input placeholder="Min"></Input>
+						<span className="mx-3 text-sm">to</span>
+						<Input placeholder="Max"></Input>
+					</div>
+				</CollapsibleContent>
+			</Collapsible>
+		);
+	}
+	return (
+		<div className="p-6 flex flex-col gap-4 relative overflow-y-scroll">
+			<h4>Category</h4>
+			<div className="flex flex-wrap gap-2">
+				<Button variant="outline">All</Button>
+				<Button variant="outline">Art</Button>
+				<Button variant="outline">Gaming</Button>
+				<Button variant="outline">PFPs</Button>
+				<Button variant="outline">Photography</Button>
+			</div>
+			<hr />
+			<h4>Chains</h4>
+			<div className="flex flex-wrap gap-2">
+				<Button variant="outline">
+					<EthereumCircleColorful />
+					Ethereum
+				</Button>
+				<Button variant="outline">
+					<BaseCircleColorful />
+					Base
+				</Button>
+			</div>
+			<PriceFilter title="Floor Price" />
+			<PriceFilter title="Top Offer" />
+			<div className="flex justify-between gap-2 sticky bottom-0  bg-background">
+				<DrawerClose asChild>
+					<Button
+						variant="outline"
+						className="grow"
+					>
+						Clear All
+					</Button>
+				</DrawerClose>
+				<DrawerClose asChild>
+					<Button className="grow">Done</Button>
+				</DrawerClose>
+			</div>
 		</div>
 	);
 }
@@ -88,6 +203,7 @@ export default function NFTTable() {
 			cell({ row }) {
 				return (
 					<div
+						className="pl-2"
 						onClick={() => {
 							const nextData = produce(data, (draft) => {
 								const target = draft.find((d) => {
@@ -227,13 +343,49 @@ export default function NFTTable() {
 			},
 		},
 	];
+	const [compact, setCompact] = useState<boolean>(false);
 	return (
-		<CustomTable
-			columns={columns}
-			data={data}
-			columnPinningState={{
-				left: ['watchlist', 'name'],
-			}}
-		/>
+		<>
+			<nav className="sticky top-0 px-4 flex items-center mb-4 justify-between">
+				<div className="flex gap-2">
+					<Drawer>
+						<DrawerTrigger asChild>
+							<Button
+								className="-ml-3"
+								variant="outline"
+							>
+								<IconFilter2 />
+							</Button>
+						</DrawerTrigger>
+						<DrawerContent>
+							<NFTTableFilter />
+						</DrawerContent>
+					</Drawer>
+					<Button variant="outline">
+						<IconMedal /> Top
+					</Button>
+					<Button variant="outline">
+						<IconStar /> Watchlist
+					</Button>
+				</div>
+				<div>
+					<Button
+						variant={compact ? 'default' : 'outline'}
+						onClick={() => {
+							setCompact(!compact);
+						}}
+					>
+						<IconBaselineDensitySmall />
+					</Button>
+				</div>
+			</nav>
+			<CustomTable
+				columns={columns}
+				data={data}
+				columnPinningState={{
+					left: ['watchlist', 'name'],
+				}}
+			/>
+		</>
 	);
 }

@@ -57,7 +57,7 @@ function SelectTrigger({
 		>
 			{children}
 			<SelectPrimitive.Icon asChild>
-				<ChevronDownIcon className="size-4 opacity-50" />
+				<ChevronDownIcon className="size-4 opacity-50 group-aria-expanded:rotate-180 transition-transform ease-in-out duration-200" />
 			</SelectPrimitive.Icon>
 		</SelectPrimitive.Trigger>
 	);

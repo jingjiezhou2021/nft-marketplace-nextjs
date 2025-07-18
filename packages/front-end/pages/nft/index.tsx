@@ -1,5 +1,13 @@
 import CustomTable from '@/components/custom-table';
 import NFTTable from '@/components/nft-table';
+import { Button } from '@/components/ui/button';
+import {
+	IconBaselineDensityLarge,
+	IconBaselineDensitySmall,
+	IconFilter2,
+	IconMedal,
+	IconStar,
+} from '@tabler/icons-react';
 import { InferGetStaticPropsType } from 'next';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -16,7 +24,7 @@ export default function Page(
 	_props: InferGetStaticPropsType<typeof getStaticProps>,
 ) {
 	return (
-		<div>
+		<div className="relative">
 			<NFTTable />
 		</div>
 	);
