@@ -1,3 +1,5 @@
+import CustomTable from '@/components/custom-table';
+import NFTTable from '@/components/nft-table';
 import { InferGetStaticPropsType } from 'next';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -13,10 +15,9 @@ export const getStaticProps = async ({ locale }) => {
 export default function Page(
 	_props: InferGetStaticPropsType<typeof getStaticProps>,
 ) {
-	const { t } = useTranslation('common');
 	return (
 		<div>
-			<h1>{t('Welcome to NFT page')}</h1>
+			<NFTTable />
 		</div>
 	);
 }
