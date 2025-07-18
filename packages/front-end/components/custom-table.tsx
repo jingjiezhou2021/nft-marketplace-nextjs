@@ -28,7 +28,9 @@ import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 export function CustomTableHeaderFilterButton<TData extends RowData>({
 	children,
 	column,
-}: React.ComponentProps<'button'> & { column: Column<TData> }) {
+}: React.ComponentProps<'button'> & {
+	column: Column<TData>;
+}) {
 	return (
 		<Button
 			variant="ghost"
@@ -54,6 +56,7 @@ export default function CustomTable<TData extends RowData>(props: {
 	columns: ColumnDef<TData>[];
 	data: TData[];
 	columnPinningState: ColumnPinningState;
+	rowCursor: boolean;
 }) {
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] =
@@ -121,7 +124,9 @@ export default function CustomTable<TData extends RowData>(props: {
 									data-state={
 										row.getIsSelected() && 'selected'
 									}
-									className="cursor-pointer"
+									className={cn(
+										props.rowCursor && 'cursor-pointer',
+									)}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell

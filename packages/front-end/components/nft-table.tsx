@@ -50,7 +50,7 @@ interface NFT {
 	supply: number;
 	watched: boolean;
 }
-function formatPrice(n: number | bigint): string {
+export function formatPrice(n: number | bigint): string {
 	if (typeof n === 'bigint') {
 		n = Number(n);
 	}
@@ -67,10 +67,13 @@ function formatPrice(n: number | bigint): string {
 		return `${(n / 1e9).toFixed(1)}B`;
 	}
 }
-function PriceCell({ n }: { n: number | bigint }) {
+export function PriceCell({
+	n,
+	className,
+}: { n: number | bigint } & React.ComponentProps<'div'>) {
 	const formatted = formatPrice(n);
 	return (
-		<div className="font-light font-mono">
+		<div className={cn('font-light font-mono', className)}>
 			{formatted !== '-' && <span>$</span>}
 			{formatted}
 		</div>
@@ -391,6 +394,7 @@ export default function NFTTable() {
 				columnPinningState={{
 					left: ['watchlist', 'name'],
 				}}
+				rowCursor
 			/>
 		</>
 	);
