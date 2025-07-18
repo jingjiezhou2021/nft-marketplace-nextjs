@@ -239,7 +239,12 @@ export default function NFTTable() {
 			cell({ row }) {
 				return (
 					<div className="font-light flex gap-2 items-center">
-						<div className="size-[32px] rounded-md overflow-hidden md:size-[64px]">
+						<div
+							className={cn(
+								'size-[32px] rounded-md overflow-hidden md:size-[64px]',
+								compact && 'size-[32px]!',
+							)}
+						>
 							<Image
 								width={64}
 								height={64}
@@ -374,6 +379,7 @@ export default function NFTTable() {
 						onClick={() => {
 							setCompact(!compact);
 						}}
+						className="hidden md:inline-flex"
 					>
 						<IconBaselineDensitySmall />
 					</Button>
