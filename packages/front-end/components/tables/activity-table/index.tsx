@@ -1,71 +1,11 @@
-import {
-	IconArrowUpRight,
-	IconBaselineDensitySmall,
-	IconFilter2,
-	IconTag,
-} from '@tabler/icons-react';
-import {
-	Drawer,
-	DrawerClose,
-	DrawerContent,
-	DrawerTrigger,
-} from '../../ui/drawer';
+import { IconBaselineDensitySmall, IconFilter2 } from '@tabler/icons-react';
+import { Drawer, DrawerContent, DrawerTrigger } from '../../ui/drawer';
 import { Button } from '../../ui/button';
 import CustomTable from '../custom-table';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import {
-	BaseCircleColorful,
-	EthereumCircleColorful,
-} from '@ant-design/web3-icons';
-import { PriceFilter } from '../PriceFilter';
-import GetActivityColumns, { Activity, Event, EventToString } from './columns';
+import GetActivityColumns, { Activity, Event } from './columns';
+import ActivityFilter from './filter';
 
-function ActivityFilter() {
-	const { t } = useTranslation('common');
-	return (
-		<div className="p-6 flex flex-col gap-4 relative overflow-y-scroll">
-			<h4>{t('Staus')}</h4>
-			<div className="flex flex-wrap gap-2">
-				<Button variant="outline">{t('All')}</Button>
-				<Button variant="outline">{EventToString(Event.Sale)}</Button>
-				<Button variant="outline">
-					{EventToString(Event.Transfer)}
-				</Button>
-				<Button variant="outline">
-					{EventToString(Event.Listing)}
-				</Button>
-				<Button variant="outline">{EventToString(Event.Offer)}</Button>
-			</div>
-			<hr />
-			<h4>{t('Chains')}</h4>
-			<div className="flex flex-wrap gap-2">
-				<Button variant="outline">
-					<EthereumCircleColorful />
-					Ethereum
-				</Button>
-				<Button variant="outline">
-					<BaseCircleColorful />
-					Base
-				</Button>
-			</div>
-			<PriceFilter title={t('Price')} />
-			<div className="flex justify-between gap-2 sticky bottom-0  bg-background">
-				<DrawerClose asChild>
-					<Button
-						variant="outline"
-						className="grow"
-					>
-						{t('Clear All')}
-					</Button>
-				</DrawerClose>
-				<DrawerClose asChild>
-					<Button className="grow">{t('Done')}</Button>
-				</DrawerClose>
-			</div>
-		</div>
-	);
-}
 export default function ActivityTable() {
 	const data: Activity[] = [
 		{
