@@ -1,5 +1,5 @@
-import CustomTable from '@/components/custom-table';
-import NFTTable from '@/components/nft-table';
+import CustomTable from '@/components/tables/custom-table';
+import NFTTable from '@/components/tables/nft-table';
 import { Button } from '@/components/ui/button';
 import {
 	IconBaselineDensityLarge,

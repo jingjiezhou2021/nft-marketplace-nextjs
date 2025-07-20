@@ -3,8 +3,8 @@ import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
-} from './ui/collapsible';
-import { Button } from './ui/button';
+} from '../ui/collapsible';
+import { Button } from '../ui/button';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -13,8 +13,8 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from './ui/select';
-import { Input } from './ui/input';
+} from '../ui/select';
+import { Input } from '../ui/input';
 import { useTranslation } from 'react-i18next';
 
 export function PriceFilter({ title }: { title: string }) {

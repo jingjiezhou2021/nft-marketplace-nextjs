@@ -1,4 +1,4 @@
-import ActivityTable from '@/components/activity-table';
+import ActivityTable from '@/components/tables/activity-table';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 export const getStaticProps = async ({ locale }) => {
 	return {

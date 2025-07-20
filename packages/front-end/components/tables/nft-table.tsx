@@ -10,8 +10,8 @@ import {
 import { cn } from '@/lib/utils';
 import { produce } from 'immer';
 import { useState } from 'react';
-import { Button } from './ui/button';
-import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from './ui/drawer';
+import { Button } from '../ui/button';
+import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from '../ui/drawer';
 import {
 	BaseCircleColorful,
 	EthereumCircleColorful,

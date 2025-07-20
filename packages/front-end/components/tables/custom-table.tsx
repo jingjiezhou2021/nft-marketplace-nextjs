@@ -22,7 +22,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 export function CustomTableHeaderFilterButton<TData extends RowData>({
