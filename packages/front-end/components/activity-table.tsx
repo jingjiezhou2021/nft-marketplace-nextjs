@@ -19,6 +19,7 @@ import {
 	EthereumCircleColorful,
 } from '@ant-design/web3-icons';
 import { PriceFilter } from './PriceFilter';
+import getDateFnsLocale from '@/lib/getDateFnsLocale';
 enum Event {
 	Listing,
 	Transfer,
@@ -84,24 +85,28 @@ function ActivityFilter() {
 	);
 }
 function EventToString(e: Event) {
+	const { t } = useTranslation('common');
 	switch (e) {
 		case Event.Listing:
-			return 'Listing';
+			return t('Listing');
 		case Event.Transfer:
-			return 'Transfer';
+			return t('Transfer');
 		case Event.Offer:
-			return 'Item Offer';
+			return t('Item Offer');
 		case Event.Sale:
-			return 'Sale';
+			return t('Sale');
 	}
 }
 export default function ActivityTable() {
+	const { t, i18n } = useTranslation('common');
 	const columns: ColumnDef<Activity>[] = [
 		{
 			accessorKey: 'event',
 			header: () => {
 				return (
-					<div className="text-muted-foreground text-xs">EVENT</div>
+					<div className="text-muted-foreground text-xs">
+						{t('EVENT')}
+					</div>
 				);
 			},
 			cell({ row }) {
@@ -117,7 +122,9 @@ export default function ActivityTable() {
 			accessorKey: 'item',
 			header: () => {
 				return (
-					<div className="text-muted-foreground text-xs">ITEM</div>
+					<div className="text-muted-foreground text-xs">
+						{t('ITEM')}
+					</div>
 				);
 			},
 			cell({ row }) {
@@ -157,7 +164,9 @@ export default function ActivityTable() {
 			accessorKey: 'price',
 			header: () => {
 				return (
-					<div className="text-muted-foreground text-xs">PRICE</div>
+					<div className="text-muted-foreground text-xs">
+						{t('PRICE')}
+					</div>
 				);
 			},
 			cell({ row }) {
@@ -169,7 +178,7 @@ export default function ActivityTable() {
 			header: () => {
 				return (
 					<div className="text-muted-foreground text-xs">
-						QUANTITY
+						{t('QUANTITY')}
 					</div>
 				);
 			},
@@ -183,7 +192,9 @@ export default function ActivityTable() {
 			accessorKey: 'from',
 			header: () => {
 				return (
-					<div className="text-muted-foreground text-xs">FROM</div>
+					<div className="text-muted-foreground text-xs">
+						{t('FROM')}
+					</div>
 				);
 			},
 			cell({ row }) {
@@ -193,7 +204,11 @@ export default function ActivityTable() {
 		{
 			accessorKey: 'to',
 			header: () => {
-				return <div className="text-muted-foreground text-xs">TO</div>;
+				return (
+					<div className="text-muted-foreground text-xs">
+						{t('TO')}
+					</div>
+				);
 			},
 			cell({ row }) {
 				return <div className="font-light">{row.original.to}</div>;
@@ -203,7 +218,9 @@ export default function ActivityTable() {
 			accessorKey: 'time',
 			header: () => {
 				return (
-					<div className="text-muted-foreground text-xs">TIME</div>
+					<div className="text-muted-foreground text-xs">
+						{t('TIME')}
+					</div>
 				);
 			},
 			cell({ row }) {
@@ -211,6 +228,7 @@ export default function ActivityTable() {
 					<div className="font-serif flex items-center cursor-pointer">
 						{formatDistance(new Date(), row.original.time, {
 							addSuffix: true,
+							locale: getDateFnsLocale(i18n.language),
 						})}
 						<IconArrowUpRight className="text-muted-foreground" />
 					</div>
