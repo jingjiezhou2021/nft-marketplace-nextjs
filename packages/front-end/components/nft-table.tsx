@@ -38,6 +38,7 @@ import {
 	SelectValue,
 } from './ui/select';
 import { Input } from './ui/input';
+import { useTranslation } from 'react-i18next';
 interface NFT {
 	cover: string;
 	id: bigint;
@@ -80,6 +81,7 @@ export function PriceCell({
 	);
 }
 function NFTTableFilter() {
+	const { t } = useTranslation('common');
 	function PriceFilter({ title }: { title: string }) {
 		const [open, setOpen] = useState(false);
 		return (
@@ -113,9 +115,9 @@ function NFTTableFilter() {
 						</SelectContent>
 					</Select>
 					<div className="flex items-center">
-						<Input placeholder="Min"></Input>
-						<span className="mx-3 text-sm">to</span>
-						<Input placeholder="Max"></Input>
+						<Input placeholder={t('Min')}></Input>
+						<span className="mx-3 text-sm">{t('to')}</span>
+						<Input placeholder={t('Max')}></Input>
 					</div>
 				</CollapsibleContent>
 			</Collapsible>
@@ -123,16 +125,16 @@ function NFTTableFilter() {
 	}
 	return (
 		<div className="p-6 flex flex-col gap-4 relative overflow-y-scroll">
-			<h4>Category</h4>
+			<h4>{t('Category')}</h4>
 			<div className="flex flex-wrap gap-2">
-				<Button variant="outline">All</Button>
-				<Button variant="outline">Art</Button>
-				<Button variant="outline">Gaming</Button>
-				<Button variant="outline">PFPs</Button>
-				<Button variant="outline">Photography</Button>
+				<Button variant="outline">{t('All')}</Button>
+				<Button variant="outline">{t('Art')}</Button>
+				<Button variant="outline">{t('Gaming')}</Button>
+				<Button variant="outline">{t('PFPs')}</Button>
+				<Button variant="outline">{t('Photography')}</Button>
 			</div>
 			<hr />
-			<h4>Chains</h4>
+			<h4>{t('Chains')}</h4>
 			<div className="flex flex-wrap gap-2">
 				<Button variant="outline">
 					<EthereumCircleColorful />
@@ -143,25 +145,26 @@ function NFTTableFilter() {
 					Base
 				</Button>
 			</div>
-			<PriceFilter title="Floor Price" />
-			<PriceFilter title="Top Offer" />
+			<PriceFilter title={t('Floor Price')} />
+			<PriceFilter title={t('Top Offer')} />
 			<div className="flex justify-between gap-2 sticky bottom-0  bg-background">
 				<DrawerClose asChild>
 					<Button
 						variant="outline"
 						className="grow"
 					>
-						Clear All
+						{t('Clear All')}
 					</Button>
 				</DrawerClose>
 				<DrawerClose asChild>
-					<Button className="grow">Done</Button>
+					<Button className="grow">{t('Done')}</Button>
 				</DrawerClose>
 			</div>
 		</div>
 	);
 }
 export default function NFTTable() {
+	const { t } = useTranslation('common');
 	const [data, setData] = useState<NFT[]>([
 		{
 			cover: '/example5-1.png',
@@ -235,7 +238,7 @@ export default function NFTTable() {
 			header: () => {
 				return (
 					<div className="text-muted-foreground text-xs">
-						COLLECTION
+						{t('COLLECTION')}
 					</div>
 				);
 			},
@@ -265,7 +268,7 @@ export default function NFTTable() {
 			header: ({ column }) => {
 				return (
 					<CustomTableHeaderFilterButton column={column}>
-						FLOOR PRICE
+						{t('FLOOR PRICE')}
 					</CustomTableHeaderFilterButton>
 				);
 			},
@@ -278,7 +281,7 @@ export default function NFTTable() {
 			header: ({ column }) => {
 				return (
 					<CustomTableHeaderFilterButton column={column}>
-						TOP OFFER
+						{t('TOP OFFER')}
 					</CustomTableHeaderFilterButton>
 				);
 			},
@@ -291,7 +294,7 @@ export default function NFTTable() {
 			header: ({ column }) => {
 				return (
 					<CustomTableHeaderFilterButton column={column}>
-						VOL
+						{t('VOL')}
 					</CustomTableHeaderFilterButton>
 				);
 			},
@@ -304,7 +307,7 @@ export default function NFTTable() {
 			header: ({ column }) => {
 				return (
 					<CustomTableHeaderFilterButton column={column}>
-						SALES
+						{t('SALES')}
 					</CustomTableHeaderFilterButton>
 				);
 			},
@@ -321,7 +324,7 @@ export default function NFTTable() {
 			header: ({ column }) => {
 				return (
 					<CustomTableHeaderFilterButton column={column}>
-						OWNERS
+						{t('OWNERS')}
 					</CustomTableHeaderFilterButton>
 				);
 			},
@@ -338,7 +341,7 @@ export default function NFTTable() {
 			header: ({ column }) => {
 				return (
 					<CustomTableHeaderFilterButton column={column}>
-						SUPPLY
+						{t('SUPPLY')}
 					</CustomTableHeaderFilterButton>
 				);
 			},
@@ -370,10 +373,10 @@ export default function NFTTable() {
 						</DrawerContent>
 					</Drawer>
 					<Button variant="outline">
-						<IconMedal /> Top
+						<IconMedal /> {t('Top')}
 					</Button>
 					<Button variant="outline">
-						<IconStar /> Watchlist
+						<IconStar /> {t('Watchlist')}
 					</Button>
 				</div>
 				<div>
