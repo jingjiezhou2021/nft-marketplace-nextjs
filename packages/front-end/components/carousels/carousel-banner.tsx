@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import CarouselMain from './carousel-main';
-import { Separator } from './ui/separator';
+import { Separator } from '../ui/separator';
 import { ShieldCheck, ShieldQuestionMark } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 interface PropsType {

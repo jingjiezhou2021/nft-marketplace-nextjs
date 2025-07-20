@@ -1,9 +1,9 @@
 import Image from 'next/image';
 import CarouselScroller from './carousel-scroller';
 import { ReactNode } from 'react';
-import { CarouselItem } from './ui/carousel';
+import { CarouselItem } from '../ui/carousel';
 import { cn } from '@/lib/utils';
-import { Card, CardContent } from './ui/card';
+import { Card, CardContent } from '../ui/card';
 
 interface PropsType {
 	contents: {

@@ -5,7 +5,7 @@ import {
 	CarouselNext,
 	CarouselPrevious,
 } from '@/components/ui/carousel';
-import { Card, CardContent } from './ui/card';
+import { Card, CardContent } from '../ui/card';
 import Autoplay from 'embla-carousel-autoplay';
 import { type CarouselApi } from '@/components/ui/carousel';
 import { ReactNode, useEffect, useRef, useState } from 'react';

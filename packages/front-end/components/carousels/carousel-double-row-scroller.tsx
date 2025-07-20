@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import CarouselScroller from './carousel-scroller';
 import { cn } from '@/lib/utils';
-import { CarouselItem } from './ui/carousel';
+import { CarouselItem } from '../ui/carousel';
 export default function CarouselDoubleRowScoller(props: {
 	twins: [ReactNode, ReactNode][];
 }) {
