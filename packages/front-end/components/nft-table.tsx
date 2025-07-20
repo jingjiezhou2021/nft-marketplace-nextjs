@@ -11,34 +11,13 @@ import { cn } from '@/lib/utils';
 import { produce } from 'immer';
 import { useState } from 'react';
 import { Button } from './ui/button';
-import {
-	Drawer,
-	DrawerClose,
-	DrawerContent,
-	DrawerFooter,
-	DrawerTrigger,
-} from './ui/drawer';
+import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from './ui/drawer';
 import {
 	BaseCircleColorful,
 	EthereumCircleColorful,
 } from '@ant-design/web3-icons';
-import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
-} from './ui/collapsible';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectLabel,
-	SelectTrigger,
-	SelectValue,
-} from './ui/select';
-import { Input } from './ui/input';
 import { useTranslation } from 'react-i18next';
+import { PriceFilter } from './PriceFilter';
 interface NFT {
 	cover: string;
 	id: bigint;
@@ -82,47 +61,6 @@ export function PriceCell({
 }
 function NFTTableFilter() {
 	const { t } = useTranslation('common');
-	function PriceFilter({ title }: { title: string }) {
-		const [open, setOpen] = useState(false);
-		return (
-			<Collapsible
-				open={open}
-				onOpenChange={setOpen}
-			>
-				<CollapsibleTrigger asChild>
-					<Button
-						variant="ghost"
-						size="icon"
-						className="w-full justify-between text-base font-normal hover:bg-transparent!"
-					>
-						{title}
-						<ChevronDown
-							className={cn(
-								open && 'rotate-180',
-								'transition-transform ease-in-out duration-200',
-							)}
-						/>
-					</Button>
-				</CollapsibleTrigger>
-				<CollapsibleContent className="flex flex-col gap-4 py-3">
-					<Select defaultValue="ETH">
-						<SelectTrigger className="w-full group">
-							<SelectValue></SelectValue>
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value="ETH">ETH</SelectItem>
-							<SelectItem value="USD">USD</SelectItem>
-						</SelectContent>
-					</Select>
-					<div className="flex items-center">
-						<Input placeholder={t('Min')}></Input>
-						<span className="mx-3 text-sm">{t('to')}</span>
-						<Input placeholder={t('Max')}></Input>
-					</div>
-				</CollapsibleContent>
-			</Collapsible>
-		);
-	}
 	return (
 		<div className="p-6 flex flex-col gap-4 relative overflow-y-scroll">
 			<h4>{t('Category')}</h4>
