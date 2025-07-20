@@ -3,9 +3,9 @@ import { IconArrowUpRight, IconTag } from '@tabler/icons-react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
-import { PriceCell } from '../nft-table';
 import { formatDistance } from 'date-fns';
 import getDateFnsLocale from '@/lib/getDateFnsLocale';
+import { PriceCell } from '../PriceCell';
 export enum Event {
 	Listing,
 	Transfer,

@@ -11,13 +11,19 @@ import { cn } from '@/lib/utils';
 import { produce } from 'immer';
 import { useState } from 'react';
 import { Button } from '../ui/button';
-import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from '../ui/drawer';
+import {
+	Drawer,
+	DrawerClose,
+	DrawerContent,
+	DrawerTrigger,
+} from '../ui/drawer';
 import {
 	BaseCircleColorful,
 	EthereumCircleColorful,
 } from '@ant-design/web3-icons';
 import { useTranslation } from 'react-i18next';
 import { PriceFilter } from './PriceFilter';
+import { PriceCell } from './PriceCell';
 interface NFT {
 	cover: string;
 	id: bigint;
@@ -30,35 +36,7 @@ interface NFT {
 	supply: number;
 	watched: boolean;
 }
-export function formatPrice(n: number | bigint): string {
-	if (typeof n === 'bigint') {
-		n = Number(n);
-	}
-	if (n === 0) {
-		return '-';
-	}
-	if (n < 1e4) {
-		return n.toLocaleString();
-	} else if (n < 1e6) {
-		return `${(n / 1e3).toFixed(1)}K`;
-	} else if (n < 1e9) {
-		return `${(n / 1e6).toFixed(1)}M`;
-	} else {
-		return `${(n / 1e9).toFixed(1)}B`;
-	}
-}
-export function PriceCell({
-	n,
-	className,
-}: { n: number | bigint } & React.ComponentProps<'div'>) {
-	const formatted = formatPrice(n);
-	return (
-		<div className={cn('font-light font-mono', className)}>
-			{formatted !== '-' && <span>$</span>}
-			{formatted}
-		</div>
-	);
-}
+
 function NFTTableFilter() {
 	const { t } = useTranslation('common');
 	return (
