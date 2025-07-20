@@ -4,7 +4,7 @@ import { ColumnDef, Row } from '@tanstack/react-table';
 import Image from 'next/image';
 import { CustomTableHeaderFilterButton } from '../custom-table';
 import { PriceCell } from '../PriceCell';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 export interface NFT {
 	cover: string;
 	id: bigint;

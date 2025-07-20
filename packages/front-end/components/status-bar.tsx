@@ -9,7 +9,7 @@ import {
 import ButtonSwitch from './button-switch';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 export default function StatusBar(props: React.ComponentProps<'div'>) {
 	const { t } = useTranslation('common');

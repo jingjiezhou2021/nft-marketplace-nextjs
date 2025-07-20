@@ -9,9 +9,9 @@ import { produce } from 'immer';
 import { useState } from 'react';
 import { Button } from '../../ui/button';
 import { Drawer, DrawerContent, DrawerTrigger } from '../../ui/drawer';
-import { useTranslation } from 'react-i18next';
 import GetNFTColumns, { NFT } from './columns';
 import NFTTableFilter from './filter';
+import { useTranslation } from 'next-i18next';
 
 export default function NFTTable() {
 	const { t } = useTranslation('common');

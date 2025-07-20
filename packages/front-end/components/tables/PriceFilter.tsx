@@ -15,7 +15,7 @@ import {
 	SelectValue,
 } from '../ui/select';
 import { Input } from '../ui/input';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 export function PriceFilter({ title }: { title: string }) {
 	const [open, setOpen] = useState(false);

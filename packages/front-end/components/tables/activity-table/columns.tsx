@@ -1,11 +1,11 @@
 import { cn } from '@/lib/utils';
 import { IconArrowUpRight, IconTag } from '@tabler/icons-react';
 import { ColumnDef } from '@tanstack/react-table';
-import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import { formatDistance } from 'date-fns';
 import getDateFnsLocale from '@/lib/getDateFnsLocale';
 import { PriceCell } from '../PriceCell';
+import { useTranslation } from 'next-i18next';
 export enum Event {
 	Listing,
 	Transfer,
