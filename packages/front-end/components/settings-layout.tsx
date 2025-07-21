@@ -10,7 +10,7 @@ export default function SettingsLayout({
 }) {
 	return (
 		<Layout>
-			<SidebarProvider className="min-h-0 h-full has-data-[variant=inset]:bg-transparent">
+			<SidebarProvider className="min-h-0 h-full has-data-[variant=inset]:bg-transparent flex-col md:flex-row">
 				<SettingsSidebar />
 				<SidebarInset>
 					<div className="mx-auto h-full w-full md:w-2/3">

@@ -32,9 +32,10 @@ export function SettingsSidebar() {
 	];
 	return (
 		<Sidebar
-			className="static h-full"
+			className="static bg-transparent w-full md:w-(--sidebar-width) h-auto md:h-full border-b border-b-border md:border-0"
 			sidebarInnerClassName="bg-transparent"
 			variant="inset"
+			collapsible="none"
 		>
 			<SidebarContent>
 				<SidebarGroup>
