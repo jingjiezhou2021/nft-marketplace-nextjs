@@ -8,4 +8,13 @@ module.exports = {
 		'rc-pagination',
 		'rc-picker',
 	],
+	async redirects() {
+		return [
+			{
+				source: '/settings',
+				destination: '/settings/profile',
+				permanent: true,
+			},
+		];
+	},
 };

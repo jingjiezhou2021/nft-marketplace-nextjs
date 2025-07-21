@@ -6,8 +6,17 @@ import createApolloClient from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
 import Layout from '@/components/layout';
 import { ThemeProvider } from '@/components/providers/theme-provider';
+import { NextPage } from 'next';
+import { ReactElement, ReactNode } from 'react';
 const client = createApolloClient();
-function App({ Component, pageProps }: AppProps) {
+export type NextPageWithLayout<P = any, IP = P> = NextPage<P, IP> & {
+	GetLayout?: ({ children }: { children: ReactElement }) => ReactNode;
+};
+type AppPropsWithLayout = AppProps & {
+	Component: NextPageWithLayout;
+};
+function App({ Component, pageProps }: AppPropsWithLayout) {
+	const GetLayout = Component.GetLayout ?? Layout;
 	return (
 		<ApolloProvider client={client}>
 			<ThemeProvider
@@ -16,9 +25,9 @@ function App({ Component, pageProps }: AppProps) {
 				enableSystem
 			>
 				<RainbowKitAllProvider>
-					<Layout>
+					<GetLayout>
 						<Component {...pageProps} />
-					</Layout>
+					</GetLayout>
 				</RainbowKitAllProvider>
 			</ThemeProvider>
 		</ApolloProvider>
