@@ -16,6 +16,9 @@ import EmojiAvatar from '@/components/emojo-avatar';
 import { useMutation, useQuery } from '@apollo/client';
 import updateProfileGQL from '@/lib/graphql/mutations/update-user-profile';
 import findUserProfile from '@/lib/graphql/queries/find-user-profile';
+import { cn } from '@/lib/utils';
+import { Transition } from 'react-transition-group';
+import { message } from 'antd';
 type Upload = {
 	file: File | undefined;
 	url: string | null;
@@ -56,18 +59,21 @@ const Page: NextPageWithLayout = (
 	const { status, address } = useAccount();
 	const [updateProfileFunc, { loading: updateLoading }] =
 		useMutation(updateProfileGQL);
-	const { loading: findProfileLoading, data: userProfile } = useQuery(
-		findUserProfile,
-		{
-			variables: {
-				where: {
-					address: {
-						equals: address,
-					},
+	const [messageApi, contextHolder] = message.useMessage();
+	const {
+		loading: findProfileLoading,
+		data: userProfile,
+		updateQuery,
+	} = useQuery(findUserProfile, {
+		variables: {
+			where: {
+				address: {
+					equals: address,
 				},
 			},
 		},
-	);
+		notifyOnNetworkStatusChange: true,
+	});
 	// Inside your component:
 	const formik = useFormik<{
 		username?: string;
@@ -93,6 +99,12 @@ const Page: NextPageWithLayout = (
 				variables: {
 					newUserProfileData,
 				},
+			});
+			messageApi.success(t('Update Successful'));
+			updateQuery((_) => {
+				return {
+					findFirstUserProfile: { ...res.data.updateUserAvatar },
+				};
 			});
 			console.log(res);
 		},
@@ -124,6 +136,10 @@ const Page: NextPageWithLayout = (
 			}
 		}
 	}, [address, userProfile]);
+	const [loading, setLoading] = useState(false);
+	useEffect(() => {
+		setLoading(findProfileLoading || updateLoading);
+	}, [findProfileLoading, updateLoading]);
 	const { t } = useTranslation('common');
 	const [banner, setBanner] = useState<Upload>({
 		file: undefined,
@@ -133,9 +149,31 @@ const Page: NextPageWithLayout = (
 		file: undefined,
 		url: null,
 	});
+	const maskRef = useRef<HTMLDivElement>(null);
 	if (status === 'connected') {
 		return (
 			<div className="w-full h-full pt-2">
+				{contextHolder}
+				<Transition
+					nodeRef={maskRef}
+					in={loading}
+					timeout={300}
+					unmountOnExit={true}
+					appear={true}
+				>
+					{(state) => (
+						<div
+							ref={maskRef}
+							className={cn(
+								'absolute w-full h-full bg-background opacity-0 transition-opacity ease-in-out duration-300 z-20',
+								state === 'entering' && 'opacity-80',
+								state === 'entered' && 'opacity-80',
+								state === 'exiting' && 'opacity-0',
+								state === 'exited' && 'opacity-0',
+							)}
+						></div>
+					)}
+				</Transition>
 				<form
 					className="h-full"
 					onSubmit={formik.handleSubmit}
