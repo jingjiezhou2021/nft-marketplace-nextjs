@@ -17,6 +17,7 @@ import * as Yup from 'yup';
 import createApolloClient from '@/apollo';
 import { graphql } from '@/apollo/gql';
 import ImageUpload from '@/components/image-upload';
+import EmojiAvatar from '@/components/emojo-avatar';
 type Upload = {
 	file: File | undefined;
 	url: string | null;
@@ -155,8 +156,6 @@ const Page: NextPageWithLayout = (
 		file: undefined,
 		url: null,
 	});
-	const uploadAvatarInput = useRef<HTMLInputElement>(null);
-	const emojiAvatar = emojiAvatarForAddress(address);
 	if (status === 'connected') {
 		return (
 			<div className="w-full h-full pt-2">
@@ -208,17 +207,12 @@ const Page: NextPageWithLayout = (
 											/>
 										</div>
 									) : (
-										<div
-											className="size-full flex justify-center items-center text-3xl"
-											style={{
-												backgroundColor:
-													emojiAvatar.color,
-												borderColor: emojiAvatar.color,
-											}}
+										<EmojiAvatar
+											address={address}
+											className="size-full"
 										>
-											{emojiAvatar.emoji}
 											<div className="size-full absolute top-1/2 -translate-y-1/2 bg-black opacity-20 transition-opacity duration-300 ease-out-quint group-hover:opacity-40"></div>
-										</div>
+										</EmojiAvatar>
 									)}
 								</ImageUpload>
 								<h3 className="font-medium leading-tight text-2xl mb-5 mt-2.5">
