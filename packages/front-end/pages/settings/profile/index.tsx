@@ -16,6 +16,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import createApolloClient from '@/apollo';
 import { graphql } from '@/apollo/gql';
+import ImageUpload from '@/components/image-upload';
 type Upload = {
 	file: File | undefined;
 	url: string | null;
@@ -154,7 +155,6 @@ const Page: NextPageWithLayout = (
 		file: undefined,
 		url: null,
 	});
-	const uploadBannerInput = useRef<HTMLInputElement>(null);
 	const uploadAvatarInput = useRef<HTMLInputElement>(null);
 	const emojiAvatar = emojiAvatarForAddress(address);
 	if (status === 'connected') {
@@ -166,12 +166,16 @@ const Page: NextPageWithLayout = (
 				>
 					<div className="flex flex-col h-full">
 						<div className="grow max-h-[calc(100%-36px)] overflow-y-scroll no-scrollbar">
-							<button
-								className="inline-flex items-center border-0 disabled:pointer-events-none disabled:opacity-40 aspect-8/3 w-full overflow-hidden rounded-t [mask-image:linear-gradient(to_bottom,black,black_calc(100%_-_theme(spacing.16)),transparent)] group relative cursor-pointer bg-black"
-								onClick={() => {
-									uploadBannerInput.current.click();
+							<ImageUpload
+								className="border-0 disabled:opacity-40 aspect-8/3 w-full [mask-image:linear-gradient(to_bottom,black,black_calc(100%_-_theme(spacing.16)),transparent)] bg-black cursor-pointer"
+								handleChange={(e) => {
+									setBanner({
+										url: URL.createObjectURL(
+											e.target.files[0],
+										),
+										file: e.target.files[0],
+									});
 								}}
-								type="button"
 							>
 								{banner.url && (
 									<Image
@@ -181,29 +185,18 @@ const Page: NextPageWithLayout = (
 										alt="account-banner"
 									/>
 								)}
-								<IconEdit className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white"></IconEdit>
-								<input
-									accept="image/*"
-									type="file"
-									ref={uploadBannerInput}
-									className="invisible"
-									onChange={(e) => {
-										setBanner({
+							</ImageUpload>
+							<div className="flex flex-col mx-4 pb-4">
+								<ImageUpload
+									handleChange={(e) => {
+										setAvatar({
 											url: URL.createObjectURL(
 												e.target.files[0],
 											),
 											file: e.target.files[0],
 										});
 									}}
-								></input>
-							</button>
-							<div className="flex flex-col mx-4 pb-4">
-								<button
-									className="border-0 disabled:pointer-events-none disabled:opacity-40 group relative cursor-pointer mb-[calc(-40px+theme(spacing.3))] aspect-square size-[80px] -translate-y-1/2 rounded-full overflow-hidden z-10"
-									onClick={() => {
-										uploadAvatarInput.current.click();
-									}}
-									type="button"
+									className="border-0 disabled:pointer-events-none disabled:opacity-40 mb-[calc(-40px+theme(spacing.3))] aspect-square size-[80px] -translate-y-1/2 rounded-full z-10 cursor-pointer"
 								>
 									{avatar.url ? (
 										<div className="size-full bg-black">
@@ -227,25 +220,7 @@ const Page: NextPageWithLayout = (
 											<div className="size-full absolute top-1/2 -translate-y-1/2 bg-black opacity-20 transition-opacity duration-300 ease-out-quint group-hover:opacity-40"></div>
 										</div>
 									)}
-									<IconEdit
-										className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white"
-										size={16}
-									></IconEdit>
-									<input
-										accept="image/*"
-										type="file"
-										ref={uploadAvatarInput}
-										className="invisible"
-										onChange={(e) => {
-											setAvatar({
-												url: URL.createObjectURL(
-													e.target.files[0],
-												),
-												file: e.target.files[0],
-											});
-										}}
-									></input>
-								</button>
+								</ImageUpload>
 								<h3 className="font-medium leading-tight text-2xl mb-5 mt-2.5">
 									{t('Edit Profile')}
 								</h3>
