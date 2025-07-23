@@ -4,3 +4,5 @@ node_modules
 
 /prisma/generated/
 graphql/types
+/build
+/upload/*

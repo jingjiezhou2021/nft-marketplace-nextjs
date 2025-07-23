@@ -5,9 +5,14 @@
         "lib": [
             "es2021"
         ],
+        "outDir": "build",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "allowJs": true,
+        "baseUrl": ".",
         "plugins": [
             {
                 "name": "@0no-co/graphqlsp",
@@ -15,4 +20,8 @@
             }
         ]
     },
+    "include": [
+        "src/**/*",
+        "prisma/**/*"
+    ]
 }

@@ -3,7 +3,7 @@ import { expressMiddleware } from "@as-integrations/express5";
 import { Prisma, PrismaClient } from "../prisma/generated/prisma";
 import { DefaultArgs } from "../prisma/generated/prisma/runtime/library";
 import getSchema from "./schema";
-interface Context {
+export interface Context {
   prisma: MyPrismaClient;
 }
 type MyPrismaClient = PrismaClient<

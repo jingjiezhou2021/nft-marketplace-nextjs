@@ -71,3 +71,13 @@ model ActiveItem {
   listing Listing
   chainId BigInt @default(31337) 
 }
+
+model UserProfile {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  address String
+  username String?
+  bio String?
+  url String?
+  avatar String?
+  banner String?
+}
