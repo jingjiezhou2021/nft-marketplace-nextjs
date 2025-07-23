@@ -3,7 +3,7 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
 	schema: process.env.NEXT_PUBLIC_APOLLO_SERVER_ENDPOINT,
-	documents: ['pages/**/*.tsx'],
+	documents: ['pages/**/*', 'lib/**/*'],
 	ignoreNoDocuments: true, // for better experience with the watcher
 	generates: {
 		'./apollo/gql/': {

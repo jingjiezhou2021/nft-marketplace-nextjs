@@ -4,20 +4,18 @@ import SettingsLayout from '@/components/settings-layout';
 import { NextPageWithLayout } from '@/pages/_app';
 import { useAccount } from 'wagmi';
 import { useTranslation } from 'next-i18next';
-import { Store } from 'lucide-react';
-import { IconEdit } from '@tabler/icons-react';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { emojiAvatarForAddress } from '@/lib/emojiAvatarForAddress';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import createApolloClient from '@/apollo';
-import { graphql } from '@/apollo/gql';
 import ImageUpload from '@/components/image-upload';
 import EmojiAvatar from '@/components/emojo-avatar';
+import { useMutation, useQuery } from '@apollo/client';
+import updateProfileGQL from '@/lib/graphql/mutations/update-user-profile';
+import findUserProfile from '@/lib/graphql/queries/find-user-profile';
 type Upload = {
 	file: File | undefined;
 	url: string | null;
@@ -55,16 +53,33 @@ function FieldSet({
 const Page: NextPageWithLayout = (
 	_props: InferGetStaticPropsType<typeof getStaticProps>,
 ) => {
+	const { status, address } = useAccount();
+	const [updateProfileFunc, { loading: updateLoading }] =
+		useMutation(updateProfileGQL);
+	const { loading: findProfileLoading, data: userProfile } = useQuery(
+		findUserProfile,
+		{
+			variables: {
+				where: {
+					address: {
+						equals: address,
+					},
+				},
+			},
+		},
+	);
 	// Inside your component:
-	const formik = useFormik({
+	const formik = useFormik<{
+		username?: string;
+		bio?: string;
+		url?: string;
+	}>({
 		initialValues: {
-			username: null,
-			bio: null,
-			url: null,
+			username: undefined,
+			bio: undefined,
+			url: undefined,
 		},
 		onSubmit: async (values) => {
-			// You can call an API here to save the profile
-			const client = createApolloClient();
 			const newUserProfileData = {
 				address,
 				url: values.url,
@@ -74,23 +89,7 @@ const Page: NextPageWithLayout = (
 				banner: banner.file,
 			};
 			console.log('new user profile:', newUserProfileData);
-			const mutation = graphql(`
-				mutation updateProfile(
-					$newUserProfileData: UserProfileInputData!
-				) {
-					updateUserAvatar(NewUserProfileData: $newUserProfileData) {
-						id
-						address
-						username
-						bio
-						url
-						avatar
-						banner
-					}
-				}
-			`);
-			const res = await client.mutate({
-				mutation,
+			const res = await updateProfileFunc({
 				variables: {
 					newUserProfileData,
 				},
@@ -102,56 +101,29 @@ const Page: NextPageWithLayout = (
 			url: Yup.string().url('Invalid URL').notRequired(),
 		}),
 	});
-	const { status, address } = useAccount();
 	useEffect(() => {
 		if (!address) {
 			formik.resetForm();
 			setAvatar({ file: undefined, url: null });
 			setBanner({ file: undefined, url: null });
-			return;
+		} else if (userProfile && userProfile.findFirstUserProfile) {
+			if (userProfile.findFirstUserProfile) {
+				formik.setValues(userProfile.findFirstUserProfile);
+			}
+			if (userProfile.findFirstUserProfile?.avatar) {
+				setAvatar({
+					file: null,
+					url: `http://localhost:4500/${userProfile.findFirstUserProfile.avatar}`,
+				});
+			}
+			if (userProfile.findFirstUserProfile?.banner) {
+				setBanner({
+					file: null,
+					url: `http://localhost:4500/${userProfile.findFirstUserProfile.banner}`,
+				});
+			}
 		}
-		const client = createApolloClient();
-		client
-			.query({
-				query: graphql(`
-					query FindFirstUserProfile($where: UserProfileWhereInput) {
-						findFirstUserProfile(where: $where) {
-							address
-							avatar
-							banner
-							bio
-							url
-							username
-						}
-					}
-				`),
-				variables: {
-					where: {
-						address: {
-							equals: address,
-						},
-					},
-				},
-			})
-			.then((res) => {
-				debugger;
-				if (res.data.findFirstUserProfile) {
-					formik.setValues(res.data.findFirstUserProfile);
-				}
-				if (res.data.findFirstUserProfile?.avatar) {
-					setAvatar({
-						file: null,
-						url: `http://localhost:4500/${res.data.findFirstUserProfile.avatar}`,
-					});
-				}
-				if (res.data.findFirstUserProfile?.banner) {
-					setBanner({
-						file: null,
-						url: `http://localhost:4500/${res.data.findFirstUserProfile.banner}`,
-					});
-				}
-			});
-	}, [address]);
+	}, [address, userProfile]);
 	const { t } = useTranslation('common');
 	const [banner, setBanner] = useState<Upload>({
 		file: undefined,
