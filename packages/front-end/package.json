@@ -50,8 +50,10 @@
     "@tabler/icons-react": "^3.34.0",
     "@tanstack/react-query": "^5.81.5",
     "@tanstack/react-table": "^8.21.3",
+    "@types/apollo-upload-client": "^18.0.0",
     "@types/react": "19.1.8",
     "antd": "^5.26.4",
+    "apollo-upload-client": "^18.0.1",
     "class-variance-authority": "^0.7.1",
     "date-fns": "^4.1.0",
     "dotenv": "^17.0.1",
@@ -61,6 +63,7 @@
     "eslint-config-next": "15.3.5",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.1",
+    "formik": "^2.4.6",
     "graphql": "^16.11.0",
     "i18next-parser": "^9.3.0",
     "immer": "^10.1.1",
@@ -69,6 +72,7 @@
     "react-remove-scroll": "^2.7.1",
     "tw-animate-css": "^1.3.5",
     "viem": "2.x",
-    "wagmi": "^2.15.6"
+    "wagmi": "^2.15.6",
+    "yup": "^1.6.1"
   }
 }

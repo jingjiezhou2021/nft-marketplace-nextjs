@@ -12,7 +12,14 @@ import Image from 'next/image';
 import { emojiAvatarForAddress } from '@/lib/emojiAvatarForAddress';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import createApolloClient from '@/apollo';
+import { graphql } from '@/apollo/gql';
+type Upload = {
+	file: File | undefined;
+	url: string | null;
+};
 export const getStaticProps = async ({ locale }) => {
 	return {
 		props: {
@@ -46,10 +53,107 @@ function FieldSet({
 const Page: NextPageWithLayout = (
 	_props: InferGetStaticPropsType<typeof getStaticProps>,
 ) => {
+	// Inside your component:
+	const formik = useFormik({
+		initialValues: {
+			username: null,
+			bio: null,
+			url: null,
+		},
+		onSubmit: async (values) => {
+			// You can call an API here to save the profile
+			const client = createApolloClient();
+			const newUserProfileData = {
+				address,
+				url: values.url,
+				bio: values.bio,
+				username: values.username,
+				avatar: avatar.file,
+				banner: banner.file,
+			};
+			console.log('new user profile:', newUserProfileData);
+			const mutation = graphql(`
+				mutation updateProfile(
+					$newUserProfileData: UserProfileInputData!
+				) {
+					updateUserAvatar(NewUserProfileData: $newUserProfileData) {
+						id
+						address
+						username
+						bio
+						url
+						avatar
+						banner
+					}
+				}
+			`);
+			const res = await client.mutate({
+				mutation,
+				variables: {
+					newUserProfileData,
+				},
+			});
+			console.log(res);
+		},
+		validationSchema: Yup.object({
+			username: Yup.string().notRequired(),
+			url: Yup.string().url('Invalid URL').notRequired(),
+		}),
+	});
 	const { status, address } = useAccount();
+	useEffect(() => {
+		if (!address) return;
+		const client = createApolloClient();
+		client
+			.query({
+				query: graphql(`
+					query FindFirstUserProfile($where: UserProfileWhereInput) {
+						findFirstUserProfile(where: $where) {
+							address
+							avatar
+							banner
+							bio
+							url
+							username
+						}
+					}
+				`),
+				variables: {
+					where: {
+						address: {
+							equals: address,
+						},
+					},
+				},
+			})
+			.then((res) => {
+				debugger;
+				if (res.data.findFirstUserProfile) {
+					formik.setValues(res.data.findFirstUserProfile);
+				}
+				if (res.data.findFirstUserProfile?.avatar) {
+					setAvatar({
+						file: null,
+						url: `http://localhost:4500/${res.data.findFirstUserProfile.avatar}`,
+					});
+				}
+				if (res.data.findFirstUserProfile?.banner) {
+					setBanner({
+						file: null,
+						url: `http://localhost:4500/${res.data.findFirstUserProfile.banner}`,
+					});
+				}
+			});
+	}, [address]);
 	const { t } = useTranslation('common');
-	const [bannerUrl, setBannerUrl] = useState<string>();
-	const [avatarUrl, setAvatarUrl] = useState<string>();
+	const [banner, setBanner] = useState<Upload>({
+		file: undefined,
+		url: null,
+	});
+	const [avatar, setAvatar] = useState<Upload>({
+		file: undefined,
+		url: null,
+	});
 	const uploadBannerInput = useRef<HTMLInputElement>(null);
 	const uploadAvatarInput = useRef<HTMLInputElement>(null);
 	const emojiAvatar = emojiAvatarForAddress(address);
@@ -58,9 +162,7 @@ const Page: NextPageWithLayout = (
 			<div className="w-full h-full pt-2">
 				<form
 					className="h-full"
-					onSubmit={(e) => {
-						e.preventDefault();
-					}}
+					onSubmit={formik.handleSubmit}
 				>
 					<div className="flex flex-col h-full">
 						<div className="grow max-h-[calc(100%-36px)] overflow-y-scroll no-scrollbar">
@@ -69,11 +171,12 @@ const Page: NextPageWithLayout = (
 								onClick={() => {
 									uploadBannerInput.current.click();
 								}}
+								type="button"
 							>
-								{bannerUrl && (
+								{banner.url && (
 									<Image
 										fill
-										src={bannerUrl}
+										src={banner.url}
 										className="opacity-60 transition-opacity duration-300 ease-out-quint group-hover:opacity-80 absolute !top-1/2 size-full -translate-y-1/2 object-cover"
 										alt="account-banner"
 									/>
@@ -85,11 +188,12 @@ const Page: NextPageWithLayout = (
 									ref={uploadBannerInput}
 									className="invisible"
 									onChange={(e) => {
-										setBannerUrl(
-											URL.createObjectURL(
+										setBanner({
+											url: URL.createObjectURL(
 												e.target.files[0],
 											),
-										);
+											file: e.target.files[0],
+										});
 									}}
 								></input>
 							</button>
@@ -99,12 +203,13 @@ const Page: NextPageWithLayout = (
 									onClick={() => {
 										uploadAvatarInput.current.click();
 									}}
+									type="button"
 								>
-									{avatarUrl ? (
+									{avatar.url ? (
 										<div className="size-full bg-black">
 											<Image
 												fill
-												src={avatarUrl}
+												src={avatar.url}
 												className="opacity-60 transition-opacity duration-300 ease-out-quint group-hover:opacity-80 absolute !top-1/2 size-full -translate-y-1/2 object-cover"
 												alt="account-banner"
 											/>
@@ -132,11 +237,12 @@ const Page: NextPageWithLayout = (
 										ref={uploadAvatarInput}
 										className="invisible"
 										onChange={(e) => {
-											setAvatarUrl(
-												URL.createObjectURL(
+											setAvatar({
+												url: URL.createObjectURL(
 													e.target.files[0],
 												),
-											);
+												file: e.target.files[0],
+											});
 										}}
 									></input>
 								</button>
@@ -150,10 +256,22 @@ const Page: NextPageWithLayout = (
 											'This is your public username',
 										)}
 									>
-										<Input className="w-full" />
+										<Input
+											className="w-full"
+											id="username"
+											name="username"
+											value={formik.values.username}
+											onChange={formik.handleChange}
+										/>
 									</FieldSet>
 									<FieldSet title={t('Bio')}>
-										<Textarea className="w-full" />
+										<Textarea
+											className="w-full"
+											id="bio"
+											name="bio"
+											value={formik.values.bio}
+											onChange={formik.handleChange}
+										/>
 									</FieldSet>
 									<FieldSet
 										title="URL"
@@ -161,7 +279,13 @@ const Page: NextPageWithLayout = (
 											'Add a link to your website or social profile',
 										)}
 									>
-										<Input className="w-full" />
+										<Input
+											className="w-full"
+											id="url"
+											name="url"
+											value={formik.values.url}
+											onChange={formik.handleChange}
+										/>
 									</FieldSet>
 								</div>
 							</div>
