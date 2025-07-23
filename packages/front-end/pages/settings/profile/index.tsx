@@ -104,7 +104,12 @@ const Page: NextPageWithLayout = (
 	});
 	const { status, address } = useAccount();
 	useEffect(() => {
-		if (!address) return;
+		if (!address) {
+			formik.resetForm();
+			setAvatar({ file: undefined, url: null });
+			setBanner({ file: undefined, url: null });
+			return;
+		}
 		const client = createApolloClient();
 		client
 			.query({
