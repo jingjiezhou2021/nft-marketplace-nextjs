@@ -92,7 +92,7 @@ export default function Page(
 												)}
 											</div>
 										)}
-										<div className="flex items-center min-w-0 h-10">
+										<div className="flex items-center min-w-0 flex-wrap">
 											{!expand && (
 												<div className="cursor-pointer aspect-square size-10 rounded-full overflow-hidden relative mr-4">
 													{data.findFirstUserProfile
@@ -128,7 +128,7 @@ export default function Page(
 											)}
 											<Separator
 												orientation="vertical"
-												className="ml-4 mr-1 w-[2px]! max-h-6 bg-border"
+												className="ml-4 mr-1 w-[2px]! h-6! bg-border"
 											/>
 											<Button
 												variant="ghost"
