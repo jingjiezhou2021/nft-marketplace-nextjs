@@ -7,9 +7,9 @@ export default function EmojiAvatar({
 	address,
 	className,
 }: {
-	children: ReactNode;
+	children?: ReactNode;
 	address: string;
-	className: string;
+	className?: string;
 }) {
 	const emojiAvatar = emojiAvatarForAddress(address);
 	return (

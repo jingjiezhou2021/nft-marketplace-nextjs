@@ -24,6 +24,7 @@ import { NavUser } from './nav-user';
 import { useTranslation } from 'next-i18next';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useAccount } from 'wagmi';
 
 const user = {
 	name: 'shadcn',
@@ -34,6 +35,7 @@ const user = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	const pathname = usePathname();
 	const { t } = useTranslation('common');
+	const { address } = useAccount();
 	// Menu items.
 	const items = [
 		{
@@ -53,7 +55,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 		},
 		{
 			title: t('Profile'),
-			url: '/profile',
+			url: `/profile/${address}`,
 			icon: CircleUser,
 		},
 		{
