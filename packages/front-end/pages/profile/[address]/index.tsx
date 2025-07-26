@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useQuery } from '@apollo/client';
 import findUserProfile from '@/lib/graphql/queries/find-user-profile';
 import ProfileHeader from '@/components/profile/header';
-
+import ProfileNav from '@/components/profile/nav';
 export const getServerSideProps = async ({ locale }) => {
 	return {
 		props: {
@@ -35,6 +35,7 @@ export default function Page(
 						data={data}
 						address={address}
 					/>
+					<ProfileNav address={address} />
 				</div>
 			)}
 		</>
