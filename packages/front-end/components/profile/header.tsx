@@ -98,6 +98,7 @@ export default function ProfileHeader({
 									variant="ghost"
 									className="text-foreground hover:text-primary"
 									onClick={() => {
+										navigator.clipboard.writeText(address);
 										messageApi.success(
 											t('Copy Address Successful'),
 										);
