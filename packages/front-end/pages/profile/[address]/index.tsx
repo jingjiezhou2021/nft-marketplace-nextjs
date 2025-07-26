@@ -65,8 +65,8 @@ export default function Page(
 										: 'h-auto',
 								)}
 							>
-								{data.findFirstUserProfile?.banner &&
-									expand && (
+								{expand &&
+									(data.findFirstUserProfile?.banner ? (
 										<Image
 											src={new URL(
 												data.findFirstUserProfile.banner,
@@ -76,7 +76,13 @@ export default function Page(
 											alt="profile-banner"
 											className="object-cover"
 										/>
-									)}
+									) : (
+										<EmojiAvatar
+											address={address}
+											className="size-full absolute left-0 top-0"
+											size={128}
+										/>
+									))}
 								<div className="flex w-full min-w-0 flex-col pb-4 lg:grid lg:grid-cols-[1fr_auto] lg:items-end lg:justify-between xl:gap-4 xl:pb-5 relative z-30">
 									<div className="flex flex-col gap-1 md:gap-4">
 										{expand && (
