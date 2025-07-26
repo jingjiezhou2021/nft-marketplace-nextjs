@@ -18,6 +18,8 @@ module.exports = {
 		];
 	},
 	images: {
-		remotePatterns: [new URL('http://localhost:4500/**')],
+		remotePatterns: [
+			new URL('**', process.env.NEXT_PUBLIC_SERVER_ENDPOINT),
+		],
 	},
 };

@@ -67,7 +67,10 @@ export default function Page(
 								{data.findFirstUserProfile?.banner &&
 									expand && (
 										<Image
-											src={`http://localhost:4500/${data.findFirstUserProfile?.banner}`}
+											src={new URL(
+												data.findFirstUserProfile.banner,
+												process.env.NEXT_PUBLIC_SERVER_ENDPOINT,
+											).toString()}
 											fill
 											alt="profile-banner"
 											className="object-cover"
@@ -80,7 +83,10 @@ export default function Page(
 												{data.findFirstUserProfile
 													?.avatar ? (
 													<Image
-														src={`http://localhost:4500/${data.findFirstUserProfile.avatar}`}
+														src={new URL(
+															data.findFirstUserProfile.avatar,
+															process.env.NEXT_PUBLIC_SERVER_ENDPOINT,
+														).toString()}
 														fill
 														alt="profile-avatar"
 													/>
@@ -98,7 +104,10 @@ export default function Page(
 													{data.findFirstUserProfile
 														?.avatar ? (
 														<Image
-															src={`http://localhost:4500/${data.findFirstUserProfile.avatar}`}
+															src={new URL(
+																data.findFirstUserProfile.avatar,
+																process.env.NEXT_PUBLIC_SERVER_ENDPOINT,
+															).toString()}
 															fill
 															alt="profile-avatar"
 														/>

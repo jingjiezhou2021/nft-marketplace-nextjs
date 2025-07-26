@@ -126,13 +126,19 @@ const Page: NextPageWithLayout = (
 			if (userProfile.findFirstUserProfile?.avatar) {
 				setAvatar({
 					file: null,
-					url: `http://localhost:4500/${userProfile.findFirstUserProfile.avatar}`,
+					url: new URL(
+						userProfile.findFirstUserProfile.avatar,
+						process.env.NEXT_PUBLIC_SERVER_ENDPOINT,
+					).toString(),
 				});
 			}
 			if (userProfile.findFirstUserProfile?.banner) {
 				setBanner({
 					file: null,
-					url: `http://localhost:4500/${userProfile.findFirstUserProfile.banner}`,
+					url: new URL(
+						userProfile.findFirstUserProfile.banner,
+						process.env.NEXT_PUBLIC_SERVER_ENDPOINT,
+					).toString(),
 				});
 			}
 		}
