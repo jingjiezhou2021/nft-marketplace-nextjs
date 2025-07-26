@@ -55,7 +55,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 		},
 		{
 			title: t('Profile'),
-			url: `/profile/${address}`,
+			url: `/profile${address ? `/${address}` : ''}`,
 			icon: CircleUser,
 		},
 		{

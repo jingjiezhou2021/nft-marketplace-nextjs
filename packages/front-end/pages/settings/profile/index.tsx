@@ -19,6 +19,7 @@ import findUserProfile from '@/lib/graphql/queries/find-user-profile';
 import { cn } from '@/lib/utils';
 import { Transition } from 'react-transition-group';
 import { message } from 'antd';
+import WalletNotConnected from '@/components/wallet-not-connected';
 type Upload = {
 	file: File | undefined;
 	url: string | null;
@@ -287,13 +288,7 @@ const Page: NextPageWithLayout = (
 			</div>
 		);
 	} else if (status === 'disconnected') {
-		return (
-			<div className="w-full h-full flex justify-center items-center">
-				<div className="text-muted-foreground">
-					{t('Wallet Not Connected')}
-				</div>
-			</div>
-		);
+		return <WalletNotConnected />;
 	}
 };
 Page.GetLayout = SettingsLayout;
