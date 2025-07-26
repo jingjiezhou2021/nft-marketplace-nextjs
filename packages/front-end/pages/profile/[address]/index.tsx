@@ -22,6 +22,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import ProfileAvatar from '@/components/profile/avatar';
 
 export const getServerSideProps = async ({ locale }) => {
 	return {
@@ -79,45 +80,25 @@ export default function Page(
 								<div className="flex w-full min-w-0 flex-col pb-4 lg:grid lg:grid-cols-[1fr_auto] lg:items-end lg:justify-between xl:gap-4 xl:pb-5 relative z-30">
 									<div className="flex flex-col gap-1 md:gap-4">
 										{expand && (
-											<div className="cursor-pointer aspect-square size-20 rounded-full overflow-hidden relative">
-												{data.findFirstUserProfile
-													?.avatar ? (
-													<Image
-														src={new URL(
-															data.findFirstUserProfile.avatar,
-															process.env.NEXT_PUBLIC_SERVER_ENDPOINT,
-														).toString()}
-														fill
-														alt="profile-avatar"
-													/>
-												) : (
-													<EmojiAvatar
-														address={address}
-														className="size-full"
-													/>
-												)}
-											</div>
+											<ProfileAvatar
+												avatar={
+													data.findFirstUserProfile
+														?.avatar
+												}
+												address={address}
+												className="size-20"
+											/>
 										)}
 										<div className="flex items-center min-w-0 flex-wrap">
 											{!expand && (
-												<div className="cursor-pointer aspect-square size-10 rounded-full overflow-hidden relative mr-4">
-													{data.findFirstUserProfile
-														?.avatar ? (
-														<Image
-															src={new URL(
-																data.findFirstUserProfile.avatar,
-																process.env.NEXT_PUBLIC_SERVER_ENDPOINT,
-															).toString()}
-															fill
-															alt="profile-avatar"
-														/>
-													) : (
-														<EmojiAvatar
-															address={address}
-															className="size-full"
-														/>
-													)}
-												</div>
+												<ProfileAvatar
+													avatar={
+														data
+															.findFirstUserProfile
+															?.avatar
+													}
+													address={address}
+												/>
 											)}
 											{data.findFirstUserProfile
 												?.username ? (
