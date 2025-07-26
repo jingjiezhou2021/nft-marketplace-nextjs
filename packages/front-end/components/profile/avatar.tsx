@@ -5,10 +5,12 @@ export default function ProfileAvatar({
 	address,
 	avatar,
 	className,
+	size,
 }: {
 	address: string;
 	avatar?: string;
 	className?: string;
+	size?: number;
 }) {
 	return (
 		<div
@@ -30,6 +32,7 @@ export default function ProfileAvatar({
 				<EmojiAvatar
 					address={address}
 					className="size-full"
+					size={size}
 				/>
 			)}
 		</div>

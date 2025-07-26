@@ -6,10 +6,12 @@ export default function EmojiAvatar({
 	children,
 	address,
 	className,
+	size = 30,
 }: {
 	children?: ReactNode;
 	address: string;
 	className?: string;
+	size?: number;
 }) {
 	const emojiAvatar = emojiAvatarForAddress(address);
 	return (
@@ -21,6 +23,7 @@ export default function EmojiAvatar({
 			style={{
 				backgroundColor: emojiAvatar.color,
 				borderColor: emojiAvatar.color,
+				fontSize: `${size}px`,
 			}}
 		>
 			{emojiAvatar.emoji}
