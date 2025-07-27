@@ -46,9 +46,9 @@ export default function ProfileNav({
 							<NavigationMenuLink
 								asChild
 								className={cn(
-									'text-muted-foreground px-0 bg-transparent! hover:border-b hover:border-b-primary rounded-none',
+									'text-muted-foreground px-0 bg-transparent! rounded-none',
 									current &&
-										'text-primary hover:text-primary',
+										'text-primary hover:text-primary border-b-primary border-b',
 								)}
 							>
 								<Link
