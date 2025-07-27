@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import NFTCard, { NFT } from './nft-card';
+import ImportNFTCard from './import-nft-card';
 export default function NFTGallery({
 	nfts,
 	className,
@@ -22,6 +23,7 @@ export default function NFTGallery({
 					/>
 				);
 			})}
+			<ImportNFTCard></ImportNFTCard>
 		</div>
 	);
 }
