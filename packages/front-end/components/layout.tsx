@@ -14,9 +14,9 @@ export default function Layout({ children }) {
 				}
 			>
 				<AppSidebar variant="inset" />
-				<SidebarInset className="h-svh lg:h-[calc(100vh-8px)]">
+				<SidebarInset className="h-svh lg:h-[calc(100svh-16px)]">
 					<SiteHeader />
-					<div className="lg:ml-4 mt-4 grow-1 lg:pr-2 overflow-scroll mx-2">
+					<div className="lg:ml-4 mt-4 grow-1 lg:pr-2 overflow-auto mx-2">
 						{children}
 					</div>
 					<StatusBar className="hidden lg:flex" />
