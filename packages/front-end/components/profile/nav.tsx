@@ -9,7 +9,13 @@ import { useTranslation } from 'next-i18next';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
-export default function ProfileNav({ address }: { address: string }) {
+export default function ProfileNav({
+	address,
+	className,
+}: {
+	address: string;
+	className: string;
+}) {
 	const { t, i18n } = useTranslation('common');
 	const pathname = usePathname();
 	const links: { title: string; url: string }[] = [
@@ -31,8 +37,8 @@ export default function ProfileNav({ address }: { address: string }) {
 		},
 	];
 	return (
-		<NavigationMenu className="px-4 py-2">
-			<NavigationMenuList className="gap-6">
+		<NavigationMenu className={cn('px-4 py-2 bg-background', className)}>
+			<NavigationMenuList className="gap-3 md:gap-6">
 				{links.map((l) => {
 					const current = pathname.endsWith(l.url);
 					return (

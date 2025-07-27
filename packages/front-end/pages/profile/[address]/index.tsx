@@ -5,6 +5,7 @@ import { useQuery } from '@apollo/client';
 import findUserProfile from '@/lib/graphql/queries/find-user-profile';
 import ProfileHeader from '@/components/profile/header';
 import ProfileNav from '@/components/profile/nav';
+import NFTGallery from '@/components/nft-gallery';
 export const getServerSideProps = async ({ locale }) => {
 	return {
 		props: {
@@ -35,7 +36,18 @@ export default function Page(
 						data={data}
 						address={address}
 					/>
-					<ProfileNav address={address} />
+					<ProfileNav
+						address={address}
+						className="sticky top-0 z-10 w-full max-w-full"
+					/>
+					<NFTGallery
+						nfts={new Array(25).fill({
+							imageUrl: '/example7.avif',
+							name: '#6759',
+							price: '1.86',
+						})}
+						className="mt-1"
+					/>
 				</div>
 			)}
 		</>
