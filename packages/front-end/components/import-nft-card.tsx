@@ -17,7 +17,7 @@ import { ReactNode, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import useMessage from 'antd/es/message/useMessage';
-import { importNFT, NOT_OWNER } from '@/lib/nft';
+import { ALREADY_IMPORTED, importNFT, NOT_OWNER } from '@/lib/nft';
 import { useAccount, useChainId } from 'wagmi';
 import { chains, config } from './providers/RainbowKitAllProvider';
 import {
@@ -98,6 +98,10 @@ export function ImportNFTDialog({ children }: { children: ReactNode }) {
 					if (err.message === NOT_OWNER) {
 						messageApi.error(
 							t('You are not the owner of this NFT'),
+						);
+					} else if (err.message === ALREADY_IMPORTED) {
+						messageApi.warning(
+							t('You have already imported the NFT'),
 						);
 					} else {
 						messageApi.error(

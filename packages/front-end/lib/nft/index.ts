@@ -45,6 +45,7 @@ export interface NFTMetadata {
 	}>;
 }
 export const NOT_OWNER = 'not owner';
+export const ALREADY_IMPORTED = 'already imported';
 export async function importNFT(
 	importer: `0x${string}`,
 	address: `0x${string}`,
@@ -137,6 +138,8 @@ export async function importNFT(
 					},
 				},
 			});
+		} else {
+			throw new Error(ALREADY_IMPORTED);
 		}
 	}
 }

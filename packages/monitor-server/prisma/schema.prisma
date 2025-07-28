@@ -89,14 +89,16 @@ model NFT {
   contractAddress     String       // NFT contract address
   tokenId      BigInt
   importedAt   DateTime     @default(now())
+
   user         UserProfile  @relation(fields: [userId], references: [id])
-  userId       String       // Foreign key
+  userId       String      @db.ObjectId
+
    // 🔗 Relation to Collection
   collection   Collection   @relation(fields: [collectionId], references: [id])
-  collectionId String
+  collectionId String @db.ObjectId
 
   activeItem ActiveItem? @relation(fields: [activeItemId],references: [id])
-  activeItemId String? @unique
+  activeItemId String? @unique @db.ObjectId
 
   @@unique([contractAddress,tokenId,collectionId])
 }
