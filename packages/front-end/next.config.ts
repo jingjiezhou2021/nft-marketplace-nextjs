@@ -20,6 +20,7 @@ module.exports = {
 	images: {
 		remotePatterns: [
 			new URL('**', process.env.NEXT_PUBLIC_SERVER_ENDPOINT),
+			new URL('**', 'https://ipfs.io'),
 		],
 	},
 };
