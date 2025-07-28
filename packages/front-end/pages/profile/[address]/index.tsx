@@ -6,6 +6,9 @@ import findUserProfile from '@/lib/graphql/queries/find-user-profile';
 import ProfileHeader from '@/components/profile/header';
 import ProfileNav from '@/components/profile/nav';
 import NFTGallery from '@/components/nft-gallery';
+import { useEffect, useState } from 'react';
+import { getNFTMetadata, NFTMetadata } from '@/lib/nft';
+import { NFT } from '@/components/nft-card';
 export const getServerSideProps = async ({ locale }) => {
 	return {
 		props: {
@@ -28,6 +31,38 @@ export default function Page(
 			},
 		},
 	});
+	const [nftMetadata, setNftMetadata] = useState<NFT[]>([]);
+	useEffect(() => {
+		if (!loading && data.findFirstUserProfile?.importedNFTs) {
+			Promise.all(
+				data.findFirstUserProfile?.importedNFTs.map((nft) => {
+					return getNFTMetadata(
+						nft.contractAddress as `0x${string}`,
+						nft.tokenId,
+						nft.collection.chainId,
+					).then((metadata) => {
+						return {
+							...metadata,
+							name: metadata.name ?? `#${nft.tokenId}`,
+							listing: nft.activeItem?.listing,
+							chainId: nft.collection.chainId,
+						};
+					});
+				}),
+			).then((metadataArr) => {
+				setNftMetadata(
+					metadataArr.map((metadata) => {
+						return {
+							imageUrl: metadata.image,
+							name: metadata.name,
+							listing: metadata.listing,
+							chainId: metadata.chainId,
+						};
+					}),
+				);
+			});
+		}
+	}, [loading, data?.findFirstUserProfile?.importedNFTs]);
 	return (
 		<>
 			{!loading && (
@@ -41,11 +76,7 @@ export default function Page(
 						className="sticky top-0 z-10 w-full max-w-full"
 					/>
 					<NFTGallery
-						nfts={new Array(25).fill({
-							imageUrl: '/example7.avif',
-							name: '#6759',
-							price: '1.86',
-						})}
+						nfts={nftMetadata}
 						className="mt-1"
 					/>
 				</div>

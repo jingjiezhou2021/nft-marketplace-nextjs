@@ -1,12 +1,14 @@
+import { Listing } from '@/apollo/gql/graphql';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Currency } from '@/lib/currency';
+import { getCryptoIcon } from '@/lib/currency';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 export type NFT = {
 	imageUrl: string;
 	name: string;
-	price: string;
-	currency?: Currency;
+	listing?: Listing;
+	chainId: number | bigint | string;
 };
 function Wrapper<T extends React.ComponentProps<'div'>>({
 	El,
@@ -86,6 +88,23 @@ export function CardFooterWrapper({
 		</Wrapped>
 	);
 }
+function PriceTag({
+	listing,
+	chainId,
+}: {
+	listing: Listing;
+	chainId: string | number | bigint;
+}) {
+	return (
+		<p>
+			{getCryptoIcon(chainId, listing.erc20TokenAddress)}
+			<span>{listing.price}</span>
+			<span className="text-muted-foreground">
+				&nbsp;{listing.erc20TokenName}
+			</span>
+		</p>
+	);
+}
 export default function NFTCard({
 	nft,
 	className,
@@ -93,6 +112,7 @@ export default function NFTCard({
 	nft: NFT;
 	className?: string;
 }) {
+	const { t } = useTranslation('common');
 	return (
 		<CardWrapper className={className}>
 			<CardContentWrapper>
@@ -104,17 +124,17 @@ export default function NFTCard({
 			</CardContentWrapper>
 			<CardFooterWrapper>
 				<h3 className="font-bold text-sm pb-2">{nft.name}</h3>
-				<div>
-					<p className="text-sm font-mono">
-						{nft.currency === Currency.USD && '$'}
-						<span>{nft.price}</span>
-						{(nft.currency === Currency.ETH ||
-							nft.currency === undefined) && (
-							<span className="text-muted-foreground">
-								&nbsp;ETH
-							</span>
-						)}
-					</p>
+				<div className="text-sm font-mono">
+					{nft.listing ? (
+						<PriceTag
+							listing={nft.listing}
+							chainId={nft.chainId}
+						/>
+					) : (
+						<p className="text-muted-foreground">
+							{t(`Not listed yet`)}
+						</p>
+					)}
 				</div>
 			</CardFooterWrapper>
 		</CardWrapper>

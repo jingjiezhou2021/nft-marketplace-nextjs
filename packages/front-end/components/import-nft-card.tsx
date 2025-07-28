@@ -17,6 +17,19 @@ import { ReactNode, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import useMessage from 'antd/es/message/useMessage';
+import { importNFT, NOT_OWNER } from '@/lib/nft';
+import { useAccount, useChainId } from 'wagmi';
+import { chains, config } from './providers/RainbowKitAllProvider';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from './ui/select';
+import { getIconOfChain } from '@/lib/chain';
+import { cn } from '@/lib/utils';
+import { ChainIdParameter } from '@wagmi/core/internal';
 export default function ImportNFTCard({
 	className,
 	children,
@@ -47,10 +60,12 @@ export function ImportNFTDialog({ children }: { children: ReactNode }) {
 	const { t } = useTranslation('common');
 	const [messageApi, contextHolder] = useMessage();
 	const [open, setOpen] = useState(false);
+	const { address } = useAccount();
 	const formik = useFormik({
 		initialValues: {
 			contractAddress: '',
 			tokenId: '',
+			chain: '',
 		},
 		validationSchema: Yup.object({
 			contractAddress: Yup.string()
@@ -59,10 +74,39 @@ export function ImportNFTDialog({ children }: { children: ReactNode }) {
 			tokenId: Yup.string()
 				.required(t('Token ID is required'))
 				.matches(/^\d+$/, t('Token ID must be a number')),
+			chain: Yup.string()
+				.required(t('Chain Selection is required'))
+				.oneOf(
+					chains.map((c) => c.id.toString()),
+					t('Chain must be one of the options'),
+				),
 		}),
 		onSubmit: async (values) => {
 			console.log('Form submitted:', values);
-			messageApi.success(t('Import Successful'));
+			try {
+				await importNFT(
+					address,
+					values.contractAddress as `0x${string}`,
+					BigInt(parseInt(values.tokenId)),
+					parseInt(values.chain) as ChainIdParameter<
+						typeof config
+					>['chainId'],
+				);
+				messageApi.success(t('Import Successful'));
+			} catch (err) {
+				if (err instanceof Error) {
+					if (err.message === NOT_OWNER) {
+						messageApi.error(
+							t('You are not the owner of this NFT'),
+						);
+					} else {
+						messageApi.error(
+							`${t('Unknown error occured when importing')}:${err.message}`,
+						);
+					}
+					return;
+				}
+			}
 			setOpen(false);
 		},
 	});
@@ -127,6 +171,52 @@ export function ImportNFTDialog({ children }: { children: ReactNode }) {
 										{formik.errors.tokenId}
 									</p>
 								)}
+						</div>
+						<div className="grid gap-3">
+							<Label htmlFor="chain">{t('Chain')}</Label>
+							<Select
+								name="chain"
+								onValueChange={(val) => {
+									formik.setFieldValue('chain', val);
+								}}
+								value={formik.values.chain}
+							>
+								<SelectTrigger
+									className={cn(
+										'w-full group',
+										formik.touched.chain &&
+											formik.errors.chain
+											? 'border-red-500'
+											: '',
+									)}
+									id="chain"
+									onBlur={formik.handleBlur}
+								>
+									<SelectValue
+										placeholder={t(
+											'Select the chain where NFT contract resides',
+										)}
+									/>
+								</SelectTrigger>
+								<SelectContent>
+									{chains.map((c) => {
+										return (
+											<SelectItem
+												value={c.id.toString()}
+												key={c.id}
+											>
+												{getIconOfChain(c.id)}
+												{c.name}
+											</SelectItem>
+										);
+									})}
+								</SelectContent>
+							</Select>
+							{formik.touched.chain && formik.errors.chain && (
+								<p className="text-sm text-red-500">
+									{formik.errors.chain}
+								</p>
+							)}
 						</div>
 					</div>
 					<DialogFooter>

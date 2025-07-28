@@ -8,6 +8,9 @@
   "By": "By",
   "Cancel": "Cancel",
   "Category": "Category",
+  "Chain": "Chain",
+  "Chain must be one of the options": "Chain must be one of the options",
+  "Chain Selection is required": "Chain Selection is required",
   "Chains": "Chains",
   "Clear All": "Clear All",
   "COLLECTION": "COLLECTION",
@@ -47,6 +50,7 @@
   "NFT": "NFT",
   "NFT Marketplace Demo": "NFT Marketplace Demo",
   "NFTs": "NFTs",
+  "Not listed yet": "Not listed yet",
   "Offers": "Offers",
   "OWNERS": "OWNERS",
   "PFPs": "PFPs",
@@ -60,6 +64,7 @@
   "Sale": "Sale",
   "SALES": "SALES",
   "Save": "Save",
+  "Select the chain where NFT contract resides": "Select the chain where NFT contract resides",
   "Settings": "Settings",
   "Staus": "Staus",
   "SUPPLY": "SUPPLY",
@@ -76,6 +81,7 @@
   "TOP OFFER": "TOP OFFER",
   "TOTAL VOLUMN": "TOTAL VOLUMN",
   "Transfer": "Transfer",
+  "Unknown error occured when importing": "Unknown error occured when importing",
   "Update Successful": "Update Successful",
   "USD": "USD",
   "Username": "Username",
@@ -84,5 +90,6 @@
   "Watchlist": "Watchlist",
   "What is a crypto wallet?": "What is a crypto wallet?",
   "What is an NFT?": "What is an NFT?",
-  "What is minting?": "What is minting?"
+  "What is minting?": "What is minting?",
+  "You are not the owner of this NFT": "You are not the owner of this NFT"
 }

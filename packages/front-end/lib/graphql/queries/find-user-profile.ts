@@ -9,6 +9,21 @@ const findUserProfile = graphql(`
 			bio
 			url
 			username
+			importedNFTs {
+				contractAddress
+				tokenId
+				importedAt
+				collection {
+					chainId
+				}
+				activeItem {
+					listing {
+						price
+						erc20TokenAddress
+						erc20TokenName
+					}
+				}
+			}
 		}
 	}
 `);

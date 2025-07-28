@@ -8,6 +8,9 @@
   "By": "作者：",
   "Cancel": "取消",
   "Category": "分类",
+  "Chain": "区块链",
+  "Chain must be one of the options": "区块链必须是选择框中的选项",
+  "Chain Selection is required": "请选择区块链",
   "Chains": "区块链",
   "Clear All": "清除",
   "COLLECTION": "系列",
@@ -47,6 +50,7 @@
   "NFT": "数字藏品",
   "NFT Marketplace Demo": "数字藏品交易平台",
   "NFTs": "数字藏品",
+  "Not listed yet": "尚未上架",
   "Offers": "出价记录",
   "OWNERS": "拥有者",
   "PFPs": "人物",
@@ -60,6 +64,7 @@
   "Sale": "出售",
   "SALES": "销量",
   "Save": "保存",
+  "Select the chain where NFT contract resides": "选择数字藏品合约所在区块链",
   "Settings": "设置",
   "Staus": "类型",
   "SUPPLY": "供应",
@@ -76,6 +81,7 @@
   "TOP OFFER": "最高价",
   "TOTAL VOLUMN": "总市值",
   "Transfer": "转移",
+  "Unknown error occured when importing": "导入发生错误",
   "Update Successful": "更新成功",
   "USD": "美元",
   "Username": "昵称",
@@ -84,5 +90,6 @@
   "Watchlist": "收藏",
   "What is a crypto wallet?": "什么是加密货币钱包？",
   "What is an NFT?": "什么是数字藏品？",
-  "What is minting?": "什么是铸造？"
+  "What is minting?": "什么是铸造？",
+  "You are not the owner of this NFT": "您不是这件数字藏品的持有者"
 }

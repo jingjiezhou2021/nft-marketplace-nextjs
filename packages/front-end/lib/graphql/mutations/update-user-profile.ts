@@ -14,4 +14,23 @@ const updateProfileGQL = graphql(`
 	}
 `);
 
+export const updateNFTsOfUserProfile = graphql(`
+	mutation UpdateNFTsOfUserProfile(
+		$data: UserProfileUpdateInput!
+		$where: UserProfileWhereUniqueInput!
+	) {
+		updateOneUserProfile(data: $data, where: $where) {
+			importedNFTs {
+				contractAddress
+				tokenId
+				importedAt
+				collection {
+					address
+					chainId
+				}
+			}
+		}
+	}
+`);
+
 export default updateProfileGQL;
