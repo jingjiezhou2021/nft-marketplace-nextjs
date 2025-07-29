@@ -230,9 +230,19 @@ export function ImportNFTDialog({ children }: { children: ReactNode }) {
 					</div>
 					<DialogFooter>
 						<DialogClose asChild>
-							<Button variant="outline">{t('Cancel')}</Button>
+							<Button
+								variant="outline"
+								disabled={formik.isSubmitting}
+							>
+								{t('Cancel')}
+							</Button>
 						</DialogClose>
-						<Button type="submit">{t('Confirm')}</Button>
+						<Button
+							type="submit"
+							disabled={formik.isSubmitting}
+						>
+							{t('Confirm')}
+						</Button>
 					</DialogFooter>
 				</form>
 			</DialogContent>
