@@ -13,7 +13,7 @@ import {
 import { Label } from './ui/label';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import useMessage from 'antd/es/message/useMessage';
@@ -114,15 +114,15 @@ export function ImportNFTDialog({ children }: { children: ReactNode }) {
 			setOpen(false);
 		},
 	});
+	useEffect(() => {
+		if (!open) {
+			formik.resetForm();
+		}
+	}, [open]);
 	return (
 		<Dialog
 			open={open}
-			onOpenChange={(val) => {
-				if (val === false) {
-					formik.resetForm();
-				}
-				setOpen(val);
-			}}
+			onOpenChange={setOpen}
 		>
 			{contextHolder}
 			<DialogTrigger asChild>{children}</DialogTrigger>
