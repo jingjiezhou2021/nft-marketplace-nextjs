@@ -117,7 +117,12 @@ export function ImportNFTDialog({ children }: { children: ReactNode }) {
 	return (
 		<Dialog
 			open={open}
-			onOpenChange={setOpen}
+			onOpenChange={(val) => {
+				if (val === false) {
+					formik.resetForm();
+				}
+				setOpen(val);
+			}}
 		>
 			{contextHolder}
 			<DialogTrigger asChild>{children}</DialogTrigger>
