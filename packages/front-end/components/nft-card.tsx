@@ -4,7 +4,7 @@ import { getCryptoIcon } from '@/lib/currency';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
-export type NFT = {
+export type NFTCardData = {
 	imageUrl: string;
 	name: string;
 	listing?: Listing;
@@ -109,7 +109,7 @@ export default function NFTCard({
 	nft,
 	className,
 }: {
-	nft: NFT;
+	nft: NFTCardData;
 	className?: string;
 }) {
 	const { t } = useTranslation('common');

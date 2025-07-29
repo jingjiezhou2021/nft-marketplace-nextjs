@@ -8,7 +8,7 @@ import ProfileNav from '@/components/profile/nav';
 import NFTGallery from '@/components/nft-gallery';
 import { useEffect, useState } from 'react';
 import { getNFTMetadata, NFTMetadata } from '@/lib/nft';
-import { NFT } from '@/components/nft-card';
+import { NFTCardData } from '@/components/nft-card';
 export const getServerSideProps = async ({ locale }) => {
 	return {
 		props: {
@@ -31,7 +31,7 @@ export default function Page(
 			},
 		},
 	});
-	const [nftMetadata, setNftMetadata] = useState<NFT[]>([]);
+	const [nftMetadata, setNftMetadata] = useState<NFTCardData[]>([]);
 	useEffect(() => {
 		if (!loading && data.findFirstUserProfile?.importedNFTs) {
 			Promise.all(

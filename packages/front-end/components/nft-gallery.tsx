@@ -1,11 +1,11 @@
 import { cn } from '@/lib/utils';
-import NFTCard, { NFT } from './nft-card';
+import NFTCard, { NFTCardData } from './nft-card';
 import ImportNFTCard from './import-nft-card';
 export default function NFTGallery({
 	nfts,
 	className,
 }: {
-	nfts: NFT[];
+	nfts: NFTCardData[];
 	className?: string;
 }) {
 	return (
