@@ -98,9 +98,17 @@ export async function importNFT(
 								contractAddress: address,
 								tokenId,
 								collection: {
-									create: {
-										address,
-										chainId,
+									connectOrCreate: {
+										where: {
+											address,
+											chainId: {
+												equals: chainId,
+											},
+										},
+										create: {
+											address,
+											chainId,
+										},
 									},
 								},
 							},
