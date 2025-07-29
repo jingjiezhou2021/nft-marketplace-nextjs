@@ -7,6 +7,7 @@ import findNFT from '../graphql/queries/find-nft';
 import { updateNFTsOfUserProfile } from '../graphql/mutations/update-user-profile';
 import UpdateNFT from '../graphql/mutations/update-nft';
 import 'json-bigint-patch';
+import findUserProfile from '../graphql/queries/find-user-profile';
 function normalizeURI(
 	uri: string,
 	gateway: string = 'https://ipfs.io/ipfs/',
@@ -52,7 +53,6 @@ export async function importNFT(
 	tokenId: number | bigint,
 	chainId: ChainIdParameter<typeof config>['chainId'],
 ) {
-	debugger;
 	const owner = await readContract(config, {
 		address,
 		abi: erc721Abi,
@@ -87,6 +87,7 @@ export async function importNFT(
 	if (existedNFT.data.findFirstNFT === null) {
 		await client.mutate({
 			mutation: updateNFTsOfUserProfile,
+			refetchQueries: [findUserProfile],
 			variables: {
 				where: {
 					address: importer,
