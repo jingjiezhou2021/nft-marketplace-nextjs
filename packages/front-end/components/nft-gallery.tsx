@@ -1,11 +1,12 @@
 import { cn } from '@/lib/utils';
 import NFTCard, { NFTCardData } from './nft-card';
 import ImportNFTCard from './import-nft-card';
+import type { FindFirstUserProfileQuery } from '@/apollo/gql/graphql';
 export default function NFTGallery({
 	nfts,
 	className,
 }: {
-	nfts: NFTCardData[];
+	nfts: FindFirstUserProfileQuery['findFirstUserProfile']['importedNFTs'];
 	className?: string;
 }) {
 	return (
@@ -19,7 +20,7 @@ export default function NFTGallery({
 				return (
 					<NFTCard
 						nft={n}
-						key={n.name}
+						key={`${n.contractAddress}-${n.tokenId}`}
 					/>
 				);
 			})}

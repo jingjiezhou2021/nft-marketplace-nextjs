@@ -31,38 +31,6 @@ export default function Page(
 			},
 		},
 	});
-	const [nftMetadata, setNftMetadata] = useState<NFTCardData[]>([]);
-	useEffect(() => {
-		if (!loading && data.findFirstUserProfile?.importedNFTs) {
-			Promise.all(
-				data.findFirstUserProfile?.importedNFTs.map((nft) => {
-					return getNFTMetadata(
-						nft.contractAddress as `0x${string}`,
-						nft.tokenId,
-						nft.collection.chainId,
-					).then((metadata) => {
-						return {
-							...metadata,
-							name: metadata.name ?? `#${nft.tokenId}`,
-							listing: nft.activeItem?.listing,
-							chainId: nft.collection.chainId,
-						};
-					});
-				}),
-			).then((metadataArr) => {
-				setNftMetadata(
-					metadataArr.map((metadata) => {
-						return {
-							imageUrl: metadata.image,
-							name: metadata.name,
-							listing: metadata.listing,
-							chainId: metadata.chainId,
-						};
-					}),
-				);
-			});
-		}
-	}, [loading, data?.findFirstUserProfile?.importedNFTs]);
 	return (
 		<>
 			{!loading && (
@@ -76,7 +44,7 @@ export default function Page(
 						className="sticky top-0 z-10 w-full max-w-full"
 					/>
 					<NFTGallery
-						nfts={nftMetadata}
+						nfts={data.findFirstUserProfile?.importedNFTs}
 						className="mt-1"
 					/>
 				</div>
