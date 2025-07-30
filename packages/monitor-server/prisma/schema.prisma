@@ -108,6 +108,7 @@ model Collection {
   address       String         @unique              // contract address
   createdAt      DateTime       @default(now())
   chainId  BigInt
+  category String?
   importedNfts   NFT[]  // One-to-many relation
   @@unique([address,chainId])
 }
