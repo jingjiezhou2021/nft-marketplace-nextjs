@@ -4,7 +4,8 @@ import { Button } from '../../ui/button';
 import CustomTable from '../custom-table';
 import { useState } from 'react';
 import GetActivityColumns, { Activity, Event } from './columns';
-import ActivityFilter from './filter';
+import ActivityFilterContent from './filter';
+import { Filter } from '@/components/filter';
 
 export default function ActivityTable() {
 	const data: Activity[] = [
@@ -54,19 +55,9 @@ export default function ActivityTable() {
 		<>
 			<nav className="sticky top-0 px-4 flex items-center mb-4 justify-between">
 				<div className="flex gap-2">
-					<Drawer>
-						<DrawerTrigger asChild>
-							<Button
-								className="-ml-3"
-								variant="outline"
-							>
-								<IconFilter2 />
-							</Button>
-						</DrawerTrigger>
-						<DrawerContent>
-							<ActivityFilter />
-						</DrawerContent>
-					</Drawer>
+					<Filter>
+						<ActivityFilterContent />
+					</Filter>
 				</div>
 				<div>
 					<Button

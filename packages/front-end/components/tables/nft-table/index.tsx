@@ -10,8 +10,9 @@ import { useState } from 'react';
 import { Button } from '../../ui/button';
 import { Drawer, DrawerContent, DrawerTrigger } from '../../ui/drawer';
 import GetNFTColumns, { NFT } from './columns';
-import NFTTableFilter from './filter';
+import NFTTableFilterContent from './filter';
 import { useTranslation } from 'next-i18next';
+import { Filter } from '@/components/filter';
 
 export default function NFTTable() {
 	const { t } = useTranslation('common');
@@ -68,19 +69,9 @@ export default function NFTTable() {
 		<>
 			<nav className="sticky top-0 px-4 flex items-center mb-4 justify-between">
 				<div className="flex gap-2">
-					<Drawer>
-						<DrawerTrigger asChild>
-							<Button
-								className="-ml-3"
-								variant="outline"
-							>
-								<IconFilter2 />
-							</Button>
-						</DrawerTrigger>
-						<DrawerContent>
-							<NFTTableFilter />
-						</DrawerContent>
-					</Drawer>
+					<Filter>
+						<NFTTableFilterContent />
+					</Filter>
 					<Button variant="outline">
 						<IconMedal /> {t('Top')}
 					</Button>

@@ -1,50 +1,50 @@
-import { Button } from '@/components/ui/button';
-import {
-	BaseCircleColorful,
-	EthereumCircleColorful,
-} from '@ant-design/web3-icons';
 import { useTranslation } from 'next-i18next';
 import { PriceFilter } from '../PriceFilter';
-import { DrawerClose } from '@/components/ui/drawer';
-export default function NFTTableFilter() {
+import { FilterContent } from '@/components/filter';
+import { useState } from 'react';
+import ButtonSelection, { Choice } from '@/components/button-selection';
+import ChainSelection from '@/components/chain-selection';
+export default function NFTTableFilterContent() {
 	const { t } = useTranslation('common');
+	const [categories, setCategories] = useState<Choice<string>[]>([
+		{
+			value: t('All'),
+			label: t('All'),
+			selected: false,
+		},
+		{
+			value: t('Art'),
+			label: t('Art'),
+			selected: false,
+		},
+		{
+			value: t('Gaming'),
+			label: t('Gaming'),
+			selected: false,
+		},
+		{
+			value: t('PFPs'),
+			label: t('PFPs'),
+			selected: false,
+		},
+		{
+			value: t('Photography'),
+			label: t('Photography'),
+			selected: false,
+		},
+	]);
 	return (
-		<div className="p-6 flex flex-col gap-4 relative overflow-y-scroll">
+		<FilterContent>
 			<h4>{t('Category')}</h4>
-			<div className="flex flex-wrap gap-2">
-				<Button variant="outline">{t('All')}</Button>
-				<Button variant="outline">{t('Art')}</Button>
-				<Button variant="outline">{t('Gaming')}</Button>
-				<Button variant="outline">{t('PFPs')}</Button>
-				<Button variant="outline">{t('Photography')}</Button>
-			</div>
+			<ButtonSelection
+				choices={categories}
+				handleToggle={() => {}}
+			/>
 			<hr />
 			<h4>{t('Chains')}</h4>
-			<div className="flex flex-wrap gap-2">
-				<Button variant="outline">
-					<EthereumCircleColorful />
-					Ethereum
-				</Button>
-				<Button variant="outline">
-					<BaseCircleColorful />
-					Base
-				</Button>
-			</div>
+			<ChainSelection />
 			<PriceFilter title={t('Floor Price')} />
 			<PriceFilter title={t('Top Offer')} />
-			<div className="flex justify-between gap-2 sticky bottom-0  bg-background">
-				<DrawerClose asChild>
-					<Button
-						variant="outline"
-						className="grow"
-					>
-						{t('Clear All')}
-					</Button>
-				</DrawerClose>
-				<DrawerClose asChild>
-					<Button className="grow">{t('Done')}</Button>
-				</DrawerClose>
-			</div>
-		</div>
+		</FilterContent>
 	);
 }
