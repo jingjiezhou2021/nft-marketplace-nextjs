@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import ButtonSelection, { Choice } from './button-selection';
+import ButtonSelection from './button-selection';
 import { chains } from './providers/RainbowKitAllProvider';
 import { getIconOfChain } from '@/lib/chain';
+import useChoices from '@/hooks/use-choices';
 
 export default function ChainSelection() {
-	const [chainChoices, setChainChoices] = useState<Choice<number>[]>(
-		chains.map((c) => {
+	const [chainChoices, setChainChoices, handleToggle] = useChoices({
+		data: chains.map((c) => {
 			return {
 				value: c.id,
 				label: (
@@ -17,11 +17,13 @@ export default function ChainSelection() {
 				selected: false,
 			};
 		}),
-	);
+		includeAll: true,
+		mutiple: true,
+	});
 	return (
 		<ButtonSelection
 			choices={chainChoices}
-			handleToggle={() => {}}
+			handleToggle={handleToggle}
 		/>
 	);
 }

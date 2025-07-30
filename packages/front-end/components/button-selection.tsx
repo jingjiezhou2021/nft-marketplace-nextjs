@@ -3,7 +3,7 @@ import { Button } from './ui/button';
 import { ReactNode } from 'react';
 
 export type Choice<T = string> = {
-	value: T;
+	value: T | null;
 	label: string | ReactNode;
 	selected: boolean;
 };
@@ -21,7 +21,7 @@ export default function ButtonSelection<T>({
 				return (
 					<Button
 						key={index}
-						variant="outline"
+						variant={c.selected ? 'default' : 'outline'}
 						onClick={() => {
 							handleToggle(c);
 						}}
