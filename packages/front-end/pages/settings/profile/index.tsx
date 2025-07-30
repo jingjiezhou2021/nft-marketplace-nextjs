@@ -103,11 +103,7 @@ const Page: NextPageWithLayout = (
 				},
 			});
 			messageApi.success(t('Update Successful'));
-			updateQuery((_) => {
-				return {
-					findFirstUserProfile: { ...res.data.updateUserAvatar },
-				};
-			});
+			refetch();
 			console.log(res);
 		},
 		validationSchema: Yup.object({
