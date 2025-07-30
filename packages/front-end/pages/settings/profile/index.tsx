@@ -205,6 +205,7 @@ const Page: NextPageWithLayout = (
 									<Image
 										fill
 										src={banner.url}
+										priority
 										className="opacity-60 transition-opacity duration-300 ease-out-quint group-hover:opacity-80 absolute !top-1/2 size-full -translate-y-1/2 object-cover"
 										alt="account-banner"
 									/>
@@ -223,7 +224,7 @@ const Page: NextPageWithLayout = (
 									className="border-0 disabled:pointer-events-none disabled:opacity-40 mb-[calc(-40px+theme(spacing.3))] aspect-square size-[80px] -translate-y-1/2 rounded-full z-10 cursor-pointer"
 								>
 									{avatar.url ? (
-										<div className="size-full bg-black">
+										<div className="size-full bg-black relative">
 											<Image
 												fill
 												src={avatar.url}
