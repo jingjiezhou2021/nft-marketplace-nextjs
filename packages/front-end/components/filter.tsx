@@ -17,10 +17,7 @@ export function Filter({
 	return (
 		<Drawer {...props}>
 			<DrawerTrigger asChild>
-				<Button
-					className="-ml-3"
-					variant="outline"
-				>
+				<Button variant="outline">
 					<IconFilter2 />
 				</Button>
 			</DrawerTrigger>

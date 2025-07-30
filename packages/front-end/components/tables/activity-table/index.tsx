@@ -53,7 +53,7 @@ export default function ActivityTable() {
 	const columns = GetActivityColumns(compact);
 	return (
 		<>
-			<nav className="sticky top-0 px-4 flex items-center mb-4 justify-between">
+			<nav className="sticky top-0 flex items-center mb-4 justify-between">
 				<div className="flex gap-2">
 					<Filter>
 						<ActivityFilterContent />
