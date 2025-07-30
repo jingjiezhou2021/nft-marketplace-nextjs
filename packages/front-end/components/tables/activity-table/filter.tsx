@@ -42,7 +42,7 @@ export default function ActivityFilterContent() {
 	]);
 	return (
 		<FilterContent>
-			<h4>{t('Staus')}</h4>
+			<h4>{t('Status')}</h4>
 			<ButtonSelection
 				choices={statusChoices}
 				handleToggle={() => {}}
