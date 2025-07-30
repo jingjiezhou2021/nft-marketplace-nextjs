@@ -5,7 +5,7 @@ import { ReactNode } from 'react';
 export type Choice<T = string> = {
 	value: T | null;
 	label: string | ReactNode;
-	selected: boolean;
+	selected?: boolean;
 };
 export default function ButtonSelection<T>({
 	className,
