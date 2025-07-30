@@ -8,6 +8,7 @@ import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { ValuesType } from 'utility-types';
+import { LoadingSpinner } from './loading';
 
 export type NFTCardData = {
 	imageUrl: string;
@@ -150,11 +151,8 @@ export default function NFTCard({
 	return (
 		<CardWrapper className={className}>
 			{loading ? (
-				<div className="size-full text-primary flex justify-center items-center">
-					<IconLoader2
-						className="animate-spin"
-						size={64}
-					/>
+				<div className="size-full relative min-h-32">
+					<LoadingSpinner className="absolute left-1/2 top-1/2 -translate-1/2" />
 				</div>
 			) : (
 				<>
