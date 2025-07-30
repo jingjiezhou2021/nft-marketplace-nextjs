@@ -65,6 +65,7 @@ const Page: NextPageWithLayout = (
 		loading: findProfileLoading,
 		data: userProfile,
 		updateQuery,
+		refetch,
 	} = useQuery(findUserProfile, {
 		variables: {
 			where: {
@@ -143,10 +144,16 @@ const Page: NextPageWithLayout = (
 			}
 		}
 	}, [address, userProfile]);
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 	useEffect(() => {
 		setLoading(findProfileLoading || updateLoading);
 	}, [findProfileLoading, updateLoading]);
+
+	useEffect(() => {
+		if (status === 'connected') {
+			refetch();
+		}
+	}, [status, refetch]);
 	const { t } = useTranslation('common');
 	const [banner, setBanner] = useState<Upload>({
 		file: undefined,
