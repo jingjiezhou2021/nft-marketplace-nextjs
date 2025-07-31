@@ -11,6 +11,9 @@ import {
 import { ChevronDown } from 'lucide-react';
 import { IconFilter2 } from '@tabler/icons-react';
 import { FilterData, FilterProvider } from './providers/filter-provider';
+import { useRouter } from 'next/router';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { produce } from 'immer';
 export function Filter({
 	children,
 	...props
@@ -26,7 +29,6 @@ export function Filter({
 		</Drawer>
 	);
 }
-
 export function FilterContent({
 	children,
 	className,
@@ -34,14 +36,37 @@ export function FilterContent({
 	children: ReactNode;
 	className?: string;
 }) {
+	const router = useRouter();
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
 	const { t } = useTranslation('common');
 	const [filterData, setFilterData] = useState<FilterData>({
 		selections: {},
 		ranges: {},
+		inited: false,
 	});
 	useEffect(() => {
-		console.log('filter data has changed:', filterData);
-	}, [filterData]);
+		console.log('search params have changed:', searchParams);
+		searchParams.entries().forEach((val) => {
+			const name = val[0];
+			if (filterData.selections[name] && !filterData.inited) {
+				const selectedValues = val[1].split(',');
+				const newFilterData = produce((draft) => {
+					selectedValues.forEach((sv) => {
+						if (sv === 'all') {
+							sv = null;
+						}
+						draft.selections[name].find(
+							(c) => c.value == sv,
+						).selected = true;
+					});
+					draft.inited = true;
+					return draft;
+				}, filterData);
+				setFilterData(newFilterData);
+			}
+		});
+	}, [searchParams, filterData]);
 	return (
 		<FilterProvider value={{ filterData, setFilterData }}>
 			<div
@@ -61,13 +86,53 @@ export function FilterContent({
 						</Button>
 					</DrawerClose>
 					<DrawerClose asChild>
-						<Button className="w-[49%]">{t('Done')}</Button>
+						<Button
+							className="w-[49%]"
+							onClick={() => {
+								console.log('filter done');
+								router.push(
+									{
+										pathname: pathname,
+										search: `?${transformFilterData2QueryString(filterData)}`,
+									},
+									undefined,
+									{ shallow: true },
+								);
+							}}
+						>
+							{t('Done')}
+						</Button>
 					</DrawerClose>
 				</div>
 			</div>
 		</FilterProvider>
 	);
 }
+
+export function transformFilterData2QueryString(filterData: FilterData) {
+	const params = new URLSearchParams();
+
+	// Handle selections
+	for (const [key, choices] of Object.entries(filterData.selections)) {
+		const selectedValues = choices
+			.filter((choice) => choice.selected)
+			.map((choice) => (choice.value === null ? 'all' : choice.value));
+
+		if (selectedValues.length > 0) {
+			params.set(key, selectedValues.join(',')); // e.g. color=red,blue
+		}
+	}
+
+	// Handle ranges
+	for (const [key, range] of Object.entries(filterData.ranges)) {
+		if (range && range.length === 2) {
+			params.set(key, `${range[0]}-${range[1]}`); // e.g. price=100-500
+		}
+	}
+
+	return params.toString(); // returns something like "color=red&size=L&price=100-500"
+}
+
 export function CollapsibleFilter({
 	title,
 	children,

@@ -1,4 +1,5 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
+import { Choice } from '../button-selection';
 
 export const FilterContext = createContext<{
 	filterData: FilterData;
@@ -6,6 +7,7 @@ export const FilterContext = createContext<{
 } | null>(null);
 export const FilterProvider = FilterContext.Provider;
 export type FilterData = {
-	selections: Record<string, any>;
+	selections: Record<string, Choice<any>[]>;
 	ranges: Record<string, [number, number]>;
+	inited: boolean;
 };

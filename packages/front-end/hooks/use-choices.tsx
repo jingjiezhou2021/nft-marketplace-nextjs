@@ -12,8 +12,8 @@ export default function useChoices<T>({
 	includeAll?: boolean;
 	multiple?: boolean;
 }): [
-	Choice<T>[],
-	Dispatch<SetStateAction<Choice<T>[]>>,
+	{ data: Choice<T>[] },
+	Dispatch<SetStateAction<{ data: Choice<T>[] }>>,
 	(toggled: Choice<T>) => void,
 ] {
 	const { t } = useTranslation('common');
@@ -22,65 +22,51 @@ export default function useChoices<T>({
 		initial.unshift({
 			value: null,
 			label: <>{t('All')}</>,
-			selected: true,
 		});
 	}
-	const [choices, setChoices] = useState(initial);
-	useEffect(() => {
-		if (multiple) {
-			if (
-				choices.every((c) => {
-					return !c.selected;
-				})
-			) {
-				const newChoices = produce((draft) => {
-					draft.forEach((c) => {
-						if (c.value === null) {
-							c.selected = true;
-						}
-					});
-					return draft;
-				}, choices);
-				setChoices(newChoices);
-			}
-		}
-	}, [choices, multiple]);
+	const [choices, setChoices] = useState<{
+		data: Choice<T>[];
+		inited: boolean;
+	}>({ data: initial, inited: false });
 	const handleToggle = (toggled: Choice<T>) => {
-		if (multiple) {
-			if (toggled.value === null) {
-				if (!toggled.selected) {
-					//select all chains
-					setChoices((previous) => {
-						return previous.map((choice) => {
-							return {
-								...choice,
-								selected: choice.value === null,
-							};
-						});
-					});
-				}
-			} else {
-				const newChoices = produce((draft) => {
-					draft.forEach((choice) => {
-						if (choice.value === toggled.value) {
-							choice.selected = !choice.selected;
-						} else {
+		const newChoices = produce((draft) => {
+			if (multiple) {
+				if (toggled.value === null) {
+					if (!toggled.selected) {
+						draft.data.forEach((choice) => {
 							if (choice.value === null) {
+								choice.selected = true;
+							} else {
 								choice.selected = false;
 							}
+						});
+					}
+				} else {
+					draft.data.forEach((choice) => {
+						if (choice.value === toggled.value) {
+							choice.selected = !choice.selected;
 						}
 					});
-				}, choices);
-				setChoices(newChoices);
-			}
-		} else {
-			const newChoices = produce((draft) => {
-				draft.forEach((choice) => {
+					const selectedCountAfterToggle = draft.data.filter(
+						(choice) => choice.selected,
+					).length;
+					if (selectedCountAfterToggle === 0) {
+						draft.data.find(
+							(choice) => choice.value === null,
+						).selected = true;
+					} else if (selectedCountAfterToggle > 1) {
+						draft.data.find(
+							(choice) => choice.value === null,
+						).selected = false;
+					}
+				}
+			} else {
+				draft.data.forEach((choice) => {
 					choice.selected = choice.value === toggled.value;
 				});
-			}, choices);
-			setChoices(newChoices);
-		}
+			}
+		}, choices);
+		setChoices(newChoices);
 	};
 	return [choices, setChoices, handleToggle];
 }
