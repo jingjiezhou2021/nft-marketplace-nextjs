@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from './ui/drawer';
 import { Button } from './ui/button';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,7 @@ import {
 } from './ui/collapsible';
 import { ChevronDown } from 'lucide-react';
 import { IconFilter2 } from '@tabler/icons-react';
+import { FilterData, FilterProvider } from './providers/filter-provider';
 export function Filter({
 	children,
 	...props
@@ -34,28 +35,37 @@ export function FilterContent({
 	className?: string;
 }) {
 	const { t } = useTranslation('common');
+	const [filterData, setFilterData] = useState<FilterData>({
+		selections: {},
+		ranges: {},
+	});
+	useEffect(() => {
+		console.log('filter data has changed:', filterData);
+	}, [filterData]);
 	return (
-		<div
-			className={cn(
-				'p-6 flex flex-col gap-4 relative overflow-y-auto',
-				className,
-			)}
-		>
-			{children}
-			<div className="flex justify-between sticky bottom-0  bg-background">
-				<DrawerClose asChild>
-					<Button
-						variant="outline"
-						className="w-[49%]"
-					>
-						{t('Clear All')}
-					</Button>
-				</DrawerClose>
-				<DrawerClose asChild>
-					<Button className="w-[49%]">{t('Done')}</Button>
-				</DrawerClose>
+		<FilterProvider value={{ filterData, setFilterData }}>
+			<div
+				className={cn(
+					'p-6 flex flex-col gap-4 relative overflow-y-auto',
+					className,
+				)}
+			>
+				{children}
+				<div className="flex justify-between sticky bottom-0  bg-background">
+					<DrawerClose asChild>
+						<Button
+							variant="outline"
+							className="w-[49%]"
+						>
+							{t('Clear All')}
+						</Button>
+					</DrawerClose>
+					<DrawerClose asChild>
+						<Button className="w-[49%]">{t('Done')}</Button>
+					</DrawerClose>
+				</div>
 			</div>
-		</div>
+		</FilterProvider>
 	);
 }
 export function CollapsibleFilter({

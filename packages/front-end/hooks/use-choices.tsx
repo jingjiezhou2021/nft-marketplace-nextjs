@@ -6,27 +6,28 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 export default function useChoices<T>({
 	data,
 	includeAll,
-	mutiple = false,
+	multiple = false,
 }: {
 	data: Choice<T>[];
 	includeAll?: boolean;
-	mutiple?: boolean;
+	multiple?: boolean;
 }): [
 	Choice<T>[],
 	Dispatch<SetStateAction<Choice<T>[]>>,
 	(toggled: Choice<T>) => void,
 ] {
 	const { t } = useTranslation('common');
+	const initial = [...data];
 	if (includeAll) {
-		data.unshift({
+		initial.unshift({
 			value: null,
 			label: <>{t('All')}</>,
 			selected: true,
 		});
 	}
-	const [choices, setChoices] = useState(data);
+	const [choices, setChoices] = useState(initial);
 	useEffect(() => {
-		if (mutiple) {
+		if (multiple) {
 			if (
 				choices.every((c) => {
 					return !c.selected;
@@ -43,9 +44,9 @@ export default function useChoices<T>({
 				setChoices(newChoices);
 			}
 		}
-	}, [choices, mutiple]);
+	}, [choices, multiple]);
 	const handleToggle = (toggled: Choice<T>) => {
-		if (mutiple) {
+		if (multiple) {
 			if (toggled.value === null) {
 				if (!toggled.selected) {
 					//select all chains
