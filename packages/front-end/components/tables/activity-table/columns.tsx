@@ -25,17 +25,17 @@ export interface Activity {
 	to: string;
 	time: Date;
 }
-export function EventToString(e: Event) {
+export function EventToString(e: Event, translate: boolean = true) {
 	const { t } = useTranslation('common');
 	switch (e) {
 		case Event.Listing:
-			return t('Listing');
+			return translate ? t('Listing') : 'Listing';
 		case Event.Transfer:
-			return t('Transfer');
+			return translate ? t('Transfer') : 'Transfer';
 		case Event.Offer:
-			return t('Item Offer');
+			return translate ? t('Item Offer') : 'Item Offer';
 		case Event.Sale:
-			return t('Sale');
+			return translate ? t('Sale') : 'Sale';
 	}
 }
 export default function GetActivityColumns(

@@ -7,11 +7,11 @@ export default function NFTStatusSelection() {
 		<ChoiceSelection
 			data={[
 				{
-					value: t('Listed'),
+					value: 'Listed',
 					label: t('Listed'),
 				},
 				{
-					value: t('Not Listed'),
+					value: 'Not Listed',
 					label: t('Not Listed'),
 				},
 			]}

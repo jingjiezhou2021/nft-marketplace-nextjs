@@ -9,19 +9,19 @@ export function ActivitySelection() {
 			name="activity-status"
 			data={[
 				{
-					value: EventToString(Event.Sale),
+					value: EventToString(Event.Sale, false),
 					label: EventToString(Event.Sale),
 				},
 				{
-					value: EventToString(Event.Transfer),
+					value: EventToString(Event.Transfer, false),
 					label: EventToString(Event.Transfer),
 				},
 				{
-					value: EventToString(Event.Listing),
+					value: EventToString(Event.Listing, false),
 					label: EventToString(Event.Listing),
 				},
 				{
-					value: EventToString(Event.Offer),
+					value: EventToString(Event.Offer, false),
 					label: EventToString(Event.Offer),
 				},
 			]}

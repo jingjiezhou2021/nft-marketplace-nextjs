@@ -9,19 +9,19 @@ export default function CategorySelection() {
 			includeAll={true}
 			data={[
 				{
-					value: t('Art'),
+					value: 'Art',
 					label: t('Art'),
 				},
 				{
-					value: t('Gaming'),
+					value: 'Gaming',
 					label: t('Gaming'),
 				},
 				{
-					value: t('PFPs'),
+					value: 'PFPs',
 					label: t('PFPs'),
 				},
 				{
-					value: t('Photography'),
+					value: 'Photography',
 					label: t('Photography'),
 				},
 			]}
