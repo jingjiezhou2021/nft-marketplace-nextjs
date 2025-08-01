@@ -1,5 +1,6 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
-import { Choice } from '../button-selection';
+import { Choice } from '../filter/selection/button-selection';
+import { Range } from '@/hooks/use-range';
 
 export const FilterContext = createContext<{
 	filterData: FilterData;
@@ -8,6 +9,6 @@ export const FilterContext = createContext<{
 export const FilterProvider = FilterContext.Provider;
 export type FilterData = {
 	selections: Record<string, Choice<any>[]>;
-	ranges: Record<string, [number, number]>;
+	ranges: Record<string, Range>;
 	inited: boolean;
 };

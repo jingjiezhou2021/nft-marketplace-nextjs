@@ -12,8 +12,14 @@ export default function NFTTableFilterContent() {
 			<hr />
 			<h4>{t('Chains')}</h4>
 			<ChainSelection />
-			<PriceFilter title={t('Floor Price')} />
-			<PriceFilter title={t('Top Offer')} />
+			<PriceFilter
+				title={t('Floor Price')}
+				name="floor-price"
+			/>
+			<PriceFilter
+				title={t('Top Offer')}
+				name="top-offer"
+			/>
 		</FilterContent>
 	);
 }

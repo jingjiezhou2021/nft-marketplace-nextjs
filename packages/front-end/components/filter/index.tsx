@@ -19,6 +19,7 @@ import { FilterData, FilterProvider } from '../providers/filter-provider';
 import { useRouter } from 'next/router';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { produce } from 'immer';
+import { Range } from '@/hooks/use-range';
 export function Filter({
 	children,
 	...props
@@ -54,21 +55,32 @@ export function FilterContent({
 		console.log('search params have changed:', searchParams);
 		searchParams.entries().forEach((val) => {
 			const name = val[0];
-			if (filterData.selections[name] && !filterData.inited) {
-				const selectedValues = val[1].split(',');
-				const newFilterData = produce((draft) => {
-					selectedValues.forEach((sv) => {
-						if (sv === 'all') {
-							sv = null;
-						}
-						draft.selections[name].find(
-							(c) => c.value == sv,
-						).selected = true;
-					});
-					draft.inited = true;
-					return draft;
-				}, filterData);
-				setFilterData(newFilterData);
+			if (!filterData.inited) {
+				if (filterData.selections[name]) {
+					const selectedValues = val[1].split(',');
+					const newFilterData = produce((draft) => {
+						selectedValues.forEach((sv) => {
+							if (sv === 'all') {
+								sv = null;
+							}
+							draft.selections[name].find(
+								(c) => c.value == sv,
+							).selected = true;
+						});
+						draft.inited = true;
+						return draft;
+					}, filterData);
+					setFilterData(newFilterData);
+				} else if (filterData.ranges[name]) {
+					debugger;
+					const rangeValue: Range = JSON.parse(val[1]);
+					const newFilterData = produce((draft) => {
+						draft.ranges[name] = rangeValue;
+						draft.inited = true;
+						return draft;
+					}, filterData);
+					setFilterData(newFilterData);
+				}
 			}
 		});
 	}, [searchParams, filterData]);
@@ -138,8 +150,8 @@ export function transformFilterData2QueryString(filterData: FilterData) {
 
 	// Handle ranges
 	for (const [key, range] of Object.entries(filterData.ranges)) {
-		if (range && range.length === 2) {
-			params.set(key, `${range[0]}-${range[1]}`); // e.g. price=100-500
+		if (range) {
+			params.set(key, JSON.stringify(range)); // e.g. price=100-500
 		}
 	}
 

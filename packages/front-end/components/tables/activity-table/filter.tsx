@@ -13,7 +13,10 @@ export default function ActivityFilterContent() {
 			<hr />
 			<h4>{t('Chains')}</h4>
 			<ChainSelection />
-			<PriceFilter title={t('Price')} />
+			<PriceFilter
+				title={t('Price')}
+				name="price"
+			/>
 		</FilterContent>
 	);
 }
