@@ -52,6 +52,7 @@ function PriceRangeInner({ title }: { title: string }) {
 			</Select>
 			<div className="flex items-center">
 				<Input
+					type="number"
 					placeholder={t('Min')}
 					onChange={(e) => {
 						const { value } = e.target;
@@ -62,6 +63,7 @@ function PriceRangeInner({ title }: { title: string }) {
 				></Input>
 				<span className="mx-3 text-sm">{t('to')}</span>
 				<Input
+					type="number"
 					placeholder={t('Max')}
 					onChange={(e) => {
 						const { value } = e.target;
