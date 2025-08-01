@@ -10,9 +10,10 @@ import { useTranslation } from 'next-i18next';
 import { CollapsibleFilter } from '..';
 import { produce } from 'immer';
 import { RangeContext } from '../../providers/range-provider';
-import { Context, useContext, useEffect } from 'react';
+import { Context, useContext, useEffect, useState } from 'react';
 import { RangeWrapper } from '.';
 import useRange from '@/hooks/use-range';
+import { cn } from '@/lib/utils';
 
 function PriceRangeInner({ title }: { title: string }) {
 	const { t } = useTranslation('common');
@@ -22,6 +23,7 @@ function PriceRangeInner({ title }: { title: string }) {
 			ReturnType<typeof useRange<{ currency: string }>>
 		>,
 	);
+	const [validationErr, setValidationErr] = useState<string | null>(null);
 	useEffect(() => {
 		const newRange = produce((draft) => {
 			draft.meta = { currency: defaultCurrency };
@@ -29,6 +31,21 @@ function PriceRangeInner({ title }: { title: string }) {
 		}, range);
 		setRange(newRange);
 	}, []);
+	useEffect(() => {
+		if (range.data.min < 0 || range.data.max < 0) {
+			setValidationErr(t('Range values should be positive'));
+		} else if (
+			range.data.min !== null &&
+			range.data.max !== null &&
+			range.data.min >= range.data.max
+		) {
+			setValidationErr(
+				t('The min value should have been smaller than the max value'),
+			);
+		} else {
+			setValidationErr(null);
+		}
+	}, [range, t]);
 	return (
 		<CollapsibleFilter title={title}>
 			<Select
@@ -60,6 +77,7 @@ function PriceRangeInner({ title }: { title: string }) {
 						handleChange('min', n);
 					}}
 					defaultValue={range.data.min}
+					className={cn(validationErr && 'border-destructive')}
 				></Input>
 				<span className="mx-3 text-sm">{t('to')}</span>
 				<Input
@@ -71,8 +89,10 @@ function PriceRangeInner({ title }: { title: string }) {
 						handleChange('max', n);
 					}}
 					defaultValue={range.data.max}
+					className={cn(validationErr && 'border-destructive')}
 				></Input>
 			</div>
+			<p className="my-1 text-destructive">{validationErr}</p>
 		</CollapsibleFilter>
 	);
 }

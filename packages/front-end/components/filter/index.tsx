@@ -112,6 +112,18 @@ export function FilterContent({
 					<DrawerClose asChild>
 						<Button
 							className="w-[49%]"
+							disabled={
+								Object.values(filterData.ranges).filter((r) => {
+									return (
+										(r.data.min !== null &&
+											r.data.max !== null &&
+											r.data.min >= r.data.max) ||
+										(r.data.min !== null &&
+											r.data.min < 0) ||
+										(r.data.max !== null && r.data.max < 0)
+									);
+								}).length > 0
+							}
 							onClick={() => {
 								console.log('filter done');
 								router.push(
