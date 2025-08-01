@@ -3,6 +3,8 @@ import { PriceRange } from '../../filter/range/price-range';
 import { FilterContent } from '@/components/filter';
 import ChainSelection from '@/components/filter/selection/chain-selection';
 import CategorySelection from '@/components/filter/selection/category-selection';
+export const FLOOR_PRICE = 'floor-price';
+export const TOP_OFFER = 'top-offer';
 export default function NFTTableFilterContent() {
 	const { t } = useTranslation('common');
 	return (
@@ -14,11 +16,11 @@ export default function NFTTableFilterContent() {
 			<ChainSelection />
 			<PriceRange
 				title={t('Floor Price')}
-				name="floor-price"
+				name={FLOOR_PRICE}
 			/>
 			<PriceRange
 				title={t('Top Offer')}
-				name="top-offer"
+				name={TOP_OFFER}
 			/>
 		</FilterContent>
 	);

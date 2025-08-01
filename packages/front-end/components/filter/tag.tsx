@@ -5,8 +5,11 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { cn } from '@/lib/utils';
-import { ChainFilterTags } from './selection/chain-selection';
+import { CHAIN, ChainFilterTags } from './selection/chain-selection';
 import { PriceFilterTags } from './range';
+import { ALL } from '.';
+import { FLOOR_PRICE, TOP_OFFER } from '../tables/nft-table/filter';
+import { PRICE } from '../tables/activity-table/filter';
 function FilterTagButton({
 	className,
 	children,
@@ -100,13 +103,13 @@ export function FilterTags() {
 	return (
 		<div className="flex gap-2 flex-wrap mb-2">
 			{Array.from(searchParams.entries()).map((e) => {
-				if (e[1] === 'all') {
+				if (e[1] === ALL) {
 					return null;
 				}
 				if (
-					e[0] === 'floor-price' ||
-					e[0] === 'top-offer' ||
-					e[0] === 'price'
+					e[0] === FLOOR_PRICE ||
+					e[0] === TOP_OFFER ||
+					e[0] === PRICE
 				) {
 					return (
 						<PriceFilterTags
@@ -115,7 +118,7 @@ export function FilterTags() {
 							key={e[0]}
 						/>
 					);
-				} else if (e[0] === 'chain') {
+				} else if (e[0] === CHAIN) {
 					return (
 						<ChainFilterTags
 							key="chain-filter-tags"

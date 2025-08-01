@@ -60,7 +60,7 @@ export function FilterContent({
 					const selectedValues = val[1].split(',');
 					const newFilterData = produce((draft) => {
 						selectedValues.forEach((sv) => {
-							if (sv === 'all') {
+							if (sv === ALL) {
 								sv = null;
 							}
 							draft.selections[name].find(
@@ -140,7 +140,7 @@ export function transformFilterData2QueryString(filterData: FilterData) {
 	for (const [key, choices] of Object.entries(filterData.selections)) {
 		const selectedValues = choices
 			.filter((choice) => choice.selected)
-			.map((choice) => (choice.value === null ? 'all' : choice.value));
+			.map((choice) => (choice.value === null ? ALL : choice.value));
 
 		if (selectedValues.length > 0) {
 			params.set(key, selectedValues.join(',')); // e.g. color=red,blue
@@ -191,3 +191,4 @@ export function CollapsibleFilter({
 		</Collapsible>
 	);
 }
+export const ALL = 'all';

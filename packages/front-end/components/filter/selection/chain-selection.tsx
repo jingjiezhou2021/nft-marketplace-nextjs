@@ -2,7 +2,7 @@ import { chains } from '../../providers/RainbowKitAllProvider';
 import { getIconOfChain, getNameOfChain } from '@/lib/chain';
 import ChoiceSelection from '.';
 import FilterTag from '../tag';
-
+export const CHAIN = 'chain';
 export default function ChainSelection() {
 	return (
 		<ChoiceSelection
@@ -24,6 +24,7 @@ export default function ChainSelection() {
 		/>
 	);
 }
+
 export function ChainFilterTags({
 	name,
 	value,
