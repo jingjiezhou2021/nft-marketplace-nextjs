@@ -1,4 +1,4 @@
-import { Choice } from '@/components/button-selection';
+import { Choice } from '@/components/filter/selection/button-selection';
 import { produce } from 'immer';
 import { useTranslation } from 'next-i18next';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
