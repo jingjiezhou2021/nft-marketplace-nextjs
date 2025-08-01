@@ -1,16 +1,21 @@
 import { ReactNode, useEffect, useState } from 'react';
-import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from './ui/drawer';
-import { Button } from './ui/button';
+import {
+	Drawer,
+	DrawerClose,
+	DrawerContent,
+	DrawerTrigger,
+} from '@/components/ui/drawer';
+import { Button } from '../ui/button';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
-} from './ui/collapsible';
+} from '../ui/collapsible';
 import { ChevronDown } from 'lucide-react';
 import { IconFilter2 } from '@tabler/icons-react';
-import { FilterData, FilterProvider } from './providers/filter-provider';
+import { FilterData, FilterProvider } from '../providers/filter-provider';
 import { useRouter } from 'next/router';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { produce } from 'immer';

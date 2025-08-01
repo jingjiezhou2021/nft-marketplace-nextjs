@@ -1,8 +1,8 @@
 import ButtonSelection from './button-selection';
-import { chains } from './providers/RainbowKitAllProvider';
+import { chains } from '../../providers/RainbowKitAllProvider';
 import { getIconOfChain } from '@/lib/chain';
 import useChoices from '@/hooks/use-choices';
-import ChoiceSelection from './choice-selection';
+import ChoiceSelection from '.';
 
 export default function ChainSelection() {
 	return (

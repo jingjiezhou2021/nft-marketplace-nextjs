@@ -1,8 +1,8 @@
 import { useTranslation } from 'next-i18next';
 import { PriceFilter } from '../PriceFilter';
 import { FilterContent } from '@/components/filter';
-import ChainSelection from '@/components/chain-selection';
-import CategorySelection from '@/components/category-selection';
+import ChainSelection from '@/components/filter/selection/chain-selection';
+import CategorySelection from '@/components/filter/selection/category-selection';
 export default function NFTTableFilterContent() {
 	const { t } = useTranslation('common');
 	return (

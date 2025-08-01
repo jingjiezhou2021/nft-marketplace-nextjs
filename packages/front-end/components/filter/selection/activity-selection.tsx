@@ -1,5 +1,5 @@
-import ChoiceSelection from './choice-selection';
-import { EventToString, Event } from './tables/activity-table/columns';
+import ChoiceSelection from '.';
+import { EventToString, Event } from '../../tables/activity-table/columns';
 
 export function ActivitySelection() {
 	return (

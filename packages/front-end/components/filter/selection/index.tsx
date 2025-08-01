@@ -1,7 +1,7 @@
 import useChoices from '@/hooks/use-choices';
 import ButtonSelection, { Choice } from './button-selection';
 import { useContext, useEffect } from 'react';
-import { FilterContext } from './providers/filter-provider';
+import { FilterContext } from '../../providers/filter-provider';
 import { produce } from 'immer';
 
 export default function ChoiceSelection<T>({

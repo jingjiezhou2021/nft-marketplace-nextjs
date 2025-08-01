@@ -4,9 +4,9 @@ import ImportNFTCard from './import-nft-card';
 import type { FindFirstUserProfileQuery } from '@/apollo/gql/graphql';
 import { Filter, FilterContent } from './filter';
 import { useTranslation } from 'next-i18next';
-import NFTStatusSelection from './nft-status-selection';
-import CategorySelection from './category-selection';
-import ChainSelection from './chain-selection';
+import ChainSelection from './filter/selection/chain-selection';
+import NFTStatusSelection from './filter/selection/nft-status-selection';
+import CategorySelection from './filter/selection/category-selection';
 export default function NFTGallery({
 	nfts,
 	className,
