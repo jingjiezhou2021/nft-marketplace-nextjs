@@ -1,11 +1,11 @@
 import { IconBaselineDensitySmall, IconFilter2 } from '@tabler/icons-react';
-import { Drawer, DrawerContent, DrawerTrigger } from '../../ui/drawer';
 import { Button } from '../../ui/button';
 import CustomTable from '../custom-table';
 import { useState } from 'react';
 import GetActivityColumns, { Activity, Event } from './columns';
 import ActivityFilterContent from './filter';
 import { Filter } from '@/components/filter';
+import FilterTag, { FilterTags } from '@/components/filter/tag';
 
 export default function ActivityTable() {
 	const data: Activity[] = [
@@ -71,6 +71,7 @@ export default function ActivityTable() {
 					</Button>
 				</div>
 			</nav>
+			<FilterTags></FilterTags>
 			<CustomTable
 				columns={columns}
 				data={data}

@@ -8,11 +8,11 @@ import {
 import { produce } from 'immer';
 import { useState } from 'react';
 import { Button } from '../../ui/button';
-import { Drawer, DrawerContent, DrawerTrigger } from '../../ui/drawer';
 import GetNFTColumns, { NFT } from './columns';
 import NFTTableFilterContent from './filter';
 import { useTranslation } from 'next-i18next';
 import { Filter } from '@/components/filter';
+import { FilterTags } from '@/components/filter/tag';
 
 export default function NFTTable() {
 	const { t } = useTranslation('common');
@@ -91,6 +91,7 @@ export default function NFTTable() {
 					</Button>
 				</div>
 			</nav>
+			<FilterTags />
 			<CustomTable
 				columns={columns}
 				data={data}

@@ -7,6 +7,7 @@ import { useTranslation } from 'next-i18next';
 import ChainSelection from './filter/selection/chain-selection';
 import NFTStatusSelection from './filter/selection/nft-status-selection';
 import CategorySelection from './filter/selection/category-selection';
+import { FilterTags } from './filter/tag';
 export default function NFTGallery({
 	nfts,
 	className,
@@ -30,6 +31,7 @@ export default function NFTGallery({
 					</FilterContent>
 				</Filter>
 			</div>
+			<FilterTags />
 			<div
 				className={cn(
 					'grid w-full grid-flow-row-dense gap-3 grid-cols-[repeat(auto-fill,minmax(177px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(172px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(178px,1fr))] xl:grid-cols-[repeat(auto-fill,minmax(186px,1fr))] 2xl:grid-cols-[repeat(auto-fill,minmax(218px,1fr))]',

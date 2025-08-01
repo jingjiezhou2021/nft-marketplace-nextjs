@@ -13,3 +13,16 @@ export function getIconOfChain(chain: string | number | bigint) {
 	]);
 	return map.get(Number(chain));
 }
+
+export function getNameOfChain(chainId: string | number | bigint) {
+	if (typeof chainId === 'string') {
+		chainId = parseInt(chainId);
+	}
+	chainId = Number(chainId);
+	const map = new Map<number, string>([
+		[mainnet.id, 'Ethereum'],
+		[sepolia.id, 'Sepolia'],
+		[hardhat.id, 'Hardhat'],
+	]);
+	return map.get(chainId);
+}

@@ -72,7 +72,6 @@ export function FilterContent({
 					}, filterData);
 					setFilterData(newFilterData);
 				} else if (filterData.ranges[name]) {
-					debugger;
 					const rangeValue: Range = JSON.parse(val[1]);
 					const newFilterData = produce((draft) => {
 						draft.ranges[name] = rangeValue;

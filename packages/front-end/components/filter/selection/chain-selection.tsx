@@ -1,8 +1,7 @@
-import ButtonSelection from './button-selection';
 import { chains } from '../../providers/RainbowKitAllProvider';
-import { getIconOfChain } from '@/lib/chain';
-import useChoices from '@/hooks/use-choices';
+import { getIconOfChain, getNameOfChain } from '@/lib/chain';
 import ChoiceSelection from '.';
+import FilterTag from '../tag';
 
 export default function ChainSelection() {
 	return (
@@ -23,5 +22,28 @@ export default function ChainSelection() {
 			includeAll={true}
 			multiple={true}
 		/>
+	);
+}
+export function ChainFilterTags({
+	name,
+	value,
+}: {
+	name: string;
+	value: string;
+}) {
+	return (
+		<>
+			{value.split(',').map((cid) => {
+				return (
+					<FilterTag
+						name={name}
+						key={cid}
+						value={cid}
+					>
+						{getIconOfChain(cid)}&nbsp;{getNameOfChain(cid)}
+					</FilterTag>
+				);
+			})}
+		</>
 	);
 }

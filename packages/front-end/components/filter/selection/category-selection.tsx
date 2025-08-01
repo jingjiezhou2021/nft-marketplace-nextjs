@@ -1,10 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import ChoiceSelection from '.';
+const NAME = 'category';
 export default function CategorySelection() {
 	const { t } = useTranslation('common');
 	return (
 		<ChoiceSelection
-			name="category"
+			name={NAME}
 			multiple={true}
 			includeAll={true}
 			data={[

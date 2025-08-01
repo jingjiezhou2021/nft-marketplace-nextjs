@@ -1,12 +1,12 @@
 import ChoiceSelection from '.';
 import { EventToString, Event } from '../../tables/activity-table/columns';
-
+const NAME = 'activity-status';
 export function ActivitySelection() {
 	return (
 		<ChoiceSelection
 			includeAll
 			multiple
-			name="activity-status"
+			name={NAME}
 			data={[
 				{
 					value: EventToString(Event.Sale, false),
