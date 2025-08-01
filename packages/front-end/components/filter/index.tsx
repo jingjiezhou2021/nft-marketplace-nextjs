@@ -86,6 +86,14 @@ export function FilterContent({
 						<Button
 							variant="outline"
 							className="w-[49%]"
+							onClick={() => {
+								console.log('filter cleared');
+								router.push(
+									{ pathname, search: '' },
+									undefined,
+									{ shallow: true },
+								);
+							}}
 						>
 							{t('Clear All')}
 						</Button>
