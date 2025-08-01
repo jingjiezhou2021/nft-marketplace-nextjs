@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next';
-import { PriceFilter } from '../PriceFilter';
+import { PriceRange } from '../../filter/range/price-range';
 import { FilterContent } from '@/components/filter';
 import ChainSelection from '@/components/filter/selection/chain-selection';
 import { ActivitySelection } from '@/components/filter/selection/activity-selection';
@@ -13,7 +13,7 @@ export default function ActivityFilterContent() {
 			<hr />
 			<h4>{t('Chains')}</h4>
 			<ChainSelection />
-			<PriceFilter
+			<PriceRange
 				title={t('Price')}
 				name="price"
 			/>

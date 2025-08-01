@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next';
-import { PriceFilter } from '../PriceFilter';
+import { PriceRange } from '../../filter/range/price-range';
 import { FilterContent } from '@/components/filter';
 import ChainSelection from '@/components/filter/selection/chain-selection';
 import CategorySelection from '@/components/filter/selection/category-selection';
@@ -12,11 +12,11 @@ export default function NFTTableFilterContent() {
 			<hr />
 			<h4>{t('Chains')}</h4>
 			<ChainSelection />
-			<PriceFilter
+			<PriceRange
 				title={t('Floor Price')}
 				name="floor-price"
 			/>
-			<PriceFilter
+			<PriceRange
 				title={t('Top Offer')}
 				name="top-offer"
 			/>

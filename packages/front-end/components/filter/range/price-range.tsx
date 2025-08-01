@@ -4,17 +4,17 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from '../ui/select';
-import { Input } from '../ui/input';
+} from '../../ui/select';
+import { Input } from '../../ui/input';
 import { useTranslation } from 'next-i18next';
-import { CollapsibleFilter } from '../filter';
+import { CollapsibleFilter } from '..';
 import { produce } from 'immer';
-import { RangeContext } from '../providers/range-provider';
+import { RangeContext } from '../../providers/range-provider';
 import { Context, useContext, useEffect } from 'react';
-import { RangeWrapper } from '../filter/range';
+import { RangeWrapper } from '.';
 import useRange from '@/hooks/use-range';
 
-function PriceFilterInner({ title }: { title: string }) {
+function PriceRangeInner({ title }: { title: string }) {
 	const { t } = useTranslation('common');
 	const defaultCurrency = 'ETH';
 	const [range, setRange, handleChange] = useContext(
@@ -75,10 +75,10 @@ function PriceFilterInner({ title }: { title: string }) {
 	);
 }
 
-export function PriceFilter({ title, name }: { title: string; name: string }) {
+export function PriceRange({ title, name }: { title: string; name: string }) {
 	return (
 		<RangeWrapper name={name}>
-			<PriceFilterInner title={title} />
+			<PriceRangeInner title={title} />
 		</RangeWrapper>
 	);
 }
