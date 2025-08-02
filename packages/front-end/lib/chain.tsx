@@ -26,3 +26,15 @@ export function getNameOfChain(chainId: string | number | bigint) {
 	]);
 	return map.get(chainId);
 }
+
+export function getExplorerOfChain(chainId: string | number | bigint) {
+	if (typeof chainId === 'string') {
+		chainId = parseInt(chainId);
+	}
+	chainId = Number(chainId);
+	const map = new Map<number, string>([
+		[mainnet.id, 'https://etherscan.io/address/'],
+		[sepolia.id, 'https://sepolia.etherscan.io/address/'],
+	]);
+	return map.get(chainId);
+}

@@ -5,10 +5,14 @@ const findNFT = graphql(`
 		findFirstNFT(where: $where) {
 			user {
 				address
+				username
 				id
 			}
 			importedAt
 			userId
+			collection {
+				description
+			}
 		}
 	}
 `);

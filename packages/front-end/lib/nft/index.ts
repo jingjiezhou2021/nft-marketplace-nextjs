@@ -17,6 +17,39 @@ function normalizeURI(
 	}
 	return uri;
 }
+export async function getNFTCollectionCreatorAddress(
+	address: `0x${string}`,
+	chainId: ChainIdParameter<typeof config>['chainId'],
+): Promise<string | undefined> {
+	try {
+		const apiKey = process.env.NEXT_PUBLIC_ETHERSCAN_KEY;
+		const creation = await (
+			await fetch(
+				`https://api.etherscan.io/v2/api?chainid=${chainId}&module=contract&action=getcontractcreation&contractaddresses=${address}&apikey=${apiKey}`,
+			)
+		).json();
+		return creation.result[0].contractCreator;
+	} catch (err) {
+		return undefined;
+	}
+}
+export async function getNFTCollectionName(
+	address: `0x${string}`,
+	chainId: ChainIdParameter<typeof config>['chainId'],
+): Promise<string | undefined> {
+	try {
+		const collectionName = await readContract(config, {
+			address,
+			abi: erc721Abi,
+			functionName: 'name',
+			chainId,
+			args: [],
+		});
+		return collectionName;
+	} catch (err) {
+		return undefined;
+	}
+}
 export async function getNFTMetadata(
 	address: `0x${string}`,
 	tokenId: number | bigint,

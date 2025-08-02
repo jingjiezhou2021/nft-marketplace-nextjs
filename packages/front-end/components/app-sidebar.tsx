@@ -93,9 +93,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 						<SidebarMenu>
 							{items.map((item) => {
 								const current =
-									(pathname === '/' && item.url === '/') ||
-									(item.url !== '/' &&
-										pathname.startsWith(item.url));
+									pathname &&
+									((pathname === '/' && item.url === '/') ||
+										(item.url !== '/' &&
+											pathname.startsWith(item.url)));
 								return (
 									<SidebarMenuItem key={item.title}>
 										<SidebarMenuButton

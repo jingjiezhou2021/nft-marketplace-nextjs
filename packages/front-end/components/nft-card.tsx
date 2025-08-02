@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { ValuesType } from 'utility-types';
 import { LoadingSpinner } from './loading';
+import Link from 'next/link';
 
 export type NFTCardData = {
 	imageUrl: string;
@@ -120,7 +121,7 @@ export default function NFTCard({
 	>;
 	className?: string;
 }) {
-	const { t } = useTranslation('common');
+	const { t, i18n } = useTranslation('common');
 	const [nftCardData, setNftCarddata] = useState<NFTCardData>();
 	const [loading, setLoading] = useState(true);
 	useEffect(() => {
@@ -155,7 +156,13 @@ export default function NFTCard({
 					<LoadingSpinner className="absolute left-1/2 top-1/2 -translate-1/2" />
 				</div>
 			) : (
-				<>
+				<Link
+					href={`/nft/${nftCardData.chainId}/${nft.contractAddress}/${
+						nft.tokenId
+					}`}
+					locale={i18n.language}
+					className="w-full"
+				>
 					<CardContentWrapper>
 						<Image
 							src={nftCardData.imageUrl}
@@ -180,7 +187,7 @@ export default function NFTCard({
 							)}
 						</div>
 					</CardFooterWrapper>
-				</>
+				</Link>
 			)}
 		</CardWrapper>
 	);
