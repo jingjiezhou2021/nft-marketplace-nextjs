@@ -3,11 +3,11 @@ import { IconLoader2, IconProps } from '@tabler/icons-react';
 import { ReactNode, useRef } from 'react';
 import { Transition } from 'react-transition-group';
 
-export function LoadingSpinner({ className }: IconProps) {
+export function LoadingSpinner({ className, size = 64 }: IconProps) {
 	return (
 		<IconLoader2
 			className={cn('text-primary animate-spin', className)}
-			size={64}
+			size={size}
 		/>
 	);
 }
