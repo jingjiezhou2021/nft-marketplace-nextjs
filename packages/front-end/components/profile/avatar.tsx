@@ -8,7 +8,7 @@ export default function ProfileAvatar({
 	size,
 }: {
 	address: string;
-	avatar?: string;
+	avatar?: string | null;
 	className?: string;
 	size?: number;
 }) {

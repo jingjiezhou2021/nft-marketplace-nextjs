@@ -1,4 +1,10 @@
-export function getAddressAbbreviation(address: string, chars = 4): string {
+export function getAddressAbbreviation(
+	address: string | undefined,
+	chars = 4,
+): string {
+	if (!address) {
+		return '';
+	}
 	if (!/^0x[a-fA-F0-9]{40}$/.test(address)) {
 		throw new Error('Invalid EVM address');
 	}
