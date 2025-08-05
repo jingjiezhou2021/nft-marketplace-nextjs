@@ -3,6 +3,7 @@ import { LoadingMask, LoadingSpinner } from '@/components/loading';
 import ProfileAvatar from '@/components/profile/avatar';
 import { config } from '@/components/providers/RainbowKitAllProvider';
 import { Separator } from '@/components/ui/separator';
+import useNFTMetadata from '@/hooks/use-nft-metadata';
 import { getAddressAbbreviation } from '@/lib/address';
 import { getExplorerOfChain, getNameOfChain } from '@/lib/chain';
 import findCollection from '@/lib/graphql/queries/find-collection';
@@ -30,21 +31,18 @@ export default function NFTDetailAbout({
 }) {
 	const { t } = useTranslation('common');
 	const [ownerAddress, setOwnerAddress] = useState('');
-	const [description, setDescription] = useState('');
-	const [name, setName] = useState('');
+	const { metadata, loading: metadataLoading } = useNFTMetadata(
+		contractAddress,
+		tokenId,
+		chainId,
+	);
+	const description = metadata?.description;
+	const name = metadata?.name;
 	const [collectionName, setCollectionName] = useState('');
 	useEffect(() => {
 		getNFTCollectionCreatorAddress(contractAddress, chainId).then((res) => {
 			if (res) {
 				setOwnerAddress(res);
-			}
-		});
-		getNFTMetadata(contractAddress, tokenId, chainId).then((res) => {
-			if (res.description) {
-				setDescription(res.description);
-			}
-			if (res.name) {
-				setName(res.name);
 			}
 		});
 		getNFTCollectionName(contractAddress, chainId).then((res) => {
@@ -91,7 +89,13 @@ export default function NFTDetailAbout({
 	}, [ownerLoading]);
 	return (
 		<div>
-			<div>
+			<div className="relative">
+				<LoadingMask
+					loading={metadataLoading}
+					className="flex justify-center items-center"
+				>
+					<LoadingSpinner size={14} />
+				</LoadingMask>
 				<h3 className="text-foreground font-bold">
 					{t('About')}&nbsp;{name}
 				</h3>
@@ -102,27 +106,27 @@ export default function NFTDetailAbout({
 				<h3 className="text-foreground font-bold">
 					{t('About')}&nbsp;{collectionName}
 				</h3>
-				{ownerLoading ? (
-					<LoadingMask loading={ownerLoading}>
+				<div className="text-xs text-muted-foreground flex items-center">
+					{t('A collection by')}
+					&nbsp;
+					<div className="flex items-center cursor-pointer">
+						<ProfileAvatar
+							avatar={owner?.avatar}
+							address={ownerAddress}
+							className="inline-block size-4 mr-1 ml-2"
+						/>
+						<span className="text-foreground">{ownerDispName}</span>
+					</div>
+				</div>
+				{(ownerLoading || metadataLoading) && (
+					<LoadingMask
+						loading={ownerLoading || metadataLoading}
+						className="top-0"
+					>
 						<div className="size-full flex items-center justify-center">
 							<LoadingSpinner size={18} />
 						</div>
 					</LoadingMask>
-				) : (
-					<div className="text-xs text-muted-foreground flex items-center">
-						{t('A collection by')}
-						&nbsp;
-						<div className="flex items-center cursor-pointer">
-							<ProfileAvatar
-								avatar={owner?.avatar}
-								address={ownerAddress}
-								className="inline-block size-4 mr-1 ml-2"
-							/>
-							<span className="text-foreground">
-								{ownerDispName}
-							</span>
-						</div>
-					</div>
 				)}
 
 				<p className="text-sm text-muted-foreground">
