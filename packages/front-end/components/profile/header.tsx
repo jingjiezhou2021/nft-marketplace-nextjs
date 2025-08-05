@@ -24,7 +24,7 @@ export default function ProfileHeader({
 	data,
 	address,
 }: {
-	data: FindFirstUserProfileQuery;
+	data?: FindFirstUserProfileQuery;
 	address: string;
 }) {
 	const { t, i18n } = useTranslation('common');
@@ -44,7 +44,7 @@ export default function ProfileHeader({
 					)}
 				>
 					{expand &&
-						(data.findFirstUserProfile?.banner ? (
+						(data?.findFirstUserProfile?.banner ? (
 							<Image
 								src={new URL(
 									data.findFirstUserProfile.banner,
@@ -65,7 +65,7 @@ export default function ProfileHeader({
 						<div className="flex flex-col gap-1 md:gap-4">
 							{expand && (
 								<ProfileAvatar
-									avatar={data.findFirstUserProfile?.avatar}
+									avatar={data?.findFirstUserProfile?.avatar}
 									address={address}
 									className="size-20"
 								/>
@@ -74,12 +74,12 @@ export default function ProfileHeader({
 								{!expand && (
 									<ProfileAvatar
 										avatar={
-											data.findFirstUserProfile?.avatar
+											data?.findFirstUserProfile?.avatar
 										}
 										address={address}
 									/>
 								)}
-								{data.findFirstUserProfile?.username ? (
+								{data?.findFirstUserProfile?.username ? (
 									<h3 className="font-medium! leading-tight! text-foreground! text-[20px]! md:text-3xl! select-text">
 										{data.findFirstUserProfile.username}
 									</h3>
@@ -119,7 +119,7 @@ export default function ProfileHeader({
 										</Button>
 									</Link>
 								)}
-								{data.findFirstUserProfile?.url && (
+								{data?.findFirstUserProfile?.url && (
 									<Link href={data.findFirstUserProfile?.url}>
 										<Button
 											variant="ghost"
@@ -130,7 +130,7 @@ export default function ProfileHeader({
 									</Link>
 								)}
 							</div>
-							{data.findFirstUserProfile?.username && (
+							{data?.findFirstUserProfile?.username && (
 								<Badge
 									variant="outline"
 									className="border-border bg-[oklch(var(--muted-foreground)_/_0.5)]"
@@ -142,7 +142,7 @@ export default function ProfileHeader({
 									/>
 								</Badge>
 							)}
-							{data.findFirstUserProfile?.bio && (
+							{data?.findFirstUserProfile?.bio && (
 								<p className="text-foreground text-sm">
 									{data.findFirstUserProfile.bio}
 								</p>

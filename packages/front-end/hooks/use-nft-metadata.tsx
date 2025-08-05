@@ -10,10 +10,13 @@ export default function useNFTMetadata(
 ) {
 	const [metadata, setMetadata] =
 		useState<Awaited<ReturnType<typeof getNFTMetadata>>>();
+	const [loading, setLoading] = useState(true);
 	useEffect(() => {
+		setLoading(true);
 		getNFTMetadata(contractAddress, tokenId, chainId).then((res) => {
+			setLoading(false);
 			setMetadata(res);
 		});
 	}, [contractAddress, tokenId, chainId]);
-	return metadata;
+	return { metadata, loading };
 }

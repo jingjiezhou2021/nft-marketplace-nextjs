@@ -16,6 +16,7 @@ import useUser from '@/hooks/use-user';
 import { useQuery } from '@apollo/client';
 import { useParams } from 'next/navigation';
 import useNFTMetadata from '@/hooks/use-nft-metadata';
+import NFTDetailTraits from '@/components/nft/detail/traits';
 export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
 	locale,
 }) => {
@@ -73,7 +74,7 @@ export default function NFTDetailPage(
 			},
 		},
 	});
-	const nftMetadata = useNFTMetadata(
+	const { metadata: nftMetadata } = useNFTMetadata(
 		params.address,
 		parseInt(params.tokenId),
 		parseInt(params.chainId) as any,
@@ -157,7 +158,13 @@ export default function NFTDetailPage(
 						value="traits"
 						className="p-4 border rounded-lg"
 					>
-						Traits content here
+						<NFTDetailTraits
+							{...{
+								contractAddress: params.address,
+								tokenId: parseInt(params.tokenId),
+								chainId: parseInt(params.chainId) as any,
+							}}
+						/>
 					</TabsContent>
 					<TabsContent
 						value="about"
