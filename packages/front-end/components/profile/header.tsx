@@ -16,9 +16,9 @@ import {
 } from '@tabler/icons-react';
 import { Badge } from '../ui/badge';
 import { FindFirstUserProfileQuery } from '@/apollo/gql/graphql';
-import { useTranslation } from 'react-i18next';
 import useMessage from 'antd/es/message/useMessage';
 import { useAccount } from 'wagmi';
+import { useTranslation } from 'next-i18next';
 
 export default function ProfileHeader({
 	data,

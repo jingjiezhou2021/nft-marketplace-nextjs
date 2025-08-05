@@ -6,7 +6,6 @@ import {
 	DrawerTrigger,
 } from '@/components/ui/drawer';
 import { Button } from '../ui/button';
-import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import {
 	Collapsible,
@@ -20,6 +19,7 @@ import { useRouter } from 'next/router';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { produce } from 'immer';
 import { Range } from '@/hooks/use-range';
+import { useTranslation } from 'next-i18next';
 export function Filter({
 	children,
 	...props
