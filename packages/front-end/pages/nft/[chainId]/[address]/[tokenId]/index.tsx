@@ -84,7 +84,7 @@ export default function NFTDetailPage(
 		nftData?.findFirstNFT?.user.address,
 	);
 	return (
-		<div className="flex flex-col lg:flex-row gap-6 p-4 lg:p-8 h-full">
+		<div className="flex flex-col lg:flex-row gap-6 p-4 lg:py-6 lg:pl-2 h-full">
 			{/* Left Side: NFT Image */}
 			<div className="h-full aspect-square shrink-0">
 				<Card className="h-full overflow-hidden rounded-2xl shadow-lg p-0">
