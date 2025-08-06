@@ -1,3 +1,4 @@
+import { QueryMode } from '@/apollo/gql/graphql';
 import { getAddressAbbreviation } from '@/lib/address';
 import findUserProfile from '@/lib/graphql/queries/find-user-profile';
 import { useQuery } from '@apollo/client';
@@ -8,6 +9,7 @@ export default function useUser(address: string | undefined) {
 			where: {
 				address: {
 					equals: address,
+					mode: QueryMode.Insensitive,
 				},
 			},
 		},

@@ -7,6 +7,8 @@ const findCollection = graphql(`
 			category
 			createdAt
 			id
+			nickname
+			avatar
 			importedNfts {
 				activeItemId
 				contractAddress

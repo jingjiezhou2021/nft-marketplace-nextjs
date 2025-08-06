@@ -110,6 +110,8 @@ model Collection {
   chainId  BigInt
   category String?
   description String?
+  nickname String?
+  avatar String?
   importedNfts   NFT[]  // One-to-many relation
   @@unique([address,chainId])
 }
