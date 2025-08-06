@@ -6,6 +6,49 @@ import {
 	IconArrowsDiagonalMinimize2,
 } from '@tabler/icons-react';
 
+export function ExpandableBannerHeaderContent({
+	children,
+	className,
+}: React.ComponentProps<'div'>) {
+	return (
+		<div
+			className={cn(
+				'flex w-full min-w-0 flex-col pb-4 lg:grid lg:grid-cols-[1fr_auto] lg:items-end lg:justify-between xl:gap-4 xl:pb-5 relative z-30',
+				className,
+			)}
+		>
+			{children}
+		</div>
+	);
+}
+
+export function ExpandableBannerHeaderContentLeft({
+	children,
+	className,
+}: React.ComponentProps<'div'>) {
+	return (
+		<div className={cn('flex flex-col gap-1 md:gap-4', className)}>
+			{children}
+		</div>
+	);
+}
+
+export function ExpandableBannerHeaderContentRight({
+	children,
+	className,
+}: React.ComponentProps<'div'>) {
+	return (
+		<div
+			className={cn(
+				'pt-2 flex justify-between gap-6 md:gap-8',
+				className,
+			)}
+		>
+			{children}
+		</div>
+	);
+}
+
 export default function ExpandableBannerHeader({
 	children,
 	banner,

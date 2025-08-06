@@ -19,7 +19,11 @@ import { FindFirstUserProfileQuery } from '@/apollo/gql/graphql';
 import useMessage from 'antd/es/message/useMessage';
 import { useAccount } from 'wagmi';
 import { useTranslation } from 'next-i18next';
-import ExpandableBannerHeader from '../expandable-banner-header';
+import ExpandableBannerHeader, {
+	ExpandableBannerHeaderContent,
+	ExpandableBannerHeaderContentLeft,
+	ExpandableBannerHeaderContentRight,
+} from '../expandable-banner-header';
 
 export default function ProfileHeader({
 	data,
@@ -57,8 +61,8 @@ export default function ProfileHeader({
 			>
 				{(expand, toggle) => {
 					return (
-						<div className="flex w-full min-w-0 flex-col pb-4 lg:grid lg:grid-cols-[1fr_auto] lg:items-end lg:justify-between xl:gap-4 xl:pb-5 relative z-30">
-							<div className="flex flex-col gap-1 md:gap-4">
+						<ExpandableBannerHeaderContent>
+							<ExpandableBannerHeaderContentLeft>
 								{expand && (
 									<ProfileAvatar
 										avatar={
@@ -152,8 +156,8 @@ export default function ProfileHeader({
 										{data.findFirstUserProfile.bio}
 									</p>
 								)}
-							</div>
-							<div className="pt-2 flex justify-between gap-6 md:gap-8">
+							</ExpandableBannerHeaderContentLeft>
+							<ExpandableBannerHeaderContentRight>
 								<div className="text-muted-foreground">
 									<h5 className="text-xs">
 										{t('PORTFOLIO VALUE')}
@@ -163,8 +167,8 @@ export default function ProfileHeader({
 									</p>
 								</div>
 								{toggle}
-							</div>
-						</div>
+							</ExpandableBannerHeaderContentRight>
+						</ExpandableBannerHeaderContent>
 					);
 				}}
 			</ExpandableBannerHeader>
