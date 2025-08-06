@@ -84,20 +84,15 @@ export function CollectionHeader({
 						className="object-cover"
 					/>
 				}
+				loading={
+					loading ||
+					collectionCreatorAddressLoading ||
+					collectionNameLoading
+				}
 			>
 				{(expand, toggle) => {
 					return (
 						<>
-							<LoadingMask
-								loading={
-									loading ||
-									collectionCreatorAddressLoading ||
-									collectionNameLoading
-								}
-								className="top-0 flex items-center justify-center z-40"
-							>
-								<LoadingSpinner size={48} />
-							</LoadingMask>
 							<ExpandableBannerHeaderContent>
 								<ExpandableBannerHeaderContentLeft>
 									{expand && (

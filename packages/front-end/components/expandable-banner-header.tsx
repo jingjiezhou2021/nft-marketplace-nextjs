@@ -5,6 +5,7 @@ import {
 	IconArrowsDiagonal,
 	IconArrowsDiagonalMinimize2,
 } from '@tabler/icons-react';
+import { LoadingMask, LoadingSpinner } from './loading';
 
 export function ExpandableBannerHeaderContent({
 	children,
@@ -52,12 +53,14 @@ export function ExpandableBannerHeaderContentRight({
 export default function ExpandableBannerHeader({
 	children,
 	banner,
+	loading,
 }: {
 	children: (
 		expand: boolean,
 		expandToggleButton: ReactElement,
 	) => ReactElement;
 	banner: ReactElement;
+	loading?: boolean;
 }) {
 	const [expand, setExpand] = useState<boolean>(true);
 	const expandToggleButton = (
@@ -73,6 +76,14 @@ export default function ExpandableBannerHeader({
 	);
 	return (
 		<div className={cn('w-full relative', expand && 'dark')}>
+			{loading && (
+				<LoadingMask
+					loading={loading}
+					className="top-0 flex items-center justify-center z-40"
+				>
+					<LoadingSpinner size={48} />
+				</LoadingMask>
+			)}
 			<div className="mx-auto min-h-0 w-full min-w-0 px-4 lg:px-6">
 				<div
 					className={cn(
