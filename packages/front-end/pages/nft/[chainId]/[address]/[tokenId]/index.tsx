@@ -17,6 +17,8 @@ import { useQuery } from '@apollo/client';
 import { useParams } from 'next/navigation';
 import useNFTMetadata from '@/hooks/use-nft-metadata';
 import NFTDetailTraits from '@/components/nft/detail/traits';
+import { ChainIdParameter } from '@wagmi/core/internal';
+import { config } from '@/components/providers/RainbowKitAllProvider';
 export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
 	locale,
 }) => {
@@ -52,33 +54,32 @@ export default function NFTDetailPage(
 		address: `0x${string}`;
 		tokenId: string;
 	}>();
-	const router = useRouter();
-	const { tokenId } = router.query;
+	const chainId = parseInt(params.chainId) as ChainIdParameter<
+		typeof config
+	>['chainId'];
+	const address = params.address;
+	const tokenId = parseInt(params.tokenId);
 	const { t } = useTranslation('common');
 	const { data: nftData } = useQuery(findNFT, {
 		variables: {
 			where: {
 				contractAddress: {
-					equals: params.address,
+					equals: address,
 				},
 				tokenId: {
-					equals: BigInt(parseInt(params.tokenId)),
+					equals: tokenId,
 				},
 				collection: {
 					is: {
 						chainId: {
-							equals: BigInt(parseInt(params.chainId)),
+							equals: chainId,
 						},
 					},
 				},
 			},
 		},
 	});
-	const { metadata: nftMetadata } = useNFTMetadata(
-		params.address,
-		parseInt(params.tokenId),
-		parseInt(params.chainId) as any,
-	);
+	const { metadata: nftMetadata } = useNFTMetadata(address, tokenId, chainId);
 	const dispName = nftMetadata?.name ?? `# ${tokenId}`;
 	const { dispName: ownerDispName } = useUser(
 		nftData?.findFirstNFT?.user.address,
@@ -110,11 +111,11 @@ export default function NFTDetailPage(
 
 				<div>
 					<Badge variant="outline">
-						{getIconOfChain(params.chainId)}&nbsp;
-						{getNameOfChain(params.chainId)}
+						{getIconOfChain(chainId)}&nbsp;
+						{getNameOfChain(chainId)}
 					</Badge>
 					<Badge variant="outline">
-						{t('TOKEN')}&nbsp;#{params.tokenId}
+						{t('TOKEN')}&nbsp;#{tokenId}
 					</Badge>
 				</div>
 
@@ -160,9 +161,9 @@ export default function NFTDetailPage(
 					>
 						<NFTDetailTraits
 							{...{
-								contractAddress: params.address,
-								tokenId: parseInt(params.tokenId),
-								chainId: parseInt(params.chainId) as any,
+								contractAddress: address,
+								tokenId: tokenId,
+								chainId: chainId,
 							}}
 						/>
 					</TabsContent>
@@ -171,9 +172,9 @@ export default function NFTDetailPage(
 						className="p-4 border rounded-lg"
 					>
 						<NFTDetailAbout
-							contractAddress={params.address}
-							tokenId={parseInt(params.tokenId)}
-							chainId={parseInt(params.chainId) as any}
+							contractAddress={address}
+							tokenId={tokenId}
+							chainId={chainId}
 						/>
 					</TabsContent>
 					<TabsContent

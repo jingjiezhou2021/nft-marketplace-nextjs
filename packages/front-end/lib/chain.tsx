@@ -5,7 +5,7 @@ import {
 import { ReactElement } from 'react';
 import { hardhat, mainnet, sepolia } from 'viem/chains';
 
-export function getIconOfChain(chain: string | number | bigint) {
+export function getIconOfChain(chain: string | number | bigint | undefined) {
 	const map = new Map<number, ReactElement>([
 		[mainnet.id, <EthereumCircleColorful key="ethereum" />],
 		[sepolia.id, <EthereumCircleColorful key="sepolia" />],
@@ -14,7 +14,7 @@ export function getIconOfChain(chain: string | number | bigint) {
 	return map.get(Number(chain));
 }
 
-export function getNameOfChain(chainId: string | number | bigint) {
+export function getNameOfChain(chainId: string | number | bigint | undefined) {
 	if (typeof chainId === 'string') {
 		chainId = parseInt(chainId);
 	}
