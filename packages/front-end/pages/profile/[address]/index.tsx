@@ -47,7 +47,7 @@ export default function Page(
 						className="sticky top-0 z-10 w-full max-w-full"
 					/>
 					<NFTGallery
-						nfts={data?.findFirstUserProfile?.importedNFTs}
+						nfts={data?.findFirstUserProfile?.importedNFTs ?? []}
 						className="mt-1"
 					/>
 				</div>
