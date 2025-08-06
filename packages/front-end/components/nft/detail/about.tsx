@@ -20,6 +20,7 @@ import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { NFTDetailProps } from '.';
+import useUser from '@/hooks/use-user';
 
 export default function NFTDetailAbout({
 	contractAddress,
@@ -48,19 +49,6 @@ export default function NFTDetailAbout({
 			}
 		});
 	}, [contractAddress, chainId, tokenId]);
-	const { data: ownerData, loading: ownerLoading } = useQuery(
-		findUserProfile,
-		{
-			variables: {
-				where: {
-					address: {
-						equals: ownerAddress,
-						mode: QueryMode.Insensitive,
-					},
-				},
-			},
-		},
-	);
 	const { data: collectionData } = useQuery(findCollection, {
 		variables: {
 			where: {
@@ -74,16 +62,13 @@ export default function NFTDetailAbout({
 			},
 		},
 	});
-	const owner = ownerData?.findFirstUserProfile;
 	const collectionDescription =
 		collectionData?.findFirstCollection?.description;
-	let ownerDispName = owner?.username;
-	if (!ownerDispName) {
-		ownerDispName = getAddressAbbreviation(ownerAddress);
-	}
-	useEffect(() => {
-		console.log('owner loading:', ownerLoading);
-	}, [ownerLoading]);
+	const {
+		user: collectionCreator,
+		loading: collectionCreatorLoading,
+		dispName: collectionCreatorDispName,
+	} = useUser(ownerAddress);
 	return (
 		<div>
 			<div className="relative">
@@ -108,23 +93,23 @@ export default function NFTDetailAbout({
 					&nbsp;
 					<div className="flex items-center cursor-pointer">
 						<ProfileAvatar
-							avatar={owner?.avatar}
+							avatar={collectionCreator?.avatar}
 							address={ownerAddress}
 							className="inline-block size-4 mr-1 ml-2"
 						/>
-						<span className="text-foreground">{ownerDispName}</span>
+						<span className="text-foreground">
+							{collectionCreatorDispName}
+						</span>
 					</div>
 				</div>
-				{(ownerLoading || metadataLoading) && (
-					<LoadingMask
-						loading={ownerLoading || metadataLoading}
-						className="top-0"
-					>
-						<div className="size-full flex items-center justify-center">
-							<LoadingSpinner size={18} />
-						</div>
-					</LoadingMask>
-				)}
+				<LoadingMask
+					loading={collectionCreatorLoading || metadataLoading}
+					className="top-0"
+				>
+					<div className="size-full flex items-center justify-center">
+						<LoadingSpinner size={18} />
+					</div>
+				</LoadingMask>
 
 				<p className="text-sm text-muted-foreground">
 					{collectionDescription}
