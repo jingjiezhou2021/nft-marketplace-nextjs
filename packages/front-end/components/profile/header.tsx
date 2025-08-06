@@ -55,7 +55,7 @@ export default function ProfileHeader({
 					)
 				}
 			>
-				{(expand, setExpand) => {
+				{(expand, toggle) => {
 					return (
 						<div className="flex w-full min-w-0 flex-col pb-4 lg:grid lg:grid-cols-[1fr_auto] lg:items-end lg:justify-between xl:gap-4 xl:pb-5 relative z-30">
 							<div className="flex flex-col gap-1 md:gap-4">
@@ -162,19 +162,7 @@ export default function ProfileHeader({
 										0.04 ETH
 									</p>
 								</div>
-								<Button
-									variant="outline"
-									className="text-foreground hover:text-primary"
-									onClick={() => {
-										setExpand(!expand);
-									}}
-								>
-									{expand ? (
-										<IconArrowsDiagonalMinimize2 />
-									) : (
-										<IconArrowsDiagonal />
-									)}
-								</Button>
+								{toggle}
 							</div>
 						</div>
 					);
