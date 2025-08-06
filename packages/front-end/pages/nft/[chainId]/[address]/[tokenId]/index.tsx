@@ -145,13 +145,22 @@ export default function NFTDetailPage(
 					className="w-full"
 				>
 					<TabsList className="flex flex-wrap w-full h-auto">
-						<CustomTabsTrigger value="traits">
+						<CustomTabsTrigger
+							value="traits"
+							className="hover:cursor-pointer hover:text-primary dark:hover:text-primary"
+						>
 							{t('Traits')}
 						</CustomTabsTrigger>
-						<CustomTabsTrigger value="about">
+						<CustomTabsTrigger
+							value="about"
+							className="hover:cursor-pointer hover:text-primary dark:hover:text-primary"
+						>
 							{t('About')}
 						</CustomTabsTrigger>
-						<CustomTabsTrigger value="more">
+						<CustomTabsTrigger
+							value="more"
+							className="hover:cursor-pointer hover:text-primary dark:hover:text-primary"
+						>
 							{t('More')}
 						</CustomTabsTrigger>
 					</TabsList>
