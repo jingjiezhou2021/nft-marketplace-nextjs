@@ -110,7 +110,7 @@ export default function NFTDetailPage(
 					{ownerDispName}
 				</p>
 
-				<div>
+				<div className="flex items-center gap-1">
 					<Badge variant="outline">
 						{getIconOfChain(chainId)}&nbsp;
 						{getNameOfChain(chainId)}
