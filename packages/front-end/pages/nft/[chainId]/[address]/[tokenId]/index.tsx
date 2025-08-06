@@ -19,6 +19,7 @@ import useNFTMetadata from '@/hooks/use-nft-metadata';
 import NFTDetailTraits from '@/components/nft/detail/traits';
 import { ChainIdParameter } from '@wagmi/core/internal';
 import { config } from '@/components/providers/RainbowKitAllProvider';
+import NFTDetailMore from '@/components/nft/detail/more';
 export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
 	locale,
 }) => {
@@ -151,7 +152,7 @@ export default function NFTDetailPage(
 							{t('About')}
 						</CustomTabsTrigger>
 						<CustomTabsTrigger value="more">
-							{t('More from Collection')}
+							{t('More')}
 						</CustomTabsTrigger>
 					</TabsList>
 
@@ -181,7 +182,11 @@ export default function NFTDetailPage(
 						value="more"
 						className="p-4 border rounded-lg"
 					>
-						More NFTs from this collection
+						<NFTDetailMore
+							contractAddress={address}
+							tokenId={tokenId}
+							chainId={chainId}
+						/>
 					</TabsContent>
 				</Tabs>
 			</div>

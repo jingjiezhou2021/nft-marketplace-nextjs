@@ -115,11 +115,15 @@ function PriceTag({
 export default function NFTCard({
 	nft,
 	className,
+	fontSmaller,
 }: {
 	nft: ValuesType<
-		FindFirstUserProfileQuery['findFirstUserProfile']['importedNFTs']
+		NonNullable<
+			FindFirstUserProfileQuery['findFirstUserProfile']
+		>['importedNFTs']
 	>;
 	className?: string;
+	fontSmaller?: boolean;
 }) {
 	const { t, i18n } = useTranslation('common');
 	const [nftCardData, setNftCarddata] = useState<NFTCardData>();
@@ -150,9 +154,9 @@ export default function NFTCard({
 			});
 	}, [nft]);
 	return (
-		<CardWrapper className={className}>
+		<CardWrapper className={cn('min-h-32', className)}>
 			{loading ? (
-				<div className="size-full relative min-h-32">
+				<div className="size-full relative">
 					<LoadingSpinner className="absolute left-1/2 top-1/2 -translate-1/2" />
 				</div>
 			) : (
@@ -171,10 +175,20 @@ export default function NFTCard({
 						/>
 					</CardContentWrapper>
 					<CardFooterWrapper>
-						<h3 className="font-bold text-sm pb-2">
+						<h3
+							className={cn(
+								'font-bold text-sm pb-2 pt-3',
+								fontSmaller && 'text-xs',
+							)}
+						>
 							{nftCardData.name}
 						</h3>
-						<div className="text-sm font-mono">
+						<div
+							className={cn(
+								'text-sm font-mono',
+								fontSmaller && 'text-xs',
+							)}
+						>
 							{nftCardData.listing ? (
 								<PriceTag
 									listing={nftCardData.listing}

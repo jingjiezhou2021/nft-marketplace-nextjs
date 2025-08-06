@@ -19,16 +19,13 @@ import { ChainIdParameter } from '@wagmi/core/internal';
 import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { NFTDetailProps } from '.';
 
 export default function NFTDetailAbout({
 	contractAddress,
 	tokenId,
 	chainId,
-}: {
-	contractAddress: `0x${string}`;
-	tokenId: number;
-	chainId: ChainIdParameter<typeof config>['chainId'];
-}) {
+}: NFTDetailProps) {
 	const { t } = useTranslation('common');
 	const [ownerAddress, setOwnerAddress] = useState('');
 	const { metadata, loading: metadataLoading } = useNFTMetadata(

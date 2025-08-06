@@ -12,7 +12,9 @@ export default function NFTGallery({
 	nfts,
 	className,
 }: {
-	nfts: FindFirstUserProfileQuery['findFirstUserProfile']['importedNFTs'];
+	nfts: NonNullable<
+		FindFirstUserProfileQuery['findFirstUserProfile']
+	>['importedNFTs'];
 	className?: string;
 }) {
 	const { t } = useTranslation('common');

@@ -5,6 +5,7 @@ import useNFTMetadata from '@/hooks/use-nft-metadata';
 import { ColumnDef } from '@tanstack/react-table';
 import { ChainIdParameter } from '@wagmi/core/internal';
 import { useTranslation } from 'next-i18next';
+import { NFTDetailProps } from '.';
 type Attribute_Trait = {
 	attribute: string;
 	trait: string;
@@ -13,11 +14,7 @@ export default function NFTDetailTraits({
 	contractAddress,
 	tokenId,
 	chainId,
-}: {
-	contractAddress: `0x${string}`;
-	tokenId: number;
-	chainId: ChainIdParameter<typeof config>['chainId'];
-}) {
+}: NFTDetailProps) {
 	const { t } = useTranslation('common');
 	const { metadata, loading } = useNFTMetadata(
 		contractAddress,

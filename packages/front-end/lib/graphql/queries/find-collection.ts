@@ -9,6 +9,7 @@ const findCollection = graphql(`
 			id
 			importedNfts {
 				activeItemId
+				contractAddress
 				activeItem {
 					chainId
 					id
@@ -26,6 +27,9 @@ const findCollection = graphql(`
 					address
 					avatar
 					username
+				}
+				collection {
+					chainId
 				}
 			}
 		}
