@@ -9,11 +9,7 @@ import { getExplorerOfChain, getNameOfChain } from '@/lib/chain';
 import findCollection from '@/lib/graphql/queries/find-collection';
 import findNFT from '@/lib/graphql/queries/find-nft';
 import findUserProfile from '@/lib/graphql/queries/find-user-profile';
-import {
-	getNFTCollectionCreatorAddress,
-	getNFTCollectionName,
-	getNFTMetadata,
-} from '@/lib/nft';
+import { getNFTCollectionCreatorAddress, getNFTMetadata } from '@/lib/nft';
 import { useQuery } from '@apollo/client';
 import { ChainIdParameter } from '@wagmi/core/internal';
 import { useTranslation } from 'next-i18next';
@@ -21,6 +17,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { NFTDetailProps } from '.';
 import useUser from '@/hooks/use-user';
+import useCollectionName from '@/hooks/use-collection-name';
 
 export default function NFTDetailAbout({
 	contractAddress,
@@ -36,16 +33,10 @@ export default function NFTDetailAbout({
 	);
 	const description = metadata?.description;
 	const name = metadata?.name;
-	const [collectionName, setCollectionName] = useState('');
 	useEffect(() => {
 		getNFTCollectionCreatorAddress(contractAddress, chainId).then((res) => {
 			if (res) {
 				setOwnerAddress(res);
-			}
-		});
-		getNFTCollectionName(contractAddress, chainId).then((res) => {
-			if (res) {
-				setCollectionName(res);
 			}
 		});
 	}, [contractAddress, chainId, tokenId]);
@@ -69,6 +60,8 @@ export default function NFTDetailAbout({
 		loading: collectionCreatorLoading,
 		dispName: collectionCreatorDispName,
 	} = useUser(ownerAddress);
+	const { name: collectionName, loading: collectionNameLoading } =
+		useCollectionName(contractAddress, chainId);
 	return (
 		<div>
 			<div className="relative">
@@ -103,7 +96,11 @@ export default function NFTDetailAbout({
 					</div>
 				</div>
 				<LoadingMask
-					loading={collectionCreatorLoading || metadataLoading}
+					loading={
+						collectionCreatorLoading ||
+						metadataLoading ||
+						collectionNameLoading
+					}
 					className="top-0"
 				>
 					<div className="size-full flex items-center justify-center">

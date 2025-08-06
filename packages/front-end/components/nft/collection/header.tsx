@@ -6,10 +6,7 @@ import ExpandableBannerHeader, {
 import { config } from '@/components/providers/RainbowKitAllProvider';
 import useUser from '@/hooks/use-user';
 import findCollection from '@/lib/graphql/queries/find-collection';
-import {
-	getNFTCollectionCreatorAddress,
-	getNFTCollectionName,
-} from '@/lib/nft';
+import { getNFTCollectionCreatorAddress } from '@/lib/nft';
 import { useQuery } from '@apollo/client';
 import { ChainIdParameter } from '@wagmi/core/internal';
 import useMessage from 'antd/es/message/useMessage';
@@ -24,6 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { getIconOfChain, getNameOfChain } from '@/lib/chain';
 import { useTranslation } from 'next-i18next';
 import { LoadingMask, LoadingSpinner } from '@/components/loading';
+import useCollectionName from '@/hooks/use-collection-name';
 export function CollectionHeader({
 	address,
 	chainId,
@@ -31,10 +29,8 @@ export function CollectionHeader({
 	address: `0x${string}`;
 	chainId: ChainIdParameter<typeof config>['chainId'];
 }) {
-	const [collectionName, setCollectionName] = useState('');
 	const [collectionCreatorAddress, setCollectionCreatorAddress] =
 		useState('');
-	const [collectionNameLoading, setCollectionNameLoading] = useState(true);
 	const [
 		collectionCreatorAddressLoading,
 		setCollectionCreatorAddressLoading,
@@ -56,22 +52,17 @@ export function CollectionHeader({
 	const { dispName: collectionCreatorDispName } = useUser(
 		collectionCreatorAddress,
 	);
+	const { name: collectionName, loading: collectionNameLoading } =
+		useCollectionName(address, chainId);
 	useEffect(() => {
 		setCollectionCreatorAddressLoading(true);
-		setCollectionNameLoading(true);
-		getNFTCollectionName(address, chainId).then((res) => {
-			if (res) {
-				setCollectionName(res);
-			}
-			setCollectionNameLoading(false);
-		});
 		getNFTCollectionCreatorAddress(address, chainId).then((res) => {
 			if (res) {
 				setCollectionCreatorAddress(res);
 			}
 			setCollectionCreatorAddressLoading(false);
 		});
-	}, [setCollectionName, address, chainId]);
+	}, [address, chainId]);
 	return (
 		<div>
 			{contextHolder}
