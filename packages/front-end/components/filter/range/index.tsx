@@ -1,13 +1,19 @@
 import { FilterContext } from '@/components/providers/filter-provider';
-import { RangeProvider } from '@/components/providers/range-provider';
+import {
+	RangeContext,
+	RangeProvider,
+} from '@/components/providers/range-provider';
 import useRange, { Range } from '@/hooks/use-range';
 import { produce } from 'immer';
-import { ReactNode, useContext, useEffect } from 'react';
+import { ReactNode, useContext, useEffect, useState } from 'react';
 import FilterTag from '../tag';
 import { IconMathEqualGreater, IconMathEqualLower } from '@tabler/icons-react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
-
+import { useTranslation } from 'next-i18next';
+import { CollapsibleFilter } from '..';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 export function RangeWrapper({
 	name,
 	children,
@@ -47,6 +53,85 @@ export function RangeWrapper({
 		<RangeProvider value={[range, setRange, handleChange]}>
 			{children}
 		</RangeProvider>
+	);
+}
+function SimpleRangeInner({
+	title,
+	children,
+}: {
+	title: string;
+	children?: ReactNode;
+}) {
+	const { t } = useTranslation('common');
+	const [validationErr, setValidationErr] = useState<string | null>(null);
+	const context = useContext(RangeContext);
+	if (context === null) {
+		throw new Error('range should be inside filter context');
+	}
+	const [range, _, handleChange] = context;
+	useEffect(() => {
+		if (
+			(range.data.min !== null && range.data.min < 0) ||
+			(range.data.max !== null && range.data.max < 0)
+		) {
+			setValidationErr(t('Range values should be positive'));
+		} else if (
+			range.data.min !== null &&
+			range.data.max !== null &&
+			range.data.min >= range.data.max
+		) {
+			setValidationErr(
+				t('The min value should have been smaller than the max value'),
+			);
+		} else {
+			setValidationErr(null);
+		}
+	}, [range, t]);
+	return (
+		<CollapsibleFilter title={title}>
+			{children}
+			<div className="flex items-center">
+				<Input
+					type="number"
+					placeholder={t('Min')}
+					onChange={(e) => {
+						const { value } = e.target;
+						const n = value !== '' ? parseFloat(value) : null;
+						handleChange('min', n);
+					}}
+					defaultValue={range.data.min ?? undefined}
+					className={cn(validationErr && 'border-destructive')}
+				></Input>
+				<span className="mx-3 text-sm">{t('to')}</span>
+				<Input
+					type="number"
+					placeholder={t('Max')}
+					onChange={(e) => {
+						const { value } = e.target;
+						const n = value !== '' ? parseFloat(value) : null;
+						handleChange('max', n);
+					}}
+					defaultValue={range.data.max ?? undefined}
+					className={cn(validationErr && 'border-destructive')}
+				></Input>
+			</div>
+			<p className="my-1 text-destructive">{validationErr}</p>
+		</CollapsibleFilter>
+	);
+}
+export function SimpleRange({
+	title,
+	name,
+	children,
+}: {
+	title: string;
+	name: string;
+	children?: ReactNode;
+}) {
+	return (
+		<RangeWrapper name={name}>
+			<SimpleRangeInner title={title}>{children}</SimpleRangeInner>
+		</RangeWrapper>
 	);
 }
 export function PriceFilterTags({
