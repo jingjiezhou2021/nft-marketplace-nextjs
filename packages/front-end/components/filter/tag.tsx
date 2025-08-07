@@ -8,8 +8,8 @@ import { cn } from '@/lib/utils';
 import { CHAIN, ChainFilterTags } from './selection/chain-selection';
 import { PriceFilterTags } from './range';
 import { ALL } from '.';
-import { FLOOR_PRICE, TOP_OFFER } from '../tables/nft-table/filter';
-import { PRICE } from '../tables/activity-table/filter';
+import { FLOOR_PRICE, PRICE, TOP_OFFER } from './range/price-range';
+
 function FilterTagButton({
 	className,
 	children,

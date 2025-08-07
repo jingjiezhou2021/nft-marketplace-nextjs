@@ -5,7 +5,7 @@ import { produce } from 'immer';
 import { ReactNode, useContext, useEffect } from 'react';
 import FilterTag from '../tag';
 import { IconMathEqualGreater, IconMathEqualLower } from '@tabler/icons-react';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 
 export function RangeWrapper({
@@ -53,6 +53,7 @@ export function PriceFilterTags({
 }) {
 	const searchParams = useSearchParams();
 	const router = useRouter();
+	const pathname = usePathname();
 	const label = name
 		.split('-')
 		.map((word) => {
@@ -94,6 +95,7 @@ export function PriceFilterTags({
 					newSearchParams.delete(name);
 					router.push(
 						{
+							pathname,
 							search: newSearchParams.toString(),
 						},
 						undefined,

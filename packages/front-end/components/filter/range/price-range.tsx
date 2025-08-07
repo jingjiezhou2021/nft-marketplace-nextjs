@@ -104,3 +104,6 @@ export function PriceRange({ title, name }: { title: string; name: string }) {
 		</RangeWrapper>
 	);
 }
+export const PRICE = 'price';
+export const FLOOR_PRICE = 'floor-price';
+export const TOP_OFFER = 'top-offer';
