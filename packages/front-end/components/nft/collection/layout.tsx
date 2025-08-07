@@ -21,7 +21,7 @@ export default function CollectionLayout({
 				address={address}
 				chainId={chainId}
 			/>
-			<CollectionNav className='className="sticky top-0 z-10 w-full max-w-full'></CollectionNav>
+			<CollectionNav className="sticky top-0 z-10 w-full max-w-full"></CollectionNav>
 			{children}
 		</Layout>
 	);
