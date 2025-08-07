@@ -5,7 +5,7 @@ import { useQuery } from '@apollo/client';
 import findUserProfile from '@/lib/graphql/queries/find-user-profile';
 import ProfileHeader from '@/components/profile/header';
 import ProfileNav from '@/components/profile/nav';
-import NFTGallery from '@/components/nft-gallery';
+import ProfileNFTGallery from '@/components/profile/nft-gallery';
 import { useEffect, useState } from 'react';
 import { getNFTMetadata, NFTMetadata } from '@/lib/nft';
 import { NFTCardData } from '@/components/nft-card';
@@ -46,7 +46,7 @@ export default function Page(
 						address={address}
 						className="sticky top-0 z-10 w-full max-w-full"
 					/>
-					<NFTGallery
+					<ProfileNFTGallery
 						nfts={data?.findFirstUserProfile?.importedNFTs ?? []}
 						className="mt-1"
 					/>
