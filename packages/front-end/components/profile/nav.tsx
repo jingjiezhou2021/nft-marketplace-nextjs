@@ -1,13 +1,5 @@
-import Link from 'next/link';
-import {
-	NavigationMenu,
-	NavigationMenuItem,
-	NavigationMenuLink,
-	NavigationMenuList,
-} from '../ui/navigation-menu';
 import { useTranslation } from 'next-i18next';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import InnerNav from '../inner-nav';
 
 export default function ProfileNav({
 	address,
@@ -16,8 +8,7 @@ export default function ProfileNav({
 	address: string;
 	className: string;
 }) {
-	const { t, i18n } = useTranslation('common');
-	const pathname = usePathname();
+	const { t } = useTranslation('common');
 	const links: { title: string; url: string }[] = [
 		{
 			title: t('NFTs'),
@@ -37,31 +28,9 @@ export default function ProfileNav({
 		},
 	];
 	return (
-		<NavigationMenu className={cn('px-4 py-2 bg-background', className)}>
-			<NavigationMenuList className="gap-3 md:gap-6">
-				{links.map((l) => {
-					const current = pathname.endsWith(l.url);
-					return (
-						<NavigationMenuItem key={l.url}>
-							<NavigationMenuLink
-								asChild
-								className={cn(
-									'text-muted-foreground px-0 bg-transparent! rounded-none',
-									current &&
-										'text-primary hover:text-primary border-b-primary border-b',
-								)}
-							>
-								<Link
-									href={l.url}
-									locale={i18n.language}
-								>
-									{l.title}
-								</Link>
-							</NavigationMenuLink>
-						</NavigationMenuItem>
-					);
-				})}
-			</NavigationMenuList>
-		</NavigationMenu>
+		<InnerNav
+			links={links}
+			className={className}
+		/>
 	);
 }
