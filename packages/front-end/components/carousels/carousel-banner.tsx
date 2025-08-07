@@ -49,7 +49,7 @@ export default function CarouselBanner(props: PropsType) {
 										t('ITEMS'),
 										`${nb.amount.toLocaleString()}`,
 									],
-									[t('TOTAL VOLUMN'), nb.totalVolume],
+									[t('TOTAL VOLUME'), nb.totalVolume],
 									[
 										t('LISTED'),
 										`${nb.listedPercentage.toFixed(1)}%`,
