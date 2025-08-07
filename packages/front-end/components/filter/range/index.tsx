@@ -16,7 +16,12 @@ export function RangeWrapper({
 	children: ReactNode;
 }) {
 	const [range, setRange, handleChange] = useRange();
-	const { filterData, setFilterData } = useContext(FilterContext);
+	const context = useContext(FilterContext);
+	if (context === null) {
+		throw new Error('RangeWrapper should be inside filter context');
+	}
+	const filterData = context.filterData;
+	const setFilterData = context.setFilterData;
 	useEffect(() => {
 		console.log('adding range to filter data:', range);
 		setFilterData(
@@ -67,13 +72,13 @@ export function PriceFilterTags({
 			children = (
 				<>
 					{label}:&nbsp;{range.data.min}-{range.data.max}{' '}
-					{range.meta.currency}
+					{range.meta!.currency}
 				</>
 			);
 		} else if (range.data.min) {
 			children = (
 				<>
-					{label}:&nbsp;{range.data.min} {range.meta.currency}
+					{label}:&nbsp;{range.data.min} {range.meta!.currency}
 					<IconMathEqualGreater />
 				</>
 			);
@@ -82,7 +87,7 @@ export function PriceFilterTags({
 				<>
 					{label}:&nbsp;
 					<IconMathEqualLower /> {range.data.max}{' '}
-					{range.meta.currency}
+					{range.meta!.currency}
 				</>
 			);
 		}

@@ -28,7 +28,13 @@ function FilterTagButton({
 				onClick
 					? onClick
 					: () => {
-							const arr = searchParams.get(name).split(',');
+							const searchValue = searchParams.get(name ?? '');
+							if (!searchValue) {
+								throw new Error(
+									`Filter tag ${name} value not found`,
+								);
+							}
+							const arr = searchValue.split(',');
 							arr.splice(
 								arr.findIndex((val) => val === value),
 								1,
@@ -37,9 +43,9 @@ function FilterTagButton({
 								searchParams,
 							);
 							if (arr.length) {
-								newSearchParams.set(name, arr.join(','));
+								newSearchParams.set(name!, arr.join(','));
 							} else {
-								newSearchParams.delete(name);
+								newSearchParams.delete(name!);
 							}
 							router.push({
 								pathname,
@@ -81,7 +87,7 @@ export default function FilterTag({
 		const vals = searchParams.get(name);
 		return (
 			<>
-				{vals.split(',').map((val) => {
+				{vals?.split(',').map((val) => {
 					return (
 						<FilterTagButton
 							name={name}

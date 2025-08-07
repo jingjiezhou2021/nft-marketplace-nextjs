@@ -59,13 +59,16 @@ export function FilterContent({
 				if (filterData.selections[name]) {
 					const selectedValues = val[1].split(',');
 					const newFilterData = produce((draft) => {
-						selectedValues.forEach((sv) => {
+						selectedValues.forEach((sv: string | null) => {
 							if (sv === ALL) {
 								sv = null;
 							}
-							draft.selections[name].find(
+							const target = draft.selections[name].find(
 								(c) => c.value == sv,
-							).selected = true;
+							);
+							if (target) {
+								target.selected = true;
+							}
 						});
 						draft.inited = true;
 						return draft;

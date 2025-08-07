@@ -19,7 +19,7 @@ function PriceRangeInner({ title }: { title: string }) {
 	const { t } = useTranslation('common');
 	const defaultCurrency = 'ETH';
 	const [range, setRange, handleChange] = useContext(
-		RangeContext as Context<
+		RangeContext as unknown as Context<
 			ReturnType<typeof useRange<{ currency: string }>>
 		>,
 	);
@@ -32,7 +32,10 @@ function PriceRangeInner({ title }: { title: string }) {
 		setRange(newRange);
 	}, []);
 	useEffect(() => {
-		if (range.data.min < 0 || range.data.max < 0) {
+		if (
+			(range.data.min !== null && range.data.min < 0) ||
+			(range.data.max !== null && range.data.max < 0)
+		) {
 			setValidationErr(t('Range values should be positive'));
 		} else if (
 			range.data.min !== null &&
@@ -76,7 +79,7 @@ function PriceRangeInner({ title }: { title: string }) {
 						const n = value !== '' ? parseFloat(value) : null;
 						handleChange('min', n);
 					}}
-					defaultValue={range.data.min}
+					defaultValue={range.data.min ?? undefined}
 					className={cn(validationErr && 'border-destructive')}
 				></Input>
 				<span className="mx-3 text-sm">{t('to')}</span>
@@ -88,7 +91,7 @@ function PriceRangeInner({ title }: { title: string }) {
 						const n = value !== '' ? parseFloat(value) : null;
 						handleChange('max', n);
 					}}
-					defaultValue={range.data.max}
+					defaultValue={range.data.max ?? undefined}
 					className={cn(validationErr && 'border-destructive')}
 				></Input>
 			</div>
