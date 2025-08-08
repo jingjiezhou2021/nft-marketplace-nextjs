@@ -15,7 +15,11 @@ export default function ChoiceSelection<T>({
 	includeAll?: boolean;
 	multiple?: boolean;
 }) {
-	const { filterData, setFilterData } = useContext(FilterContext);
+	const context = useContext(FilterContext);
+	if (context === null) {
+		throw new Error('choice selection should be inside filter context');
+	}
+	const { filterData, setFilterData } = context;
 	const [choices, setChoices, handleToggle] = useChoices({
 		includeAll,
 		multiple,
@@ -27,21 +31,21 @@ export default function ChoiceSelection<T>({
 			produce((draft) => {
 				draft.selections = {
 					...draft.selections,
-					[name]: choices.data,
+					[name]: { ...draft.selections[name], data: choices.data },
 				};
 				return draft;
 			}, filterData),
 		);
 	}, [choices]);
 	useEffect(() => {
-		if (filterData.selections[name] && filterData.inited) {
+		if (filterData.selections[name] && filterData.selections[name].inited) {
 			console.log(
 				'filter data changed,reflecting on choices:',
 				filterData,
 			);
 			setChoices(
 				produce((draft) => {
-					filterData.selections[name].forEach((c) => {
+					filterData.selections[name].data.forEach((c) => {
 						draft.data.forEach((dc) => {
 							if (dc.value === c.value) {
 								dc.selected = c.selected;

@@ -8,7 +8,6 @@ export const FilterContext = createContext<{
 } | null>(null);
 export const FilterProvider = FilterContext.Provider;
 export type FilterData = {
-	selections: Record<string, Choice<any>[]>;
+	selections: Record<string, { data: Choice<any>[]; inited?: boolean }>;
 	ranges: Record<string, Range>;
-	inited: boolean;
 };

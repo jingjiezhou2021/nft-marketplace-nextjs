@@ -49,36 +49,37 @@ export function FilterContent({
 	const [filterData, setFilterData] = useState<FilterData>({
 		selections: {},
 		ranges: {},
-		inited: false,
 	});
 	useEffect(() => {
 		console.log('search params have changed:', searchParams);
 		searchParams.entries().forEach((val) => {
 			const name = val[0];
-			if (!filterData.inited) {
-				if (filterData.selections[name]) {
+			if (filterData.selections[name]) {
+				if (!filterData.selections[name].inited) {
 					const selectedValues = val[1].split(',');
 					const newFilterData = produce((draft) => {
 						selectedValues.forEach((sv: string | null) => {
 							if (sv === ALL) {
 								sv = null;
 							}
-							const target = draft.selections[name].find(
+							const target = draft.selections[name].data.find(
 								(c) => c.value == sv,
 							);
 							if (target) {
 								target.selected = true;
 							}
 						});
-						draft.inited = true;
+						draft.selections[name].inited = true;
 						return draft;
 					}, filterData);
 					setFilterData(newFilterData);
-				} else if (filterData.ranges[name]) {
+				}
+			} else if (filterData.ranges[name]) {
+				if (!filterData.ranges[name].inited) {
 					const rangeValue: Range = JSON.parse(val[1]);
 					const newFilterData = produce((draft) => {
 						draft.ranges[name] = rangeValue;
-						draft.inited = true;
+						draft.ranges[name].inited = true;
 						return draft;
 					}, filterData);
 					setFilterData(newFilterData);
@@ -153,7 +154,7 @@ export function transformFilterData2QueryString(filterData: FilterData) {
 
 	// Handle selections
 	for (const [key, choices] of Object.entries(filterData.selections)) {
-		const selectedValues = choices
+		const selectedValues = choices.data
 			.filter((choice) => choice.selected)
 			.map((choice) => (choice.value === null ? ALL : choice.value));
 

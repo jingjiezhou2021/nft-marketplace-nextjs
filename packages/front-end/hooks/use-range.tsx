@@ -3,6 +3,7 @@ import { Dispatch, SetStateAction, useState } from 'react';
 export type Range<Meta = Record<string, any>> = {
 	data: { min: number | null; max: number | null };
 	meta: Meta | null;
+	inited?: boolean;
 };
 export default function useRange<
 	Meta extends Record<string, any> = Record<string, any>,

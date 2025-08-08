@@ -6,7 +6,8 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { cn } from '@/lib/utils';
 import { CHAIN, ChainFilterTags } from './selection/chain-selection';
-import { PriceFilterTags } from './range';
+import { PriceFilterTags, RangeFilterTagInner } from './range';
+import { Range } from '@/hooks/use-range';
 import { ALL } from '.';
 import { FLOOR_PRICE, PRICE, TOP_OFFER } from './range/price-range';
 
@@ -71,6 +72,8 @@ export default function FilterTag({
 			value: string;
 	  }
 ) & { name: string; onClick?: () => void }) {
+	const pathname = usePathname();
+	const router = useRouter();
 	const { t } = useTranslation();
 	const searchParams = useSearchParams();
 	if (children && value) {
@@ -85,22 +88,56 @@ export default function FilterTag({
 		);
 	} else {
 		const vals = searchParams.get(name);
-		return (
-			<>
-				{vals?.split(',').map((val) => {
-					return (
-						<FilterTagButton
-							name={name}
-							key={val}
-							value={val}
-							onClick={onClick}
-						>
-							{t(val)}
-						</FilterTagButton>
-					);
-				})}
-			</>
-		);
+		if (vals === null) {
+			return null;
+		}
+		try {
+			const range: Range<null> = JSON.parse(vals);
+			const label = name.charAt(0).toUpperCase() + String(name).slice(1);
+			return (
+				<FilterTag
+					name={name}
+					value={vals}
+					onClick={() => {
+						const newSearchParams = new URLSearchParams(
+							searchParams,
+						);
+						newSearchParams.delete(name);
+						router.push(
+							{
+								pathname,
+								search: newSearchParams.toString(),
+							},
+							undefined,
+							{ shallow: true },
+						);
+					}}
+				>
+					<RangeFilterTagInner
+						min={range.data.min}
+						max={range.data.max}
+						label={label}
+					/>
+				</FilterTag>
+			);
+		} catch (err) {
+			return (
+				<>
+					{vals?.split(',').map((val) => {
+						return (
+							<FilterTagButton
+								name={name}
+								key={val}
+								value={val}
+								onClick={onClick}
+							>
+								{t(val)}
+							</FilterTagButton>
+						);
+					})}
+				</>
+			);
+		}
 	}
 }
 

@@ -41,7 +41,7 @@ export function RangeWrapper({
 		);
 	}, [range]);
 	useEffect(() => {
-		if (filterData.ranges[name] && filterData.inited) {
+		if (filterData.ranges[name] && filterData.ranges[name].inited) {
 			console.log(
 				'filter data changed,reflecting on ranges:',
 				filterData,
@@ -134,6 +134,47 @@ export function SimpleRange({
 		</RangeWrapper>
 	);
 }
+
+export function RangeFilterTagInner({
+	min,
+	max,
+	label,
+	children,
+}: {
+	min: number | null;
+	max: number | null;
+	label: string;
+	children?: ReactNode;
+}) {
+	if (min || max) {
+		let ret = null;
+		if (min && max) {
+			ret = (
+				<>
+					{label}:&nbsp;{min}-{max} {children}
+				</>
+			);
+		} else if (min) {
+			ret = (
+				<>
+					{label}:&nbsp;{min} {children}
+					<IconMathEqualGreater />
+				</>
+			);
+		} else {
+			ret = (
+				<>
+					{label}:&nbsp;
+					<IconMathEqualLower /> {max} {children}
+				</>
+			);
+		}
+		return ret;
+	} else {
+		return null;
+	}
+}
+
 export function PriceFilterTags({
 	name,
 	value,
@@ -152,30 +193,6 @@ export function PriceFilterTags({
 		.join(' ');
 	const range: Range<{ currency: string }> = JSON.parse(value);
 	if (range.data.min || range.data.max) {
-		let children = null;
-		if (range.data.min && range.data.max) {
-			children = (
-				<>
-					{label}:&nbsp;{range.data.min}-{range.data.max}{' '}
-					{range.meta!.currency}
-				</>
-			);
-		} else if (range.data.min) {
-			children = (
-				<>
-					{label}:&nbsp;{range.data.min} {range.meta!.currency}
-					<IconMathEqualGreater />
-				</>
-			);
-		} else {
-			children = (
-				<>
-					{label}:&nbsp;
-					<IconMathEqualLower /> {range.data.max}{' '}
-					{range.meta!.currency}
-				</>
-			);
-		}
 		return (
 			<FilterTag
 				name={name}
@@ -193,7 +210,13 @@ export function PriceFilterTags({
 					);
 				}}
 			>
-				{children}
+				<RangeFilterTagInner
+					min={range.data.min}
+					max={range.data.max}
+					label={label}
+				>
+					{range.meta!.currency}
+				</RangeFilterTagInner>
 			</FilterTag>
 		);
 	} else {
