@@ -74,7 +74,7 @@ export default function FilterTag({
 ) & { name: string; onClick?: () => void }) {
 	const pathname = usePathname();
 	const router = useRouter();
-	const { t } = useTranslation();
+	const { t } = useTranslation('filter');
 	const searchParams = useSearchParams();
 	if (children && value) {
 		return (

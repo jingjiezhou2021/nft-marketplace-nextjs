@@ -6,6 +6,7 @@ import { formatDistance } from 'date-fns';
 import getDateFnsLocale from '@/lib/getDateFnsLocale';
 import { PriceCell } from '../PriceCell';
 import { useTranslation } from 'next-i18next';
+import { EventToString } from '@/components/filter/selection/activity-selection';
 export enum Event {
 	Listing,
 	Transfer,
@@ -25,19 +26,7 @@ export interface Activity {
 	to: string;
 	time: Date;
 }
-export function EventToString(e: Event, translate: boolean = true) {
-	const { t } = useTranslation('common');
-	switch (e) {
-		case Event.Listing:
-			return translate ? t('Listing') : 'Listing';
-		case Event.Transfer:
-			return translate ? t('Transfer') : 'Transfer';
-		case Event.Offer:
-			return translate ? t('Item Offer') : 'Item Offer';
-		case Event.Sale:
-			return translate ? t('Sale') : 'Sale';
-	}
-}
+
 export default function GetActivityColumns(
 	compact: boolean,
 ): ColumnDef<Activity>[] {

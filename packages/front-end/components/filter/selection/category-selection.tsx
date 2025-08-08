@@ -2,7 +2,7 @@ import { useTranslation } from 'next-i18next';
 import ChoiceSelection from '.';
 const NAME = 'category';
 export default function CategorySelection() {
-	const { t } = useTranslation('common');
+	const { t } = useTranslation('filter');
 	return (
 		<ChoiceSelection
 			name={NAME}

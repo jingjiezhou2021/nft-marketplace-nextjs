@@ -5,7 +5,7 @@ import ChainSelection from '@/components/filter/selection/chain-selection';
 import { ActivitySelection } from '@/components/filter/selection/activity-selection';
 
 export default function ActivityFilterContent() {
-	const { t } = useTranslation('common');
+	const { t } = useTranslation('filter');
 	return (
 		<FilterContent>
 			<h4>{t('Status')}</h4>

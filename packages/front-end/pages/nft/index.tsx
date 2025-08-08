@@ -14,7 +14,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 export const getStaticProps = async ({ locale }) => {
 	return {
 		props: {
-			...(await serverSideTranslations(locale, ['common'])),
+			...(await serverSideTranslations(locale, ['common', 'filter'])),
 			// Will be passed to the page component as props
 		},
 		revalidate: 60,

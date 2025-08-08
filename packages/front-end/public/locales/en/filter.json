@@ -1,0 +1,23 @@
+{
+  "Art": "Art",
+  "Category": "Category",
+  "Chains": "Chains",
+  "Floor Price": "Floor Price",
+  "Gaming": "Gaming",
+  "Item Offer": "Item Offer",
+  "Listed": "Listed",
+  "Listing": "Listing",
+  "Max": "Max",
+  "Min": "Min",
+  "Not Listed": "Not Listed",
+  "PFPs": "PFPs",
+  "Photography": "Photography",
+  "Price": "Price",
+  "Range values should be positive": "Range values should be positive",
+  "Sale": "Sale",
+  "Status": "Status",
+  "The min value should have been smaller than the max value": "The min value should have been smaller than the max value",
+  "to": "to",
+  "Top Offer": "Top Offer",
+  "Transfer": "Transfer"
+}

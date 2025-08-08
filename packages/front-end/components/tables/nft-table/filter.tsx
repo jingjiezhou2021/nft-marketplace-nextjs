@@ -9,7 +9,7 @@ import ChainSelection from '@/components/filter/selection/chain-selection';
 import CategorySelection from '@/components/filter/selection/category-selection';
 
 export default function NFTTableFilterContent() {
-	const { t } = useTranslation('common');
+	const { t } = useTranslation('filter');
 	return (
 		<FilterContent>
 			<h4>{t('Category')}</h4>

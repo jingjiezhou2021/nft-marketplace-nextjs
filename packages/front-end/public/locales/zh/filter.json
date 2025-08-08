@@ -1,0 +1,23 @@
+{
+  "Art": "艺术",
+  "Category": "类别",
+  "Chains": "区块链",
+  "Floor Price": "最低价",
+  "Gaming": "游戏",
+  "Item Offer": "出价",
+  "Listed": "已上架",
+  "Listing": "上架",
+  "Max": "最大值",
+  "Min": "最小值",
+  "Not Listed": "未上架",
+  "PFPs": "人物",
+  "Photography": "摄影",
+  "Price": "价格",
+  "Range values should be positive": "范围值应该是正数",
+  "Sale": "出售",
+  "Status": "状态",
+  "The min value should have been smaller than the max value": "最小值应该小于最大值",
+  "to": "至",
+  "Top Offer": "最高价",
+  "Transfer": "转移"
+}

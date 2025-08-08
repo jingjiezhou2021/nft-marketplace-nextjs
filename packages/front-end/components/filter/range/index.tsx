@@ -62,7 +62,7 @@ function SimpleRangeInner({
 	title: string;
 	children?: ReactNode;
 }) {
-	const { t } = useTranslation('common');
+	const { t } = useTranslation('filter');
 	const [validationErr, setValidationErr] = useState<string | null>(null);
 	const context = useContext(RangeContext);
 	if (context === null) {
@@ -182,15 +182,20 @@ export function PriceFilterTags({
 	name: string;
 	value: string;
 }) {
+	const { t } = useTranslation('filter');
 	const searchParams = useSearchParams();
 	const router = useRouter();
 	const pathname = usePathname();
-	const label = name
-		.split('-')
-		.map((word) => {
-			return String(word).charAt(0).toUpperCase() + String(word).slice(1);
-		})
-		.join(' ');
+	const label = t(
+		name
+			.split('-')
+			.map((word) => {
+				return (
+					String(word).charAt(0).toUpperCase() + String(word).slice(1)
+				);
+			})
+			.join(' '),
+	);
 	const range: Range<{ currency: string }> = JSON.parse(value);
 	if (range.data.min || range.data.max) {
 		return (

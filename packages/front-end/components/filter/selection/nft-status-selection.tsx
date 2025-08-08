@@ -2,7 +2,7 @@ import { useTranslation } from 'next-i18next';
 import ChoiceSelection from '.';
 
 export default function NFTStatusSelection() {
-	const { t } = useTranslation('common');
+	const { t } = useTranslation('filter');
 	return (
 		<ChoiceSelection
 			data={[
