@@ -176,15 +176,18 @@ export function transformFilterData2QueryString(filterData: FilterData) {
 export function CollapsibleFilter({
 	title,
 	children,
+	defaultOpen = false,
 }: {
 	title: string;
 	children: ReactNode;
+	defaultOpen?: boolean;
 }) {
-	const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(!!defaultOpen);
 	return (
 		<Collapsible
 			open={open}
 			onOpenChange={setOpen}
+			defaultOpen={defaultOpen}
 		>
 			<CollapsibleTrigger asChild>
 				<Button
