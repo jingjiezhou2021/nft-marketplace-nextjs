@@ -19,7 +19,7 @@ export default function ImageUpload({
 				className,
 			)}
 			onClick={() => {
-				inputRef.current.click();
+				inputRef.current?.click();
 			}}
 			type="button"
 		>

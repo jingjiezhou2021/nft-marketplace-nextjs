@@ -1,9 +1,9 @@
-import { InferGetStaticPropsType } from 'next';
+import { GetServerSideProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import SettingsLayout from '@/components/settings-layout';
 import { NextPageWithLayout } from '@/pages/_app';
 import { useAccount } from 'wagmi';
-import { useTranslation } from 'next-i18next';
+import { SSRConfig, useTranslation } from 'next-i18next';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import ImageUpload from '@/components/image-upload';
+import ImageUpload from '@/components/upload/image-upload';
 import EmojiAvatar from '@/components/emojo-avatar';
 import { useMutation, useQuery } from '@apollo/client';
 import updateProfileGQL from '@/lib/graphql/mutations/update-user-profile';
@@ -25,10 +25,13 @@ type Upload = {
 	file: File | undefined;
 	url: string | null;
 };
-export const getStaticProps = async ({ locale }) => {
+export const getStaticProps: GetServerSideProps<
+	SSRConfig,
+	{ chainId: string; address: string }
+> = async ({ locale }) => {
 	return {
 		props: {
-			...(await serverSideTranslations(locale, ['common'])),
+			...(await serverSideTranslations(locale!, ['common'])),
 			// Will be passed to the page component as props
 		},
 		revalidate: 60,
