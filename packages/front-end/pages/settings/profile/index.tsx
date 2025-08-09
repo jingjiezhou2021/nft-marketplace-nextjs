@@ -21,8 +21,10 @@ import { Transition } from 'react-transition-group';
 import { message } from 'antd';
 import WalletNotConnected from '@/components/wallet-not-connected';
 import { LoadingMask } from '@/components/loading';
+import BannerUpload from '@/components/upload/banner-upload';
+import AvatarUpload from '@/components/upload/avatar-upload';
 type Upload = {
-	file: File | undefined;
+	file: File | null;
 	url: string | null;
 };
 export const getStaticProps: GetServerSideProps<
@@ -68,7 +70,6 @@ const Page: NextPageWithLayout = (
 	const {
 		loading: findProfileLoading,
 		data: userProfile,
-		updateQuery,
 		refetch,
 	} = useQuery(findUserProfile, {
 		variables: {
@@ -82,9 +83,9 @@ const Page: NextPageWithLayout = (
 	});
 	// Inside your component:
 	const formik = useFormik<{
-		username?: string;
-		bio?: string;
-		url?: string;
+		username?: string | null;
+		bio?: string | null;
+		url?: string | null;
 	}>({
 		initialValues: {
 			username: undefined,
@@ -92,6 +93,10 @@ const Page: NextPageWithLayout = (
 			url: undefined,
 		},
 		onSubmit: async (values) => {
+			if (!address) {
+				messageApi.error(t("address should'nt have been null"));
+				return;
+			}
 			const newUserProfileData = {
 				address,
 				url: values.url,
@@ -118,8 +123,8 @@ const Page: NextPageWithLayout = (
 	useEffect(() => {
 		if (!address) {
 			formik.resetForm();
-			setAvatar({ file: undefined, url: null });
-			setBanner({ file: undefined, url: null });
+			setAvatar({ file: null, url: null });
+			setBanner({ file: null, url: null });
 		} else if (userProfile && userProfile.findFirstUserProfile) {
 			if (userProfile.findFirstUserProfile) {
 				formik.setValues(userProfile.findFirstUserProfile);
@@ -156,11 +161,11 @@ const Page: NextPageWithLayout = (
 	}, [status, refetch]);
 	const { t } = useTranslation('common');
 	const [banner, setBanner] = useState<Upload>({
-		file: undefined,
+		file: null,
 		url: null,
 	});
 	const [avatar, setAvatar] = useState<Upload>({
-		file: undefined,
+		file: null,
 		url: null,
 	});
 	if (status === 'connected') {
@@ -174,9 +179,12 @@ const Page: NextPageWithLayout = (
 				>
 					<div className="flex flex-col h-full">
 						<div className="grow max-h-[calc(100%-36px)] overflow-y-scroll no-scrollbar">
-							<ImageUpload
-								className="border-0 disabled:opacity-40 aspect-8/3 w-full [mask-image:linear-gradient(to_bottom,black,black_calc(100%_-_theme(spacing.16)),transparent)] bg-black cursor-pointer"
+							<BannerUpload
+								bannerUrl={banner.url}
 								handleChange={(e) => {
+									if (e.target.files === null) {
+										return;
+									}
 									setBanner({
 										url: URL.createObjectURL(
 											e.target.files[0],
@@ -184,20 +192,14 @@ const Page: NextPageWithLayout = (
 										file: e.target.files[0],
 									});
 								}}
-							>
-								{banner.url && (
-									<Image
-										fill
-										src={banner.url}
-										priority
-										className="opacity-60 transition-opacity duration-300 ease-out-quint group-hover:opacity-80 absolute !top-1/2 size-full -translate-y-1/2 object-cover"
-										alt="account-banner"
-									/>
-								)}
-							</ImageUpload>
+							/>
 							<div className="flex flex-col mx-4 pb-4">
-								<ImageUpload
+								<AvatarUpload
+									avatarUrl={avatar.url}
 									handleChange={(e) => {
+										if (e.target.files === null) {
+											return;
+										}
 										setAvatar({
 											url: URL.createObjectURL(
 												e.target.files[0],
@@ -205,26 +207,8 @@ const Page: NextPageWithLayout = (
 											file: e.target.files[0],
 										});
 									}}
-									className="border-0 disabled:pointer-events-none disabled:opacity-40 mb-[calc(-40px+theme(spacing.3))] aspect-square size-[80px] -translate-y-1/2 rounded-full z-10 cursor-pointer"
-								>
-									{avatar.url ? (
-										<div className="size-full bg-black relative">
-											<Image
-												fill
-												src={avatar.url}
-												className="opacity-60 transition-opacity duration-300 ease-out-quint group-hover:opacity-80 absolute !top-1/2 size-full -translate-y-1/2 object-cover"
-												alt="account-banner"
-											/>
-										</div>
-									) : (
-										<EmojiAvatar
-											address={address}
-											className="size-full"
-										>
-											<div className="size-full absolute top-1/2 -translate-y-1/2 bg-black opacity-20 transition-opacity duration-300 ease-out-quint group-hover:opacity-40"></div>
-										</EmojiAvatar>
-									)}
-								</ImageUpload>
+									address={address}
+								/>
 								<h3 className="font-medium leading-tight text-2xl mb-5 mt-2.5">
 									{t('Edit Profile')}
 								</h3>
@@ -239,7 +223,10 @@ const Page: NextPageWithLayout = (
 											className="w-full"
 											id="username"
 											name="username"
-											value={formik.values.username}
+											value={
+												formik.values.username ??
+												undefined
+											}
 											onChange={formik.handleChange}
 										/>
 									</FieldSet>
@@ -248,7 +235,9 @@ const Page: NextPageWithLayout = (
 											className="w-full"
 											id="bio"
 											name="bio"
-											value={formik.values.bio}
+											value={
+												formik.values.bio ?? undefined
+											}
 											onChange={formik.handleChange}
 										/>
 									</FieldSet>
@@ -262,7 +251,9 @@ const Page: NextPageWithLayout = (
 											className="w-full"
 											id="url"
 											name="url"
-											value={formik.values.url}
+											value={
+												formik.values.url ?? undefined
+											}
 											onChange={formik.handleChange}
 										/>
 									</FieldSet>
