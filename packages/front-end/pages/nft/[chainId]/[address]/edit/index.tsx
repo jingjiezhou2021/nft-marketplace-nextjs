@@ -3,6 +3,7 @@ import FieldSet from '@/components/field-set';
 import { LoadingMask, LoadingSpinner } from '@/components/loading';
 import NotOwnerOfCollection from '@/components/nft/collection/not-owner-of-collection';
 import { chains, config } from '@/components/providers/RainbowKitAllProvider';
+import SelectChain from '@/components/select-chain';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -235,38 +236,10 @@ const Page = (
 												/>
 											</FieldSet>
 											<FieldSet title={t('Chain')}>
-												<Select
+												<SelectChain
 													value={chainId.toString()}
 													disabled
-												>
-													<SelectTrigger
-														className={
-															'w-full group'
-														}
-														id="chain"
-													>
-														<SelectValue
-															placeholder={t(
-																'Select the chain where NFT contract resides',
-															)}
-														/>
-													</SelectTrigger>
-													<SelectContent>
-														{chains.map((c) => {
-															return (
-																<SelectItem
-																	value={c.id.toString()}
-																	key={c.id}
-																>
-																	{getIconOfChain(
-																		c.id,
-																	)}
-																	{c.name}
-																</SelectItem>
-															);
-														})}
-													</SelectContent>
-												</Select>
+												/>
 											</FieldSet>
 											<FieldSet
 												title={t('Nickname')}

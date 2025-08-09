@@ -30,6 +30,7 @@ import {
 import { getIconOfChain } from '@/lib/chain';
 import { cn } from '@/lib/utils';
 import { ChainIdParameter } from '@wagmi/core/internal';
+import SelectChain from './select-chain';
 export default function ImportNFTCard({
 	className,
 	children,
@@ -183,44 +184,13 @@ export function ImportNFTDialog({ children }: { children: ReactNode }) {
 						</div>
 						<div className="grid gap-3">
 							<Label htmlFor="chain">{t('Chain')}</Label>
-							<Select
+							<SelectChain
 								name="chain"
 								onValueChange={(val) => {
 									formik.setFieldValue('chain', val);
 								}}
 								value={formik.values.chain}
-							>
-								<SelectTrigger
-									className={cn(
-										'w-full group',
-										formik.touched.chain &&
-											formik.errors.chain
-											? 'border-red-500'
-											: '',
-									)}
-									id="chain"
-									onBlur={formik.handleBlur}
-								>
-									<SelectValue
-										placeholder={t(
-											'Select the chain where NFT contract resides',
-										)}
-									/>
-								</SelectTrigger>
-								<SelectContent>
-									{chains.map((c) => {
-										return (
-											<SelectItem
-												value={c.id.toString()}
-												key={c.id}
-											>
-												{getIconOfChain(c.id)}
-												{c.name}
-											</SelectItem>
-										);
-									})}
-								</SelectContent>
-							</Select>
+							/>
 							{formik.touched.chain && formik.errors.chain && (
 								<p className="text-sm text-red-500">
 									{formik.errors.chain}
