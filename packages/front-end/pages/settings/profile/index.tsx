@@ -23,10 +23,8 @@ import WalletNotConnected from '@/components/wallet-not-connected';
 import { LoadingMask } from '@/components/loading';
 import BannerUpload from '@/components/upload/banner-upload';
 import AvatarUpload from '@/components/upload/avatar-upload';
-type Upload = {
-	file: File | null;
-	url: string | null;
-};
+import { Upload } from '@/components/upload';
+import FieldSet from '@/components/field-set';
 export const getStaticProps: GetServerSideProps<
 	SSRConfig,
 	{ chainId: string; address: string }
@@ -39,30 +37,10 @@ export const getStaticProps: GetServerSideProps<
 		revalidate: 60,
 	};
 };
-function FieldSet({
-	title,
-	comment,
-	children,
-	className,
-}: {
-	title: string;
-	comment?: string;
-} & React.ComponentProps<'fieldset'>) {
-	return (
-		<fieldset className={className}>
-			<div className="flex flex-col gap-2">
-				<h4 className="leading-normal text-sm font-medium">{title}</h4>
-				{children}
-				<p className="leading-normal text-xs text-muted-foreground">
-					{comment}
-				</p>
-			</div>
-		</fieldset>
-	);
-}
 const Page: NextPageWithLayout = (
 	_props: InferGetStaticPropsType<typeof getStaticProps>,
 ) => {
+	const { t } = useTranslation('common');
 	const { status, address } = useAccount();
 	const [updateProfileFunc, { loading: updateLoading }] =
 		useMutation(updateProfileGQL);
@@ -117,7 +95,7 @@ const Page: NextPageWithLayout = (
 		},
 		validationSchema: Yup.object({
 			username: Yup.string().notRequired(),
-			url: Yup.string().url('Invalid URL').notRequired(),
+			url: Yup.string().url(t('Invalid URL')).notRequired(),
 		}),
 	});
 	useEffect(() => {
@@ -159,7 +137,6 @@ const Page: NextPageWithLayout = (
 			refetch();
 		}
 	}, [status, refetch]);
-	const { t } = useTranslation('common');
 	const [banner, setBanner] = useState<Upload>({
 		file: null,
 		url: null,
@@ -255,7 +232,14 @@ const Page: NextPageWithLayout = (
 												formik.values.url ?? undefined
 											}
 											onChange={formik.handleChange}
+											onBlur={formik.handleBlur}
 										/>
+										{formik.errors.url &&
+										formik.touched.url ? (
+											<p className="text-destructive text-xs">
+												{formik.errors.url}
+											</p>
+										) : null}
 									</FieldSet>
 								</div>
 							</div>

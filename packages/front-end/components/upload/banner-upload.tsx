@@ -7,7 +7,7 @@ export default function BannerUpload({
 	className,
 	handleChange,
 }: {
-	bannerUrl: string | null;
+	bannerUrl?: string | null;
 	className?: string;
 	handleChange: ChangeEventHandler<HTMLInputElement>;
 }) {

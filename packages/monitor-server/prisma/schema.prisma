@@ -8,6 +8,7 @@ generator client {
   provider = "prisma-client-js"
   output   = "./generated/prisma"
 }
+
 generator typegraphql {
   provider = "typegraphql-prisma"
 }
@@ -24,94 +25,105 @@ type Listing {
 }
 
 type Offer {
-  buyer String
+  buyer      String
   nftAddress String
-  tokenId BigInt
-  listing Listing
+  tokenId    BigInt
+  listing    Listing
 }
 
 model NftMarketplace__ItemListed {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  seller String
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  seller     String
   nftAddress String
-  tokenId BigInt
-  listing Listing
-  chainId BigInt @default(31337)
+  tokenId    BigInt
+  listing    Listing
+  chainId    BigInt  @default(31337)
 }
 
 model NftMarketplace__ItemCanceled {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  seller String
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  seller     String
   nftAddress String
-  tokenId BigInt
-  chainId BigInt @default(31337)
+  tokenId    BigInt
+  chainId    BigInt @default(31337)
 }
 
 model NftMarketplace__ItemBought {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  buyer String
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  buyer      String
   nftAddress String
-  tokenId BigInt
-  listing Listing
-  chainId BigInt @default(31337)
+  tokenId    BigInt
+  listing    Listing
+  chainId    BigInt  @default(31337)
 }
 
 model NftMarketplace__ItemOfferMade {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
   offerId BigInt
-  offer Offer
+  offer   Offer
   chainId BigInt @default(31337)
 }
 
 model ActiveItem {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  seller String
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  seller     String
   nftAddress String
-  tokenId BigInt
-  listing Listing
-  chainId BigInt @default(31337) 
-  nft NFT?
+  tokenId    BigInt
+  listing    Listing
+  chainId    BigInt  @default(31337)
+  nft        NFT?
 }
 
 model UserProfile {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  address String @unique
-  username String?
-  bio String?
-  url String?
-  avatar String?
-  banner String?
-  importedNFTs NFT[]  // One-to-many relation
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  address      String  @unique
+  username     String?
+  bio          String?
+  url          String?
+  avatar       String?
+  banner       String?
+  importedNFTs NFT[] // One-to-many relation
 }
 
 model NFT {
-  id           String       @id @default(auto()) @map("_id") @db.ObjectId
-  contractAddress     String       // NFT contract address
-  tokenId      BigInt
-  importedAt   DateTime     @default(now())
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  contractAddress String // NFT contract address
+  tokenId         BigInt
+  importedAt      DateTime @default(now())
 
-  user         UserProfile  @relation(fields: [userId], references: [id])
-  userId       String      @db.ObjectId
+  user   UserProfile @relation(fields: [userId], references: [id])
+  userId String      @db.ObjectId
 
-   // 🔗 Relation to Collection
-  collection   Collection   @relation(fields: [collectionId], references: [id])
-  collectionId String @db.ObjectId
+  // 🔗 Relation to Collection
+  collection   Collection @relation(fields: [collectionId], references: [id])
+  collectionId String     @db.ObjectId
 
-  activeItem ActiveItem? @relation(fields: [activeItemId],references: [id])
-  activeItemId String? @unique @db.ObjectId
+  activeItem   ActiveItem? @relation(fields: [activeItemId], references: [id])
+  activeItemId String?     @unique @db.ObjectId
 
-  @@unique([contractAddress,tokenId,collectionId])
+  @@unique([contractAddress, tokenId, collectionId])
 }
 
 model Collection {
-  id             String         @id @default(auto()) @map("_id") @db.ObjectId
-  address       String         @unique              // contract address
-  createdAt      DateTime       @default(now())
-  chainId  BigInt
-  category String?
-  description String?
-  nickname String?
-  avatar String?
-  importedNfts   NFT[]  // One-to-many relation
-  @@unique([address,chainId])
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  address      String   @unique // contract address
+  createdAt    DateTime @default(now())
+  chainId      BigInt
+  category     Category @default(Art)
+  description  String?
+  nickname     String?
+  avatar       String?
+  banner       String?
+  url          String?
+  importedNfts NFT[] // One-to-many relation
+
+  @@unique([address, chainId])
+}
+
+enum Category {
+  Art
+  Gaming
+  PFPs
+  Photography
+  Membership
 }

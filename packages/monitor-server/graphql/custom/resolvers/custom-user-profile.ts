@@ -30,21 +30,24 @@ export class CustomUserProfileResolver {
   ) {
     const user = await prisma.userProfile.findFirst({
       where: {
-        address,
+        address: {
+          equals: address,
+          mode: "insensitive",
+        },
       },
     });
     const newAvatar = avatar ? await SaveImage(avatar) : undefined;
     const newBanner = banner ? await SaveImage(banner) : undefined;
     if (user) {
       const newUser = {
-        banner:newBanner,
-        avatar:newAvatar,
+        banner: newBanner,
+        avatar: newAvatar,
         username,
         bio,
         url,
       };
-      console.log("user exists, updating...",newUser);
-      const ret=await prisma.userProfile.update({
+      console.log("user exists, updating...", newUser);
+      const ret = await prisma.userProfile.update({
         where: {
           id: user.id,
         },
@@ -61,7 +64,7 @@ export class CustomUserProfileResolver {
         avatar: newAvatar,
         banner: newBanner,
       };
-      const ret=await prisma.userProfile.create({
+      const ret = await prisma.userProfile.create({
         data: newUser,
       });
       return ret;
