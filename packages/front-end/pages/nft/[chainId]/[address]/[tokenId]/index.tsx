@@ -25,6 +25,7 @@ import ProfileAvatar from '@/components/profile/avatar';
 import Link from 'next/link';
 import findCollection from '@/lib/graphql/queries/find-collection';
 import { QueryMode } from '@/apollo/gql/graphql';
+import { useAccount } from 'wagmi';
 export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
 	locale,
 }) => {
@@ -101,9 +102,10 @@ export default function NFTDetailPage(
 	});
 	const { metadata: nftMetadata } = useNFTMetadata(address, tokenId, chainId);
 	const dispName = nftMetadata?.name ?? `# ${tokenId}`;
-	const { dispName: ownerDispName } = useUser(
+	const { dispName: ownerDispName, user: owner } = useUser(
 		nftData?.findFirstNFT?.user.address,
 	);
+	const { address: userAddress } = useAccount();
 	return (
 		<div className="flex flex-col lg:flex-row gap-6 p-4 lg:py-6 lg:pl-2 h-full">
 			{/* Left Side: NFT Image */}
@@ -156,21 +158,43 @@ export default function NFTDetailPage(
 					</Badge>
 				</div>
 
-				{/* Pricing Section */}
-				<div className="flex flex-wrap items-center gap-4 p-4 border rounded-lg bg-card">
-					<div className="flex flex-col">
-						<span className="text-xs text-muted-foreground">
-							{t('Collection Floor')}
-						</span>
-						<span className="font-semibold">-</span>
+				<div className="border rounded-lg bg-card p-4">
+					<div className="flex flex-wrap items-center gap-4">
+						<div className="flex flex-col">
+							<span className="text-xs text-muted-foreground">
+								{t('Collection Floor')}
+							</span>
+							<span className="font-semibold">-</span>
+						</div>
+						<div className="flex flex-col">
+							<span className="text-xs text-muted-foreground">
+								{t('Top Offer')}
+							</span>
+							<span className="font-semibold">-</span>
+						</div>
+						<div className="flex flex-col">
+							<span className="text-xs text-muted-foreground">
+								{t('Last Sale')}
+							</span>
+							<span className="font-semibold">-</span>
+						</div>
 					</div>
-					<div className="flex flex-col">
-						<span className="text-xs text-muted-foreground">
-							{t('Last Sale')}
-						</span>
-						<span className="font-semibold">-</span>
+					<Separator orientation="horizontal" />
+					<div className="pt-2">
+						{userAddress?.toLowerCase() ===
+						owner?.address.toLowerCase() ? (
+							<Button className="w-full">{t('List Item')}</Button>
+						) : (
+							<div className="flex justify-between">
+								<Button className="w-[48%]">
+									{t('Buy Now')}
+								</Button>
+								<Button className="w-[48%]">
+									{t('Make Offer')}
+								</Button>
+							</div>
+						)}
 					</div>
-					<Button className="ml-auto">{t('Make Offer')}</Button>
 				</div>
 
 				<Separator />
