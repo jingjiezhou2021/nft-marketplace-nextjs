@@ -1,5 +1,11 @@
 import { cn } from '@/lib/utils';
-import { Dispatch, ReactElement, SetStateAction, useState } from 'react';
+import {
+	Dispatch,
+	ReactElement,
+	ReactNode,
+	SetStateAction,
+	useState,
+} from 'react';
 import { Button } from './ui/button';
 import {
 	IconArrowsDiagonal,
@@ -59,7 +65,7 @@ export default function ExpandableBannerHeader({
 		expand: boolean,
 		expandToggleButton: ReactElement,
 	) => ReactElement;
-	banner: ReactElement;
+	banner: ReactNode;
 	loading?: boolean;
 }) {
 	const [expand, setExpand] = useState<boolean>(true);

@@ -6,11 +6,13 @@ import { cn } from '@/lib/utils';
 export function NFTGalleryContent({
 	className,
 	nfts,
+	disableImport,
 }: {
 	nfts: NonNullable<
 		FindFirstUserProfileQuery['findFirstUserProfile']
 	>['importedNFTs'];
 	className?: string;
+	disableImport?: boolean;
 }) {
 	return (
 		<div
@@ -27,7 +29,7 @@ export function NFTGalleryContent({
 					/>
 				);
 			})}
-			<ImportNFTCard></ImportNFTCard>
+			{!disableImport && <ImportNFTCard></ImportNFTCard>}
 		</div>
 	);
 }

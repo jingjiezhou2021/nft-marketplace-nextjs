@@ -100,7 +100,10 @@ export default function CollectionNFTGallery({
 				</Filter>
 			</div>
 			<FilterTags />
-			<NFTGalleryContent nfts={nfts} />
+			<NFTGalleryContent
+				nfts={nfts}
+				disableImport
+			/>
 		</div>
 	);
 }

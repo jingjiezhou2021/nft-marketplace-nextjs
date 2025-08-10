@@ -16,12 +16,15 @@ import ProfileAvatar from '@/components/profile/avatar';
 import { Address } from '@ant-design/web3';
 import { Separator } from '@radix-ui/react-separator';
 import { Button } from '@/components/ui/button';
-import { IconCopy, IconStack2 } from '@tabler/icons-react';
+import { IconCopy, IconEdit, IconStack2, IconWorld } from '@tabler/icons-react';
 import { Badge } from '@/components/ui/badge';
 import { getIconOfChain, getNameOfChain } from '@/lib/chain';
 import { useTranslation } from 'next-i18next';
 import { LoadingMask, LoadingSpinner } from '@/components/loading';
 import useCollectionName from '@/hooks/use-collection-name';
+import Link from 'next/link';
+import { useAccount } from 'wagmi';
+import EmojiAvatar from '@/components/emojo-avatar';
 export function CollectionHeader({
 	address,
 	chainId,
@@ -29,6 +32,7 @@ export function CollectionHeader({
 	address: `0x${string}`;
 	chainId: ChainIdParameter<typeof config>['chainId'];
 }) {
+	const { address: userAddress } = useAccount();
 	const [collectionCreatorAddress, setCollectionCreatorAddress] =
 		useState('');
 	const [
@@ -36,7 +40,7 @@ export function CollectionHeader({
 		setCollectionCreatorAddressLoading,
 	] = useState(true);
 	const [messageApi, contextHolder] = useMessage();
-	const { t } = useTranslation('common');
+	const { t, i18n } = useTranslation('common');
 	const { data, loading } = useQuery(findCollection, {
 		variables: {
 			where: {
@@ -68,12 +72,23 @@ export function CollectionHeader({
 			{contextHolder}
 			<ExpandableBannerHeader
 				banner={
-					<Image
-						src={'/example8.png'}
-						fill
-						alt="profile-banner"
-						className="object-cover"
-					/>
+					data?.findFirstCollection?.banner ? (
+						<Image
+							src={new URL(
+								data?.findFirstCollection?.banner,
+								process.env.NEXT_PUBLIC_SERVER_ENDPOINT,
+							).toString()}
+							fill
+							alt="profile-banner"
+							className="object-cover"
+						/>
+					) : (
+						<EmojiAvatar
+							address={address}
+							className="size-full absolute left-0 top-0"
+							size={128}
+						/>
+					)
 				}
 				loading={
 					loading ||
@@ -88,6 +103,10 @@ export function CollectionHeader({
 								<ExpandableBannerHeaderContentLeft>
 									{expand && (
 										<ProfileAvatar
+											avatar={
+												data?.findFirstCollection
+													?.avatar
+											}
 											address={address}
 											className="size-20"
 										/>
@@ -136,6 +155,34 @@ export function CollectionHeader({
 										>
 											<IconCopy />
 										</Button>
+										{userAddress?.toLowerCase() ===
+											collectionCreatorAddress.toLowerCase() && (
+											<Link
+												href={`/nft/${chainId}/${address}/edit`}
+												locale={i18n.language}
+											>
+												<Button
+													variant="ghost"
+													className="text-foreground hover:text-primary"
+												>
+													<IconEdit />
+												</Button>
+											</Link>
+										)}
+										{data?.findFirstCollection?.url && (
+											<Link
+												href={
+													data.findFirstCollection.url
+												}
+											>
+												<Button
+													variant="ghost"
+													className="text-foreground hover:text-primary"
+												>
+													<IconWorld />
+												</Button>
+											</Link>
+										)}
 									</div>
 									<div className="flex items-center gap-1">
 										<Badge
