@@ -183,7 +183,15 @@ export default function NFTDetailPage(
 					<div className="pt-2">
 						{userAddress?.toLowerCase() ===
 						owner?.address.toLowerCase() ? (
-							<Button className="w-full">{t('List Item')}</Button>
+							<Link
+								className="w-full"
+								href={`/nft/${chainId}/${address}/${tokenId}/list-item`}
+								locale={_props._nextI18Next?.initialLocale}
+							>
+								<Button className="w-full">
+									{t('List Item')}
+								</Button>
+							</Link>
 						) : (
 							<div className="flex justify-between">
 								<Button className="w-[48%]">
