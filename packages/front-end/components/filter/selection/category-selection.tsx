@@ -1,5 +1,6 @@
 import { useTranslation } from 'next-i18next';
 import ChoiceSelection from '.';
+import { Category } from '@/apollo/gql/graphql';
 const NAME = 'category';
 export default function CategorySelection() {
 	const { t } = useTranslation('filter');
@@ -8,24 +9,17 @@ export default function CategorySelection() {
 			name={NAME}
 			multiple={true}
 			includeAll={true}
-			data={[
-				{
-					value: 'Art',
-					label: t('Art'),
-				},
-				{
-					value: 'Gaming',
-					label: t('Gaming'),
-				},
-				{
-					value: 'PFPs',
-					label: t('PFPs'),
-				},
-				{
-					value: 'Photography',
-					label: t('Photography'),
-				},
-			]}
+			data={Object.values(Category).map((val) => {
+				// t("Art")
+				// t('Photography');
+				// t('Membership');
+				// t('PFPs');
+				// t('Gaming');
+				return {
+					value: val,
+					label: t(val),
+				};
+			})}
 		/>
 	);
 }
