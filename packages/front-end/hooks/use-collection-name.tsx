@@ -1,3 +1,4 @@
+import { QueryMode } from '@/apollo/gql/graphql';
 import { config } from '@/components/providers/RainbowKitAllProvider';
 import { getAddressAbbreviation } from '@/lib/address';
 import findCollection from '@/lib/graphql/queries/find-collection';
@@ -27,6 +28,7 @@ export default function useCollectionName(
 			where: {
 				address: {
 					equals: address,
+					mode: QueryMode.Insensitive,
 				},
 				chainId: {
 					equals: chainId,

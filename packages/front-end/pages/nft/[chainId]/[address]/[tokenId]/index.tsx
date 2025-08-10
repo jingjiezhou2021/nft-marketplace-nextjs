@@ -20,6 +20,11 @@ import NFTDetailTraits from '@/components/nft/detail/traits';
 import { ChainIdParameter } from '@wagmi/core/internal';
 import { config } from '@/components/providers/RainbowKitAllProvider';
 import NFTDetailMore from '@/components/nft/detail/more';
+import useCollectionName from '@/hooks/use-collection-name';
+import ProfileAvatar from '@/components/profile/avatar';
+import Link from 'next/link';
+import findCollection from '@/lib/graphql/queries/find-collection';
+import { QueryMode } from '@/apollo/gql/graphql';
 export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
 	locale,
 }) => {
@@ -60,6 +65,20 @@ export default function NFTDetailPage(
 	>['chainId'];
 	const address = params.address;
 	const tokenId = parseInt(params.tokenId);
+	const { name: collectionName } = useCollectionName(address, chainId);
+	const { data: collectionData } = useQuery(findCollection, {
+		variables: {
+			where: {
+				address: {
+					equals: address,
+					mode: QueryMode.Insensitive,
+				},
+				chainId: {
+					equals: chainId,
+				},
+			},
+		},
+	});
 	const { t } = useTranslation('common');
 	const { data: nftData } = useQuery(findNFT, {
 		variables: {
@@ -105,10 +124,27 @@ export default function NFTDetailPage(
 			<div className="flex-1 space-y-4 lg:h-full lg:overflow-auto">
 				{/* Title */}
 				<h1 className="text-2xl font-bold">{dispName}</h1>
-				<p className="text-sm text-muted-foreground">
+				<div className="text-sm text-muted-foreground flex gap-2">
+					<Link
+						href={`/nft/${chainId}/${address}`}
+						locale={_props._nextI18Next?.initialLocale}
+						className="flex text-foreground hover:text-primary"
+					>
+						<ProfileAvatar
+							avatar={collectionData?.findFirstCollection?.avatar}
+							address={address}
+							className="size-6 mr-2"
+							size={12}
+						/>
+						{collectionName}
+					</Link>
+					<Separator
+						orientation="vertical"
+						className="h-auto!"
+					/>
 					{t('Owned by')}&nbsp;
 					{ownerDispName}
-				</p>
+				</div>
 
 				<div className="flex items-center gap-1">
 					<Badge variant="outline">
