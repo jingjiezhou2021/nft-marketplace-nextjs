@@ -56,10 +56,17 @@ export default function NFTDetailTraits({
 	const data: Attribute_Trait[] = loading
 		? []
 		: metadata!.attributes!.map((a) => {
-				return {
-					attribute: a.trait_type,
-					trait: a.value.toString(),
-				};
+				if (a.trait_type) {
+					return {
+						attribute: a.trait_type.toString(),
+						trait: a.value.toString(),
+					};
+				} else {
+					return {
+						attribute: Object.entries(a)[0][0],
+						trait: Object.entries(a)[0][1].toString(),
+					};
+				}
 			});
 	return (
 		<div className="relative">

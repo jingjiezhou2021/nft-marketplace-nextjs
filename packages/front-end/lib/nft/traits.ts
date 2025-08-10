@@ -4,12 +4,21 @@ export default function getTraitValuesMap(metadataArr: NFTMetadata[]) {
 	const map = new Map<string, Map<string | number, number>>();
 	metadataArr.forEach((m) => {
 		m.attributes?.forEach((a) => {
-			const vals = map.get(a.trait_type);
-			if (vals) {
-				const oldCount = vals?.get(a.value);
-				vals?.set(a.value, oldCount ?? 0 + 1);
+			let key = '';
+			let value: string | number = '';
+			if (a.trait_type) {
+				key = a.trait_type.toString();
+				value = a.value;
 			} else {
-				map.set(a.trait_type, new Map([[a.value, 1]]));
+				key = Object.keys(a)[0];
+				value = Object.values(a)[0];
+			}
+			const vals = map.get(key);
+			if (vals) {
+				const oldCount = vals?.get(value);
+				vals?.set(value, oldCount ?? 0 + 1);
+			} else {
+				map.set(key, new Map([[value, 1]]));
 			}
 		});
 	});

@@ -65,18 +65,20 @@ export async function getNFTMetadata(
 	const metadata: NFTMetadata = await (await fetch(normalizeURI(url))).json();
 	return {
 		...metadata,
-		image: normalizeURI(metadata.image),
+		image: normalizeURI(metadata.image ?? ''),
 	};
 }
 export interface NFTMetadata {
 	name?: string;
 	description?: string;
 	image?: string; // Could be URL or IPFS
-	attributes?: Array<{
-		trait_type: string;
-		value: string | number;
-		display_type?: string;
-	}>;
+	attributes?:
+		| Array<{
+				trait_type: string;
+				value: string | number;
+				display_type?: string;
+		  }>
+		| Array<Record<string, string | number>>;
 }
 export const NOT_OWNER = 'not owner';
 export const ALREADY_IMPORTED = 'already imported';
@@ -152,7 +154,7 @@ export async function importNFT(
 			},
 		});
 	} else {
-		if (existedNFT.data.findFirstNFT.user.address !== importer) {
+		if (existedNFT.data.findFirstNFT?.user.address !== importer) {
 			await client.mutate({
 				mutation: UpdateNFT,
 				variables: {
