@@ -1,8 +1,9 @@
 import { base, hardhat, sepolia } from 'viem/chains';
-
+import { DeployedAddresses } from 'smart-contract';
 const MARKETPLACE_ADDRESS = {
-	[sepolia.id]: '0x74F561EAbFAe36c4a470667C2231dE580E14131F',
-	[hardhat.id]: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
+	[sepolia.id]:
+		DeployedAddresses[11155111]['NFTMarketPlaceProduction#NftMarketplace'],
+	[hardhat.id]: DeployedAddresses[31337]['NFTMarketPlaceDev#NftMarketplace'],
 	[base.id]: '',
 };
 export default MARKETPLACE_ADDRESS;
