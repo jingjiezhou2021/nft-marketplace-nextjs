@@ -16,6 +16,7 @@ import { useTranslation } from 'next-i18next';
 import ProfileAvatar from '@/components/profile/avatar';
 import useNFTMetadata from '@/hooks/use-nft-metadata';
 import useCollectionName from '@/hooks/use-collection-name';
+import * as Yup from 'yup';
 import {
 	Select,
 	SelectContent,
@@ -33,6 +34,7 @@ import { useAccount } from 'wagmi';
 import useNFTOwner from '@/hooks/use-nft-owner';
 import NotOwnerOfCollection from '@/components/nft/collection/not-owner-of-collection';
 import NotOwnerOfNFT from '@/components/nft/not-owner-of-nft';
+import { Form, Formik, useFormik } from 'formik';
 export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
 	locale,
 }) => {
@@ -109,109 +111,169 @@ export default function Page(
 				</div>
 
 				{/* Main content */}
-				<div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8">
-					{/* Left section */}
-					<div>
-						<h2 className="text-lg font-semibold mb-4">
-							{t('Select your sell method')}
-						</h2>
 
-						<Tabs
-							value={sellMethod}
-							onValueChange={setSellMethod}
-						>
-							<TabsList className="w-full h-auto">
-								<TabsTrigger
-									value="set-price"
-									className="flex flex-col items-center border rounded-lg p-4 data-[state=active]:border-primary"
-								>
-									<span className="font-semibold">
-										{t('Set Price')}
-									</span>
-									<span className="text-xs text-muted-foreground">
-										{t('Sell at a fixed price')}
-									</span>
-								</TabsTrigger>
-							</TabsList>
-
-							<TabsContent
-								value="set-price"
-								className="mt-6 space-y-6"
-							>
-								{/* Price */}
+				<Formik<{
+					currencyAddress: string;
+					amount?: number;
+				}>
+					initialValues={{
+						currencyAddress: '',
+						amount: undefined,
+					}}
+					onSubmit={(vals) => {
+						console.log(vals);
+					}}
+					validationSchema={Yup.object<{
+						currencyAddress: string;
+						amount?: number;
+					}>().shape({
+						amount: Yup.number()
+							.positive(t('Amount must be positive'))
+							.required(t('Amount is required')),
+						currencyAddress: Yup.string().required(
+							t('Please select currency'),
+						),
+					})}
+				>
+					{({ setFieldValue, handleChange, handleBlur, errors }) => {
+						return (
+							<Form className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8">
 								<div>
-									<Label
-										htmlFor="price"
-										className="mb-2"
+									<h2 className="text-lg font-semibold mb-4">
+										{t('Select your sell method')}
+									</h2>
+
+									<Tabs
+										value={sellMethod}
+										onValueChange={setSellMethod}
 									>
-										{t('Price')}
-									</Label>
-									<div className="flex items-center gap-2 mt-1">
-										<Select defaultValue={WETH_ADDR}>
-											<SelectTrigger
-												className="group"
-												id="currency"
+										<TabsList className="w-full h-auto">
+											<TabsTrigger
+												value="set-price"
+												className="flex flex-col items-center border rounded-lg p-4 data-[state=active]:border-primary"
 											>
-												<SelectValue
-													placeholder={t(
-														'Please select the currency you wanna trade with this item',
-													)}
-												/>
-											</SelectTrigger>
-											<SelectContent>
-												<SelectItem value={WETH_ADDR}>
-													{getCryptoIcon(
-														chainId,
-														WETH_ADDR,
-													)}
-													ETH
-												</SelectItem>
-												<SelectItem value={USDT_ADDR}>
-													{getCryptoIcon(
-														chainId,
-														USDT_ADDR,
-													)}
-													USDT
-												</SelectItem>
-											</SelectContent>
-										</Select>
-										<Input
-											id="price"
-											type="number"
-											placeholder={t('Amount')}
-										/>
-									</div>
-									<p className="text-xs text-muted-foreground mt-1">
-										{t(
-											'Will be on sale until you transfer this item or cancel it',
-										)}
-									</p>
-								</div>
-							</TabsContent>
-						</Tabs>
-					</div>
+												<span className="font-semibold">
+													{t('Set Price')}
+												</span>
+												<span className="text-xs text-muted-foreground">
+													{t('Sell at a fixed price')}
+												</span>
+											</TabsTrigger>
+										</TabsList>
 
-					{/* Right section: Summary */}
-					<div>
-						<Card>
-							<CardHeader>
-								<CardTitle>{t('Summary')}</CardTitle>
-							</CardHeader>
-							<CardContent className="space-y-4">
-								<Button className="w-full">
-									{t('Post your listing')}
-								</Button>
-								<div>
-									<p className="text-sm text-muted-foreground">
-										{t(
-											'Listing will interact with blockchain, which involves gas fee',
-										)}
-									</p>
+										<TabsContent
+											value="set-price"
+											className="mt-6 space-y-6"
+										>
+											<>
+												<Label
+													htmlFor="amount"
+													className="mb-2"
+												>
+													{t('Price')}
+												</Label>
+												<div className="flex items-center gap-2 mt-1">
+													<Select
+														defaultValue={WETH_ADDR}
+														name="currencyAddress"
+														onValueChange={(
+															val,
+														) => {
+															setFieldValue(
+																'currencyAddress',
+																val,
+															);
+														}}
+													>
+														<SelectTrigger
+															className="group"
+															id="currency"
+														>
+															<SelectValue
+																placeholder={t(
+																	'Please select the currency you wanna trade with this item',
+																)}
+															/>
+														</SelectTrigger>
+														<SelectContent>
+															<SelectItem
+																value={
+																	WETH_ADDR
+																}
+															>
+																{getCryptoIcon(
+																	chainId,
+																	WETH_ADDR,
+																)}
+																ETH
+															</SelectItem>
+															<SelectItem
+																value={
+																	USDT_ADDR
+																}
+															>
+																{getCryptoIcon(
+																	chainId,
+																	USDT_ADDR,
+																)}
+																USDT
+															</SelectItem>
+														</SelectContent>
+													</Select>
+													<Input
+														id="amount"
+														onChange={handleChange}
+														onBlur={handleBlur}
+														type="number"
+														placeholder={t(
+															'Amount',
+														)}
+													/>
+												</div>
+												{errors.amount !== undefined ? (
+													<p className="text-xs text-destructive">
+														{errors.amount}
+													</p>
+												) : null}
+												<p className="text-xs text-muted-foreground mt-1">
+													{t(
+														'Will be on sale until you transfer this item or cancel it',
+													)}
+												</p>
+											</>
+											{/* Price */}
+										</TabsContent>
+									</Tabs>
 								</div>
-							</CardContent>
-						</Card>
-					</div>
-				</div>
+								{/* Right section: Summary */}
+								<div>
+									<Card>
+										<CardHeader>
+											<CardTitle>
+												{t('Summary')}
+											</CardTitle>
+										</CardHeader>
+										<CardContent className="space-y-4">
+											<Button
+												className="w-full cursor-pointer"
+												type="submit"
+											>
+												{t('Post your listing')}
+											</Button>
+											<div>
+												<p className="text-sm text-muted-foreground">
+													{t(
+														'Listing will interact with blockchain, which involves gas fee',
+													)}
+												</p>
+											</div>
+										</CardContent>
+									</Card>
+								</div>
+							</Form>
+						);
+					}}
+				</Formik>
 			</div>
 		);
 	} else {

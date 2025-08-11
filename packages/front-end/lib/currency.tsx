@@ -26,7 +26,6 @@ export function getCryptoIcon(
 	chainId: string | bigint | number,
 	tokenContractAddress: string,
 ) {
-	debugger;
 	if (typeof chainId === 'string') {
 		chainId = parseInt(chainId);
 	}
