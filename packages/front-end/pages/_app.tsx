@@ -8,6 +8,7 @@ import Layout from '@/components/layout';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { NextPage } from 'next';
 import { ReactElement, ReactNode } from 'react';
+import AntDesignProvider from '@/components/providers/ant-design-provider';
 const client = createApolloClient();
 export type NextPageWithLayout<P = any, IP = P> = NextPage<P, IP> & {
 	GetLayout?: ({ children }: { children: ReactElement }) => ReactNode;
@@ -24,11 +25,13 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
 				defaultTheme="system"
 				enableSystem
 			>
-				<RainbowKitAllProvider>
-					<GetLayout>
-						<Component {...pageProps} />
-					</GetLayout>
-				</RainbowKitAllProvider>
+				<AntDesignProvider>
+					<RainbowKitAllProvider>
+						<GetLayout>
+							<Component {...pageProps} />
+						</GetLayout>
+					</RainbowKitAllProvider>
+				</AntDesignProvider>
 			</ThemeProvider>
 		</ApolloProvider>
 	);

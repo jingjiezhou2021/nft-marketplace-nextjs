@@ -3,7 +3,7 @@ import { GetServerSideProps, InferGetStaticPropsType } from 'next';
 import { SSRConfig } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -24,17 +24,19 @@ import {
 	SelectValue,
 	SelectItem,
 } from '@/components/ui/select';
-import {
-	CHAIN_CURRENCY_ADDRESS,
-	getCryptoIcon,
-	SEPOLIA_AAVE_WETH,
-} from '@/lib/currency';
+import { CHAIN_CURRENCY_ADDRESS, getCryptoIcon } from '@/lib/currency';
 import { LoadingMask, LoadingSpinner } from '@/components/loading';
-import { useAccount } from 'wagmi';
+import {
+	useAccount,
+	useWaitForTransactionReceipt,
+	useWriteContract,
+} from 'wagmi';
 import useNFTOwner from '@/hooks/use-nft-owner';
-import NotOwnerOfCollection from '@/components/nft/collection/not-owner-of-collection';
 import NotOwnerOfNFT from '@/components/nft/not-owner-of-nft';
-import { Form, Formik, useFormik } from 'formik';
+import { Form, Formik } from 'formik';
+import useMessage from 'antd/es/message/useMessage';
+import { NextPageWithLayout } from '@/pages/_app';
+import ListItemActionDialog from '@/components/nft/dialog/list-item';
 export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
 	locale,
 }) => {
@@ -46,9 +48,10 @@ export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
 	};
 };
 
-export default function Page(
+const Page: NextPageWithLayout = (
 	_props: Awaited<InferGetStaticPropsType<typeof getServerSideProps>>,
-) {
+) => {
+	const [messageApi, contextHolder] = useMessage();
 	const { t } = useTranslation('common');
 	const params = useParams<{
 		chainId: string;
@@ -76,9 +79,11 @@ export default function Page(
 	const [sellMethod, setSellMethod] = useState('set-price');
 	const { address: userAddress } = useAccount();
 	const nftOwnerAddress = useNFTOwner(address, chainId, tokenId);
-	if (nftOwnerAddress === userAddress) {
+	const [openActionDialog, setOpenActionDialog] = useState(false);
+	if (nftOwnerAddress.toLowerCase() === userAddress?.toLowerCase()) {
 		return (
 			<div className="container mx-auto py-10 space-y-8 relative">
+				{contextHolder}
 				<LoadingMask
 					loading={metadataLoading || collectionNameLoading}
 					className="flex justify-center items-center"
@@ -113,15 +118,15 @@ export default function Page(
 				{/* Main content */}
 
 				<Formik<{
-					currencyAddress: string;
+					currencyAddress: `0x${string}`;
 					amount?: number;
 				}>
 					initialValues={{
-						currencyAddress: '',
+						currencyAddress: WETH_ADDR as `0x${string}`,
 						amount: undefined,
 					}}
-					onSubmit={(vals) => {
-						console.log(vals);
+					onSubmit={async (vals) => {
+						setOpenActionDialog(true);
 					}}
 					validationSchema={Yup.object<{
 						currencyAddress: string;
@@ -135,142 +140,167 @@ export default function Page(
 						),
 					})}
 				>
-					{({ setFieldValue, handleChange, handleBlur, errors }) => {
+					{({
+						setFieldValue,
+						handleChange,
+						handleBlur,
+						errors,
+						values,
+					}) => {
 						return (
-							<Form className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8">
-								<div>
-									<h2 className="text-lg font-semibold mb-4">
-										{t('Select your sell method')}
-									</h2>
+							<>
+								<Form className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8">
+									<div>
+										<h2 className="text-lg font-semibold mb-4">
+											{t('Select your sell method')}
+										</h2>
 
-									<Tabs
-										value={sellMethod}
-										onValueChange={setSellMethod}
-									>
-										<TabsList className="w-full h-auto">
-											<TabsTrigger
-												value="set-price"
-												className="flex flex-col items-center border rounded-lg p-4 data-[state=active]:border-primary"
-											>
-												<span className="font-semibold">
-													{t('Set Price')}
-												</span>
-												<span className="text-xs text-muted-foreground">
-													{t('Sell at a fixed price')}
-												</span>
-											</TabsTrigger>
-										</TabsList>
-
-										<TabsContent
-											value="set-price"
-											className="mt-6 space-y-6"
+										<Tabs
+											value={sellMethod}
+											onValueChange={setSellMethod}
 										>
-											<>
-												<Label
-													htmlFor="amount"
-													className="mb-2"
+											<TabsList className="w-full h-auto">
+												<TabsTrigger
+													value="set-price"
+													className="flex flex-col items-center border rounded-lg p-4 data-[state=active]:border-primary"
 												>
-													{t('Price')}
-												</Label>
-												<div className="flex items-center gap-2 mt-1">
-													<Select
-														defaultValue={WETH_ADDR}
-														name="currencyAddress"
-														onValueChange={(
-															val,
-														) => {
-															setFieldValue(
-																'currencyAddress',
-																val,
-															);
-														}}
-													>
-														<SelectTrigger
-															className="group"
-															id="currency"
-														>
-															<SelectValue
-																placeholder={t(
-																	'Please select the currency you wanna trade with this item',
-																)}
-															/>
-														</SelectTrigger>
-														<SelectContent>
-															<SelectItem
-																value={
-																	WETH_ADDR
-																}
-															>
-																{getCryptoIcon(
-																	chainId,
-																	WETH_ADDR,
-																)}
-																ETH
-															</SelectItem>
-															<SelectItem
-																value={
-																	USDT_ADDR
-																}
-															>
-																{getCryptoIcon(
-																	chainId,
-																	USDT_ADDR,
-																)}
-																USDT
-															</SelectItem>
-														</SelectContent>
-													</Select>
-													<Input
-														id="amount"
-														onChange={handleChange}
-														onBlur={handleBlur}
-														type="number"
-														placeholder={t(
-															'Amount',
+													<span className="font-semibold">
+														{t('Set Price')}
+													</span>
+													<span className="text-xs text-muted-foreground">
+														{t(
+															'Sell at a fixed price',
 														)}
-													/>
-												</div>
-												{errors.amount !== undefined ? (
-													<p className="text-xs text-destructive">
-														{errors.amount}
-													</p>
-												) : null}
-												<p className="text-xs text-muted-foreground mt-1">
-													{t(
-														'Will be on sale until you transfer this item or cancel it',
-													)}
-												</p>
-											</>
-											{/* Price */}
-										</TabsContent>
-									</Tabs>
-								</div>
-								{/* Right section: Summary */}
-								<div>
-									<Card>
-										<CardHeader>
-											<CardTitle>
-												{t('Summary')}
-											</CardTitle>
-										</CardHeader>
-										<CardContent className="space-y-4">
-											<Button
-												className="w-full cursor-pointer"
-												type="submit"
+													</span>
+												</TabsTrigger>
+											</TabsList>
+
+											<TabsContent
+												value="set-price"
+												className="mt-6 space-y-6"
 											>
-												{t('Post your listing')}
-											</Button>
-											<div>
-												<p className="text-sm text-muted-foreground">
-													{t(
-														'Listing will interact with blockchain, which involves gas fee',
-													)}
-												</p>
-											</div>
-										</CardContent>
-									</Card>
-								</div>
-							</Form>
+												<>
+													<Label
+														htmlFor="amount"
+														className="mb-2"
+													>
+														{t('Price')}
+													</Label>
+													<div className="flex items-center gap-2 mt-1">
+														<Select
+															value={
+																values.currencyAddress
+															}
+															name="currencyAddress"
+															onValueChange={(
+																val,
+															) => {
+																setFieldValue(
+																	'currencyAddress',
+																	val,
+																);
+															}}
+														>
+															<SelectTrigger
+																className="group"
+																id="currency"
+															>
+																<SelectValue
+																	placeholder={t(
+																		'Please select the currency you wanna trade with this item',
+																	)}
+																/>
+															</SelectTrigger>
+															<SelectContent>
+																<SelectItem
+																	value={
+																		WETH_ADDR
+																	}
+																>
+																	{getCryptoIcon(
+																		chainId,
+																		WETH_ADDR,
+																	)}
+																	ETH
+																</SelectItem>
+																<SelectItem
+																	value={
+																		USDT_ADDR
+																	}
+																>
+																	{getCryptoIcon(
+																		chainId,
+																		USDT_ADDR,
+																	)}
+																	USDT
+																</SelectItem>
+															</SelectContent>
+														</Select>
+														<Input
+															id="amount"
+															onChange={
+																handleChange
+															}
+															onBlur={handleBlur}
+															type="number"
+															placeholder={t(
+																'Amount',
+															)}
+															step="any"
+														/>
+													</div>
+													{errors.amount !==
+													undefined ? (
+														<p className="text-xs text-destructive">
+															{errors.amount}
+														</p>
+													) : null}
+													<p className="text-xs text-muted-foreground mt-1">
+														{t(
+															'Will be on sale until you transfer this item or cancel it',
+														)}
+													</p>
+												</>
+												{/* Price */}
+											</TabsContent>
+										</Tabs>
+									</div>
+									{/* Right section: Summary */}
+									<div>
+										<Card>
+											<CardHeader>
+												<CardTitle>
+													{t('Summary')}
+												</CardTitle>
+											</CardHeader>
+											<CardContent className="space-y-4">
+												<Button
+													className="w-full cursor-pointer"
+													type="submit"
+												>
+													{t('Post your listing')}
+												</Button>
+												<div>
+													<p className="text-sm text-muted-foreground">
+														{t(
+															'Listing will interact with blockchain, which involves gas fee',
+														)}
+													</p>
+												</div>
+											</CardContent>
+										</Card>
+									</div>
+								</Form>
+								<ListItemActionDialog
+									currencyAddress={values.currencyAddress}
+									amount={values.amount!}
+									chainId={chainId}
+									address={address}
+									tokenId={tokenId}
+									open={openActionDialog}
+									onOpenChange={setOpenActionDialog}
+								/>
+							</>
 						);
 					}}
 				</Formik>
@@ -279,4 +309,8 @@ export default function Page(
 	} else {
 		return <NotOwnerOfNFT />;
 	}
-}
+};
+Page.GetLayout = function NoLayout({ children }) {
+	return <div className="w-full h-svh relative">{children}</div>;
+};
+export default Page;

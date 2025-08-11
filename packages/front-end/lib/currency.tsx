@@ -1,5 +1,9 @@
+import { config } from '@/components/providers/RainbowKitAllProvider';
 import { EthereumCircleColorful, USDTColorful } from '@ant-design/web3-icons';
+import { readContract } from '@wagmi/core';
+import { ChainIdParameter } from '@wagmi/core/internal';
 import { ReactNode } from 'react';
+import { erc20Abi } from 'viem';
 import { base, hardhat, sepolia } from 'viem/chains';
 
 export enum Currency {
@@ -44,4 +48,16 @@ export function getCryptoIcon(
 		},
 	};
 	return map[Number(chainId)][tokenContractAddress];
+}
+export async function getCurrencyDecimals(
+	address: `0x${string}`,
+	chainId: ChainIdParameter<typeof config>['chainId'],
+) {
+	const res = await readContract(config, {
+		address,
+		chainId,
+		abi: erc20Abi,
+		functionName: 'decimals',
+	});
+	return res;
 }
