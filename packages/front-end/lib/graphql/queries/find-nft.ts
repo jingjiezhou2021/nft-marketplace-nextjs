@@ -13,6 +13,18 @@ const findNFT = graphql(`
 			collection {
 				description
 			}
+			activeItem {
+				id
+				seller
+				nftAddress
+				tokenId
+				listing {
+					price
+					erc20TokenAddress
+					erc20TokenName
+				}
+				chainId
+			}
 		}
 	}
 `);

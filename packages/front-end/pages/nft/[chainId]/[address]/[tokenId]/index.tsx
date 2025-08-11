@@ -26,6 +26,7 @@ import Link from 'next/link';
 import findCollection from '@/lib/graphql/queries/find-collection';
 import { QueryMode } from '@/apollo/gql/graphql';
 import { useAccount } from 'wagmi';
+import CryptoPrice from '@/components/crypto-price';
 export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
 	locale,
 }) => {
@@ -82,6 +83,8 @@ export default function NFTDetailPage(
 	});
 	const { t } = useTranslation('common');
 	const { data: nftData } = useQuery(findNFT, {
+		fetchPolicy: 'network-only', // Used for first execution
+		nextFetchPolicy: 'cache-first', // Used for subsequent executions
 		variables: {
 			where: {
 				contractAddress: {
@@ -158,7 +161,7 @@ export default function NFTDetailPage(
 					</Badge>
 				</div>
 
-				<div className="border rounded-lg bg-card p-4">
+				<div className="border rounded-lg bg-card p-4 flex flex-col gap-2">
 					<div className="flex flex-wrap items-center gap-4">
 						<div className="flex flex-col">
 							<span className="text-xs text-muted-foreground">
@@ -180,7 +183,23 @@ export default function NFTDetailPage(
 						</div>
 					</div>
 					<Separator orientation="horizontal" />
-					<div className="pt-2">
+					{chainId !== undefined &&
+						nftData?.findFirstNFT?.activeItem && (
+							<div className="flex">
+								<div className="flex flex-col gap-1">
+									<h4 className="text-muted-foreground text-xs">
+										{t('Price')}&nbsp;
+									</h4>
+									<CryptoPrice
+										chainId={chainId}
+										{...nftData.findFirstNFT.activeItem
+											.listing}
+									/>
+								</div>
+							</div>
+						)}
+					<Separator orientation="horizontal" />
+					<div>
 						{userAddress?.toLowerCase() ===
 						owner?.address.toLowerCase() ? (
 							<Link
@@ -188,9 +207,18 @@ export default function NFTDetailPage(
 								href={`/nft/${chainId}/${address}/${tokenId}/list-item`}
 								locale={_props._nextI18Next?.initialLocale}
 							>
-								<Button className="w-full">
-									{t('List Item')}
-								</Button>
+								{nftData?.findFirstNFT?.activeItem ? (
+									<Button
+										className="w-full"
+										variant="destructive"
+									>
+										{t('Cancel Listing')}
+									</Button>
+								) : (
+									<Button className="w-full">
+										{t('List Item')}
+									</Button>
+								)}
 							</Link>
 						) : (
 							<div className="flex justify-between">
