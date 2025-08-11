@@ -28,6 +28,11 @@ import {
 	getCryptoIcon,
 	SEPOLIA_AAVE_WETH,
 } from '@/lib/currency';
+import { LoadingMask, LoadingSpinner } from '@/components/loading';
+import { useAccount } from 'wagmi';
+import useNFTOwner from '@/hooks/use-nft-owner';
+import NotOwnerOfCollection from '@/components/nft/collection/not-owner-of-collection';
+import NotOwnerOfNFT from '@/components/nft/not-owner-of-nft';
 export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
 	locale,
 }) => {
@@ -67,136 +72,149 @@ export default function Page(
 		useCollectionName(address, chainId);
 	const router = useRouter();
 	const [sellMethod, setSellMethod] = useState('set-price');
-
-	return (
-		<div className="container mx-auto py-10 space-y-8">
-			{/* Top NFT info section */}
-			<div className="flex items-center gap-4">
-				<button
-					onClick={() => router.back()}
-					className="p-2 hover:bg-muted rounded-full transition"
+	const { address: userAddress } = useAccount();
+	const nftOwnerAddress = useNFTOwner(address, chainId, tokenId);
+	if (nftOwnerAddress === userAddress) {
+		return (
+			<div className="container mx-auto py-10 space-y-8 relative">
+				<LoadingMask
+					loading={metadataLoading || collectionNameLoading}
+					className="flex justify-center items-center"
 				>
-					<ArrowLeft className="w-5 h-5" />
-				</button>
-
-				<ProfileAvatar
-					address={address}
-					avatar={metadata?.image}
-					className="mr-0 size-12"
-				/>
-
-				<div>
-					<p className="text-sm text-muted-foreground">
-						{collectionName}
-					</p>
-					<h1 className="text-xl font-semibold">{metadata?.name}</h1>
-				</div>
-			</div>
-
-			{/* Main content */}
-			<div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8">
-				{/* Left section */}
-				<div>
-					<h2 className="text-lg font-semibold mb-4">
-						{t('Select your sell method')}
-					</h2>
-
-					<Tabs
-						value={sellMethod}
-						onValueChange={setSellMethod}
+					<LoadingSpinner size={48} />
+				</LoadingMask>
+				{/* Top NFT info section */}
+				<div className="flex items-center gap-4">
+					<button
+						onClick={() => router.back()}
+						className="p-2 hover:bg-muted rounded-full transition"
 					>
-						<TabsList className="w-full h-auto">
-							<TabsTrigger
-								value="set-price"
-								className="flex flex-col items-center border rounded-lg p-4 data-[state=active]:border-primary"
-							>
-								<span className="font-semibold">
-									{t('Set Price')}
-								</span>
-								<span className="text-xs text-muted-foreground">
-									{t('Sell at a fixed price')}
-								</span>
-							</TabsTrigger>
-						</TabsList>
+						<ArrowLeft className="w-5 h-5" />
+					</button>
 
-						<TabsContent
-							value="set-price"
-							className="mt-6 space-y-6"
-						>
-							{/* Price */}
-							<div>
-								<Label
-									htmlFor="price"
-									className="mb-2"
-								>
-									{t('Price')}
-								</Label>
-								<div className="flex items-center gap-2 mt-1">
-									<Select defaultValue={WETH_ADDR}>
-										<SelectTrigger
-											className="group"
-											id="currency"
-										>
-											<SelectValue
-												placeholder={t(
-													'Please select the currency you wanna trade with this item',
-												)}
-											/>
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value={WETH_ADDR}>
-												{getCryptoIcon(
-													chainId,
-													WETH_ADDR,
-												)}
-												ETH
-											</SelectItem>
-											<SelectItem value={USDT_ADDR}>
-												{getCryptoIcon(
-													chainId,
-													USDT_ADDR,
-												)}
-												USDT
-											</SelectItem>
-										</SelectContent>
-									</Select>
-									<Input
-										id="price"
-										type="number"
-										placeholder={t('Amount')}
-									/>
-								</div>
-								<p className="text-xs text-muted-foreground mt-1">
-									{t(
-										'Will be on sale until you transfer this item or cancel it',
-									)}
-								</p>
-							</div>
-						</TabsContent>
-					</Tabs>
+					<ProfileAvatar
+						address={address}
+						avatar={metadata?.image}
+						className="mr-0 size-12"
+					/>
+
+					<div>
+						<p className="text-sm text-muted-foreground">
+							{collectionName}
+						</p>
+						<h1 className="text-xl font-semibold">
+							{metadata?.name}
+						</h1>
+					</div>
 				</div>
 
-				{/* Right section: Summary */}
-				<div>
-					<Card>
-						<CardHeader>
-							<CardTitle>{t('Summary')}</CardTitle>
-						</CardHeader>
-						<CardContent className="space-y-4">
-							<Button className="w-full">
-								{t('Post your listing')}
-							</Button>
-							<div>
-								<p className="text-sm text-muted-foreground">
-									{t(
-										'Listing will interact with blockchain, which involves gas fee',
-									)}
-								</p>
-							</div>
-						</CardContent>
-					</Card>
+				{/* Main content */}
+				<div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8">
+					{/* Left section */}
+					<div>
+						<h2 className="text-lg font-semibold mb-4">
+							{t('Select your sell method')}
+						</h2>
+
+						<Tabs
+							value={sellMethod}
+							onValueChange={setSellMethod}
+						>
+							<TabsList className="w-full h-auto">
+								<TabsTrigger
+									value="set-price"
+									className="flex flex-col items-center border rounded-lg p-4 data-[state=active]:border-primary"
+								>
+									<span className="font-semibold">
+										{t('Set Price')}
+									</span>
+									<span className="text-xs text-muted-foreground">
+										{t('Sell at a fixed price')}
+									</span>
+								</TabsTrigger>
+							</TabsList>
+
+							<TabsContent
+								value="set-price"
+								className="mt-6 space-y-6"
+							>
+								{/* Price */}
+								<div>
+									<Label
+										htmlFor="price"
+										className="mb-2"
+									>
+										{t('Price')}
+									</Label>
+									<div className="flex items-center gap-2 mt-1">
+										<Select defaultValue={WETH_ADDR}>
+											<SelectTrigger
+												className="group"
+												id="currency"
+											>
+												<SelectValue
+													placeholder={t(
+														'Please select the currency you wanna trade with this item',
+													)}
+												/>
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value={WETH_ADDR}>
+													{getCryptoIcon(
+														chainId,
+														WETH_ADDR,
+													)}
+													ETH
+												</SelectItem>
+												<SelectItem value={USDT_ADDR}>
+													{getCryptoIcon(
+														chainId,
+														USDT_ADDR,
+													)}
+													USDT
+												</SelectItem>
+											</SelectContent>
+										</Select>
+										<Input
+											id="price"
+											type="number"
+											placeholder={t('Amount')}
+										/>
+									</div>
+									<p className="text-xs text-muted-foreground mt-1">
+										{t(
+											'Will be on sale until you transfer this item or cancel it',
+										)}
+									</p>
+								</div>
+							</TabsContent>
+						</Tabs>
+					</div>
+
+					{/* Right section: Summary */}
+					<div>
+						<Card>
+							<CardHeader>
+								<CardTitle>{t('Summary')}</CardTitle>
+							</CardHeader>
+							<CardContent className="space-y-4">
+								<Button className="w-full">
+									{t('Post your listing')}
+								</Button>
+								<div>
+									<p className="text-sm text-muted-foreground">
+										{t(
+											'Listing will interact with blockchain, which involves gas fee',
+										)}
+									</p>
+								</div>
+							</CardContent>
+						</Card>
+					</div>
 				</div>
 			</div>
-		</div>
-	);
+		);
+	} else {
+		return <NotOwnerOfNFT />;
+	}
 }
