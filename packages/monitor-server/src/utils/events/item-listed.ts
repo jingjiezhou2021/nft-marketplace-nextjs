@@ -1,6 +1,6 @@
 import { TypeChain } from "smart-contract";
 import logListener from "./listener/logListener";
-import { PrismaClient } from "../../../prisma/generated/prisma";
+import { ActiveItem, PrismaClient } from "../../../prisma/generated/prisma";
 
 export default function listenForItemListed(
   marketContract: TypeChain.contracts.nftMarketPlaceSol.NftMarketplace,
@@ -31,17 +31,48 @@ export default function listenForItemListed(
           tokenId,
         },
       });
+      let newActiveItem: ActiveItem;
       if (existingActiveItem) {
-        await prisma.activeItem.update({
+        newActiveItem = await prisma.activeItem.update({
           where: {
             id: existingActiveItem.id,
           },
           data,
         });
       } else {
-        await prisma.activeItem.create({
+        newActiveItem = await prisma.activeItem.create({
           data,
         });
+      }
+      const existingNFT = await prisma.nFT.findFirst({
+        where: {
+          contractAddress: {
+            equals: nftAddress,
+            mode: "insensitive",
+          },
+          tokenId,
+          collection: {
+            is: {
+              chainId,
+            },
+          },
+        },
+      });
+      if (existingNFT) {
+        console.log("updating existing nft to connect with active item...");
+        await prisma.nFT.update({
+          where: {
+            id: existingNFT.id,
+          },
+          data: {
+            activeItem: {
+              connect: {
+                id: newActiveItem.id,
+              },
+            },
+          },
+        });
+        console.log("existing nft updated");
       }
     })
   );
