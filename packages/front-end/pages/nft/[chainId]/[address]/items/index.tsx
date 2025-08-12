@@ -41,6 +41,8 @@ const Page: NextPageWithLayout = (
 				},
 			},
 		},
+		fetchPolicy: 'network-only',
+		nextFetchPolicy: 'cache-first',
 	});
 	return (
 		<>

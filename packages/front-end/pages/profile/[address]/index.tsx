@@ -33,6 +33,8 @@ export default function Page(
 				},
 			},
 		},
+		fetchPolicy: 'network-only',
+		nextFetchPolicy: 'cache-first',
 	});
 	return (
 		<>
