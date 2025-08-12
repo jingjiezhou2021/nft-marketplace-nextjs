@@ -11,23 +11,43 @@ type MyPrismaClient = PrismaClient<
   never,
   DefaultArgs
 >;
-async function deleteAllData(prisma: MyPrismaClient) {
+async function deleteAllHardhatData(prisma: MyPrismaClient) {
   try {
-    await prisma.nftMarketplace__ItemListed.deleteMany({});
-    await prisma.nftMarketplace__ItemCanceled.deleteMany({});
-    await prisma.nftMarketplace__ItemBought.deleteMany({});
-    await prisma.nftMarketplace__ItemOfferMade.deleteMany({});
-    await prisma.activeItem.deleteMany({});
-    console.log("✅ All data deleted.");
+    await prisma.nftMarketplace__ItemListed.deleteMany({
+      where: {
+        chainId: 31337,
+      },
+    });
+    await prisma.nftMarketplace__ItemCanceled.deleteMany({
+      where: {
+        chainId: 31337,
+      },
+    });
+    await prisma.nftMarketplace__ItemBought.deleteMany({
+      where: {
+        chainId: 31337,
+      },
+    });
+    await prisma.nftMarketplace__ItemOfferMade.deleteMany({
+      where: {
+        chainId: 31337,
+      },
+    });
+    await prisma.activeItem.deleteMany({
+      where: {
+        chainId: 31337,
+      },
+    });
+    console.log("✅ All data in hardhat deleted.");
   } catch (err) {
-    console.error("❌ Failed to delete data:", err);
+    console.error("❌ Failed to delete data in hardhat:", err);
   }
 }
 export function getApolloServerMiddleware() {
   process.on("SIGINT", async () => {
     console.log("🛑 Shutting down Apollo Server...");
     await apolloServer.stop();
-    await deleteAllData(prisma);
+    await deleteAllHardhatData(prisma);
     await prisma.$disconnect();
     process.exit(0);
   });
