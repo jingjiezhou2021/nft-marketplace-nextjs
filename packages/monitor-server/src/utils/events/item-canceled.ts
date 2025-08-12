@@ -1,7 +1,7 @@
 import { PrismaClientKnownRequestError } from "../../../prisma/generated/prisma/runtime/edge";
 import { TypeChain } from "smart-contract";
 import logListener from "./listener/logListener";
-import { Prisma, PrismaClient } from "../../../prisma/generated/prisma";
+import { Prisma, PrismaClient } from "@/prisma/generated/prisma";
 
 export default function listenForItemCanceled(
   marketContract: TypeChain.contracts.nftMarketPlaceSol.NftMarketplace,

@@ -31,11 +31,12 @@
     "reflect-metadata": "^0.2.2",
     "sleep-promise": "^9.1.0",
     "ts-jest": "^29.4.0",
+    "tsconfig-paths": "^4.2.0",
     "type-graphql": "^2.0.0-rc.2",
     "typegraphql-prisma": "^0.28.0"
   },
   "scripts": {
-    "dev": "tsc && node build/src/index.js",
+    "dev": "tsc && tsc-alias && node build/src/index.js",
     "generate": "prisma generate",
     "postinstall": "yarn generate",
     "test": "jest -i",

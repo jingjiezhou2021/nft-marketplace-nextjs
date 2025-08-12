@@ -1,8 +1,8 @@
 import { Arg, Ctx, Field, InputType, Mutation, Resolver } from "type-graphql";
 import { GraphQLUpload, FileUpload } from "graphql-upload-ts";
 import { UserProfile } from "@generated/type-graphql";
-import { Context } from "../..";
-import SaveImage from "../../../src/utils/files/save-image";
+import { Context } from "@/graphql";
+import SaveImage from "@/src/utils/files/save-image";
 
 @InputType({ description: "UserProfile Data" })
 class UserProfileInputData {

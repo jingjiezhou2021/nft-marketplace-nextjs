@@ -1,7 +1,7 @@
 import { GraphQLUpload, FileUpload } from "graphql-upload-ts";
 import { Category, Collection } from "@generated/type-graphql";
-import { Context } from "../..";
-import SaveImage from "../../../src/utils/files/save-image";
+import { Context } from "@/graphql";
+import SaveImage from "@/src/utils/files/save-image";
 import { Field, InputType, Resolver, Mutation, Arg, Ctx } from "type-graphql";
 
 @InputType({ description: "Custom Collection Info Update Input Where" })

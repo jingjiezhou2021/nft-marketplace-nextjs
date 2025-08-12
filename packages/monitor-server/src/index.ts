@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { getApolloServerMiddleware } from "../graphql";
+import { getApolloServerMiddleware } from "@/graphql";
 import { setUpEventListener } from "./utils/events";
 import path from "path";
 import fs from "fs";

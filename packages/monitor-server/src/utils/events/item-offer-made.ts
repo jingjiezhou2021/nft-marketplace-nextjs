@@ -1,6 +1,6 @@
 import { TypeChain } from "smart-contract";
 import logListener from "./listener/logListener";
-import { PrismaClient } from "../../../prisma/generated/prisma";
+import { PrismaClient } from "@/prisma/generated/prisma";
 
 export default function listenForItemOfferMade(
   marketContract: TypeChain.contracts.nftMarketPlaceSol.NftMarketplace,

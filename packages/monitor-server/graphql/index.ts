@@ -1,7 +1,7 @@
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@as-integrations/express5";
-import { Prisma, PrismaClient } from "../prisma/generated/prisma";
-import { DefaultArgs } from "../prisma/generated/prisma/runtime/library";
+import { Prisma, PrismaClient } from "@/prisma/generated/prisma";
+import { DefaultArgs } from "@/prisma/generated/prisma/runtime/library";
 import getSchema from "./schema";
 export interface Context {
   prisma: MyPrismaClient;
