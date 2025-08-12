@@ -10,6 +10,8 @@ import { useEffect, useState } from 'react';
 import { ValuesType } from 'utility-types';
 import { LoadingSpinner } from './loading';
 import Link from 'next/link';
+import CryptoPrice from './crypto-price';
+import useNFTMetadata from '@/hooks/use-nft-metadata';
 
 export type NFTCardData = {
 	imageUrl: string;
@@ -95,23 +97,6 @@ export function CardFooterWrapper({
 		</Wrapped>
 	);
 }
-function PriceTag({
-	listing,
-	chainId,
-}: {
-	listing: Listing;
-	chainId: string | number | bigint;
-}) {
-	return (
-		<p>
-			{getCryptoIcon(chainId, listing.erc20TokenAddress)}
-			<span>{listing.price}</span>
-			<span className="text-muted-foreground">
-				&nbsp;{listing.erc20TokenName}
-			</span>
-		</p>
-	);
-}
 export default function NFTCard({
 	nft,
 	className,
@@ -126,42 +111,20 @@ export default function NFTCard({
 	fontSmaller?: boolean;
 }) {
 	const { t, i18n } = useTranslation('common');
-	const [nftCardData, setNftCarddata] = useState<NFTCardData>();
-	const [loading, setLoading] = useState(true);
-	useEffect(() => {
-		setLoading(true);
-		getNFTMetadata(
-			nft.contractAddress as `0x${string}`,
-			nft.tokenId,
-			nft.collection.chainId,
-		)
-			.then((metadata) => {
-				return {
-					...metadata,
-					name: metadata.name ?? `#${nft.tokenId}`,
-					listing: nft.activeItem?.listing,
-					chainId: nft.collection.chainId,
-				};
-			})
-			.then((cardData) => {
-				setLoading(false);
-				setNftCarddata({
-					imageUrl: cardData.image,
-					listing: cardData.listing,
-					name: cardData.name,
-					chainId: cardData.chainId,
-				});
-			});
-	}, [nft]);
+	const { metadata, loading } = useNFTMetadata(
+		nft.contractAddress as `0x${string}`,
+		nft.tokenId,
+		nft.collection.chainId,
+	);
 	return (
 		<CardWrapper className={cn('min-h-32', className)}>
-			{loading ? (
+			{loading || metadata === undefined ? (
 				<div className="size-full relative">
 					<LoadingSpinner className="absolute left-1/2 top-1/2 -translate-1/2" />
 				</div>
 			) : (
 				<Link
-					href={`/nft/${nftCardData.chainId}/${nft.contractAddress}/${
+					href={`/nft/${nft.collection.chainId}/${nft.contractAddress}/${
 						nft.tokenId
 					}`}
 					locale={i18n.language}
@@ -169,7 +132,7 @@ export default function NFTCard({
 				>
 					<CardContentWrapper>
 						<Image
-							src={nftCardData.imageUrl}
+							src={metadata.image}
 							alt="nft-card"
 							fill
 						/>
@@ -181,7 +144,7 @@ export default function NFTCard({
 								fontSmaller && 'text-xs',
 							)}
 						>
-							{nftCardData.name}
+							{metadata.name}
 						</h3>
 						<div
 							className={cn(
@@ -189,10 +152,10 @@ export default function NFTCard({
 								fontSmaller && 'text-xs',
 							)}
 						>
-							{nftCardData.listing ? (
-								<PriceTag
-									listing={nftCardData.listing}
-									chainId={nftCardData.chainId}
+							{nft.activeItem?.listing ? (
+								<CryptoPrice
+									{...nft.activeItem.listing}
+									chainId={nft.collection.chainId}
 								/>
 							) : (
 								<p className="text-muted-foreground">
