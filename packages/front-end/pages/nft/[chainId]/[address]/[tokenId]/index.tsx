@@ -185,20 +185,22 @@ export default function NFTDetailPage(
 					<Separator orientation="horizontal" />
 					{chainId !== undefined &&
 						nftData?.findFirstNFT?.activeItem && (
-							<div className="flex">
-								<div className="flex flex-col gap-1">
-									<h4 className="text-muted-foreground text-xs">
-										{t('Price')}&nbsp;
-									</h4>
-									<CryptoPrice
-										chainId={chainId}
-										{...nftData.findFirstNFT.activeItem
-											.listing}
-									/>
+							<>
+								<div className="flex">
+									<div className="flex flex-col gap-1">
+										<h4 className="text-muted-foreground text-xs">
+											{t('Price')}&nbsp;
+										</h4>
+										<CryptoPrice
+											chainId={chainId}
+											{...nftData.findFirstNFT.activeItem
+												.listing}
+										/>
+									</div>
 								</div>
-							</div>
+								<Separator orientation="horizontal" />
+							</>
 						)}
-					<Separator orientation="horizontal" />
 					<div>
 						{userAddress?.toLowerCase() ===
 						owner?.address.toLowerCase() ? (
