@@ -22,6 +22,7 @@ error NftMarketplace__AlreadyListed(
 );
 error NftMarketplace__NoProceeds();
 error NftMarketplace__NotOwner();
+error NftMarketplace__ListedButNowOwnerAnymore(address nftAddress, uint256 tokenId,address previousOwner);
 error NftMarketplace__IsOwner();
 error NftMarketplace__NotApprovedForMarketplace();
 error NftMarketplace__PriceMustBeAboveZero();
@@ -210,6 +211,9 @@ contract NftMarketplace is ReentrancyGuard{
         isNotOwner(nftAddress, tokenId, msg.sender)
         nonReentrant
     {
+        if(!getIsOwner(nftAddress,tokenId,owner)) {
+            revert NftMarketplace__ListedButNowOwnerAnymore(nftAddress,tokenId,owner);
+        }
         Listing memory listedItem = s_listings[owner][nftAddress][tokenId];
         if (msg.value > 0) {
             // native payment

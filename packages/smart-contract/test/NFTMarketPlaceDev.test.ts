@@ -11,6 +11,7 @@ describe("NFTMarketPlace", () => {
   let BasicNFTContract: BasicNFT;
   let seller: HardhatEthersSigner;
   let buyer: HardhatEthersSigner;
+  let thirdPlayer: HardhatEthersSigner;
   let standardSellingPriceUSDT: bigint;
   let standardSellingPriceWETH: bigint;
   let initialBalanceUSDT: bigint;
@@ -24,6 +25,7 @@ describe("NFTMarketPlace", () => {
     BasicNFTContract = BasicNFT as unknown as BasicNFT;
     seller = (await ethers.getSigners())[0];
     buyer = (await ethers.getSigners())[1];
+    thirdPlayer = (await ethers.getSigners())[2];
     standardSellingPriceUSDT = ethers.parseUnits(
       "1000",
       await USDTContract.decimals()
@@ -176,6 +178,34 @@ describe("NFTMarketPlace", () => {
       ).revertedWithCustomError(
         buyerConnectedContract,
         "NftMarketplace__NotListed"
+      );
+    });
+    it("if listed but not owner any more, purchase will fail", async () => {
+      await approveAndListItem(
+        onlyTokenID,
+        standardSellingPriceUSDT,
+        await USDTContract.getAddress()
+      );
+      await BasicNFTContract.transferFrom(seller, thirdPlayer, onlyTokenID);
+      await USDTContract.connect(buyer).approve(
+        await NFTMarketPlaceContract.getAddress(),
+        (
+          await NFTMarketPlaceContract.getPrice(
+            seller,
+            await BasicNFTContract.getAddress(),
+            onlyTokenID
+          )
+        )[0]
+      );
+      await expect(
+        buyerConnectedContract.buyItem(
+          seller,
+          await BasicNFTContract.getAddress(),
+          onlyTokenID
+        )
+      ).revertedWithCustomError(
+        buyerConnectedContract,
+        "NftMarketplace__ListedButNowOwnerAnymore"
       );
     });
     describe("trade with erc20 token", () => {
