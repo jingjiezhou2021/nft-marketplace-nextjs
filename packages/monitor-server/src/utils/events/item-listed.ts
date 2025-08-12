@@ -59,15 +59,15 @@ export default function listenForItemListed(
         },
       });
       if (existingNFT) {
-        console.log("updating existing nft to connect with active item...");
-        await prisma.nFT.update({
+        console.log("updating active item to connect with existing nft...");
+        await prisma.activeItem.update({
           where: {
-            id: existingNFT.id,
+            id: newActiveItem.id,
           },
           data: {
-            activeItem: {
+            nft: {
               connect: {
-                id: newActiveItem.id,
+                id: existingNFT.id,
               },
             },
           },

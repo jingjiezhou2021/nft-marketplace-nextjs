@@ -7,17 +7,17 @@ import SaveImage from "@/src/utils/files/save-image";
 @InputType({ description: "UserProfile Data" })
 class UserProfileInputData {
   @Field()
-  address: string;
+  address?: string;
   @Field({ nullable: true })
-  username?: string | undefined;
+  username?: string;
   @Field({ nullable: true })
-  bio?: string | undefined;
+  bio?: string;
   @Field({ nullable: true })
-  url?: string | undefined;
+  url?: string;
   @Field(() => GraphQLUpload, { nullable: true })
-  avatar?: FileUpload | undefined;
+  avatar?: FileUpload;
   @Field(() => GraphQLUpload, { nullable: true })
-  banner?: FileUpload | undefined;
+  banner?: FileUpload;
 }
 
 @Resolver()
@@ -57,7 +57,7 @@ export class CustomUserProfileResolver {
     } else {
       console.log("user not exist, creating...");
       const newUser = {
-        address,
+        address:address!,
         username,
         bio,
         url,

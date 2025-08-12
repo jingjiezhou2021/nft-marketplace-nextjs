@@ -71,7 +71,8 @@ model ActiveItem {
   tokenId    BigInt
   listing    Listing
   chainId    BigInt  @default(31337)
-  nft        NFT?
+  nft        NFT?    @relation(fields: [nftId], references: [id])
+  nftId      String? @unique @db.ObjectId
 }
 
 model UserProfile {
@@ -98,8 +99,7 @@ model NFT {
   collection   Collection @relation(fields: [collectionId], references: [id])
   collectionId String     @db.ObjectId
 
-  activeItem   ActiveItem? @relation(fields: [activeItemId], references: [id])
-  activeItemId String?     @unique @db.ObjectId
+  activeItem ActiveItem?
 
   @@unique([contractAddress, tokenId, collectionId])
 }

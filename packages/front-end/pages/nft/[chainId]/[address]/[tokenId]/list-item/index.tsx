@@ -41,9 +41,27 @@ import { useQuery } from '@apollo/client';
 import findNFT from '@/lib/graphql/queries/find-nft';
 import { QueryMode } from '@/apollo/gql/graphql';
 import NFTAlreadyListed from '@/components/nft/nft-already-listed';
-export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
-	locale,
-}) => {
+import checkOwnerShip from '@/lib/nft/check-ownership';
+export const getServerSideProps: GetServerSideProps<
+	SSRConfig,
+	{ chainId: string; address: `0x${string}`; tokenId: string }
+> = async ({ locale, params, resolvedUrl }) => {
+	if (params) {
+		const { refresh } = await checkOwnerShip(
+			params.chainId,
+			params.address,
+			params.tokenId,
+		);
+		console.log('refresh:', refresh);
+		if (refresh) {
+			return {
+				redirect: {
+					destination: resolvedUrl,
+					permanent: false,
+				},
+			};
+		}
+	}
 	return {
 		props: {
 			...(await serverSideTranslations(locale!, ['common'])),

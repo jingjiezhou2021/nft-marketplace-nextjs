@@ -6,6 +6,7 @@ import { setUpEventListener } from "./utils/events";
 import path from "path";
 import fs from "fs";
 import { graphqlUploadExpress } from "graphql-upload-ts";
+import router from "./routes";
 function main() {
   const app = express();
   app.use(cors());
@@ -17,6 +18,7 @@ function main() {
   app.use(express.static(uploadDir));
   // Enable file uploads
   app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 5 }));
+  app.use("/api", router);
   const port = process.env.port || 3000;
   const server = app.listen(port, () => {
     console.log(`🚀 Express server running on http://localhost:${port}`);

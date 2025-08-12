@@ -12,7 +12,6 @@ const findCollection = graphql(`
 			url
 			banner
 			importedNfts {
-				activeItemId
 				contractAddress
 				activeItem {
 					chainId

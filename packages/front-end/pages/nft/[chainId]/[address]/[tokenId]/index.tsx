@@ -14,7 +14,7 @@ import { getIconOfChain, getNameOfChain } from '@/lib/chain';
 import NFTDetailAbout from '@/components/nft/detail/about';
 import useUser from '@/hooks/use-user';
 import { useQuery } from '@apollo/client';
-import { useParams } from 'next/navigation';
+import { redirect, useParams } from 'next/navigation';
 import useNFTMetadata from '@/hooks/use-nft-metadata';
 import NFTDetailTraits from '@/components/nft/detail/traits';
 import { ChainIdParameter } from '@wagmi/core/internal';
@@ -27,9 +27,27 @@ import findCollection from '@/lib/graphql/queries/find-collection';
 import { QueryMode } from '@/apollo/gql/graphql';
 import { useAccount } from 'wagmi';
 import CryptoPrice from '@/components/crypto-price';
-export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
-	locale,
-}) => {
+import checkOwnerShip from '@/lib/nft/check-ownership';
+export const getServerSideProps: GetServerSideProps<
+	SSRConfig,
+	{ chainId: string; address: `0x${string}`; tokenId: string }
+> = async ({ params, locale, resolvedUrl }) => {
+	if (params) {
+		const { refresh } = await checkOwnerShip(
+			params.chainId,
+			params.address,
+			params.tokenId,
+		);
+		console.log('refresh:', refresh);
+		if (refresh) {
+			return {
+				redirect: {
+					destination: resolvedUrl,
+					permanent: false,
+				},
+			};
+		}
+	}
 	return {
 		props: {
 			...(await serverSideTranslations(locale!, ['common'])),

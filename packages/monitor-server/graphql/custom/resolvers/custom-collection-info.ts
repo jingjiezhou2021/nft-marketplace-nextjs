@@ -7,34 +7,34 @@ import { Field, InputType, Resolver, Mutation, Arg, Ctx } from "type-graphql";
 @InputType({ description: "Custom Collection Info Update Input Where" })
 class CustomUpdateCollectionInfoWhere {
   @Field()
-  address: string;
+  address?: string;
   @Field()
-  chainId: number;
+  chainId?: number;
 }
 
 @InputType({ description: "Custom Collection Info Update Input Data" })
 class CustomUpdateCollectionInfoData {
   @Field({ nullable: true })
-  nickname?: string | undefined;
+  nickname?: string;
   @Field({ nullable: true })
-  description?: string | undefined;
+  description?: string;
   @Field({ nullable: true })
-  url?: string | undefined;
+  url?: string;
   @Field({ nullable: true })
-  category?: Category | undefined;
+  category?: Category;
 
   @Field(() => GraphQLUpload, { nullable: true })
-  avatar?: FileUpload | undefined;
+  avatar?: FileUpload;
   @Field(() => GraphQLUpload, { nullable: true })
-  banner?: FileUpload | undefined;
+  banner?: FileUpload;
 }
 
 @InputType({ description: "Custom Collection Info Update Input" })
 class CustomUpdateCollectionInfo {
   @Field()
-  where: CustomUpdateCollectionInfoWhere;
+  where?: CustomUpdateCollectionInfoWhere;
   @Field()
-  data: CustomUpdateCollectionInfoData;
+  data?: CustomUpdateCollectionInfoData;
 }
 
 @Resolver()
@@ -48,22 +48,22 @@ export class CustomCollectionResolver {
     const collection = await prisma.collection.findFirst({
       where: {
         address: {
-          equals: where.address,
+          equals: where?.address,
           mode: "insensitive",
         },
-        chainId: where.chainId,
+        chainId: where?.chainId,
       },
     });
-    const newAvatar = data.avatar ? await SaveImage(data.avatar) : undefined;
-    const newBanner = data.banner ? await SaveImage(data.banner) : undefined;
+    const newAvatar = data?.avatar ? await SaveImage(data.avatar) : undefined;
+    const newBanner = data?.banner ? await SaveImage(data.banner) : undefined;
     if (collection) {
       const newCollection = {
         banner: newBanner,
         avatar: newAvatar,
-        nickname: data.nickname,
-        description: data.description,
-        url: data.url,
-        category: data.category,
+        nickname: data?.nickname,
+        description: data?.description,
+        url: data?.url,
+        category: data?.category,
       };
       console.log("collection exists, updating...", newCollection);
       const ret = await prisma.collection.update({
