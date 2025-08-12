@@ -76,24 +76,65 @@ describe("NFTMarketPlace Monitor Server", () => {
   async function clear() {
     await client.mutate({
       mutation: graphql(`
-        mutation clear {
-          deleteManyNftMarketplace__ItemListed {
+        mutation clear(
+          $where: ActiveItemWhereInput
+          $deleteManyNftMarketplaceItemBoughtWhere2: NftMarketplace__ItemBoughtWhereInput
+          $deleteManyNftMarketplaceItemCanceledWhere2: NftMarketplace__ItemCanceledWhereInput
+          $deleteManyNftMarketplaceItemListedWhere2: NftMarketplace__ItemListedWhereInput
+          $deleteManyNftMarketplaceItemOfferMadeWhere2: NftMarketplace__ItemOfferMadeWhereInput
+        ) {
+          deleteManyNftMarketplace__ItemListed(
+            where: $deleteManyNftMarketplaceItemListedWhere2
+          ) {
             count
           }
-          deleteManyNftMarketplace__ItemOfferMade {
+          deleteManyNftMarketplace__ItemOfferMade(
+            where: $deleteManyNftMarketplaceItemOfferMadeWhere2
+          ) {
             count
           }
-          deleteManyNftMarketplace__ItemCanceled {
+          deleteManyNftMarketplace__ItemCanceled(
+            where: $deleteManyNftMarketplaceItemCanceledWhere2
+          ) {
             count
           }
-          deleteManyNftMarketplace__ItemBought {
+          deleteManyNftMarketplace__ItemBought(
+            where: $deleteManyNftMarketplaceItemBoughtWhere2
+          ) {
             count
           }
-          deleteManyActiveItem {
+          deleteManyActiveItem(where: $where) {
             count
           }
         }
       `),
+      variables: {
+        where: {
+          chainId: {
+            equals: 31337,
+          },
+        },
+        deleteManyNftMarketplaceItemBoughtWhere2: {
+          chainId: {
+            equals: 31337,
+          },
+        },
+        deleteManyNftMarketplaceItemCanceledWhere2: {
+          chainId: {
+            equals: 31337,
+          },
+        },
+        deleteManyNftMarketplaceItemListedWhere2: {
+          chainId: {
+            equals: 31337,
+          },
+        },
+        deleteManyNftMarketplaceItemOfferMadeWhere2: {
+          chainId: {
+            equals: 31337,
+          },
+        },
+      },
     });
   }
   afterEach(async () => {
@@ -121,9 +162,9 @@ describe("NFTMarketPlace Monitor Server", () => {
           }
         `),
       });
-      expect(data.nftMarketplace__ItemListeds).toEqual<
-        typeof data.nftMarketplace__ItemListeds
-      >([
+      expect(
+        data.nftMarketplace__ItemListeds.filter((val) => (val.chainId === 31337n))
+      ).toEqual<typeof data.nftMarketplace__ItemListeds>([
         {
           __typename: "NftMarketplace__ItemListed",
           seller: seller.address,
@@ -157,9 +198,11 @@ describe("NFTMarketPlace Monitor Server", () => {
           }
         `),
       });
-      expect(data.nftMarketplace__ItemCanceleds).toEqual<
-        typeof data.nftMarketplace__ItemCanceleds
-      >([
+      expect(
+        data.nftMarketplace__ItemCanceleds.filter(
+          (val) => (val.chainId === 31337n)
+        )
+      ).toEqual<typeof data.nftMarketplace__ItemCanceleds>([
         {
           __typename: "NftMarketplace__ItemCanceled",
           seller: seller.address,
@@ -200,9 +243,9 @@ describe("NFTMarketPlace Monitor Server", () => {
           }
         `),
       });
-      expect(data.nftMarketplace__ItemBoughts).toEqual<
-        typeof data.nftMarketplace__ItemBoughts
-      >([
+      expect(
+        data.nftMarketplace__ItemBoughts.filter((val) => (val.chainId === 31337n))
+      ).toEqual<typeof data.nftMarketplace__ItemBoughts>([
         {
           __typename: "NftMarketplace__ItemBought",
           buyer: buyer.address,
@@ -273,9 +316,11 @@ describe("NFTMarketPlace Monitor Server", () => {
           }
         `),
       });
-      expect(data.nftMarketplace__ItemOfferMades).toEqual<
-        typeof data.nftMarketplace__ItemOfferMades
-      >([
+      expect(
+        data.nftMarketplace__ItemOfferMades.filter(
+          (val) => (val.chainId === 31337n)
+        )
+      ).toEqual<typeof data.nftMarketplace__ItemOfferMades>([
         {
           __typename: "NftMarketplace__ItemOfferMade",
           offerId,
@@ -318,7 +363,9 @@ describe("NFTMarketPlace Monitor Server", () => {
           }
         `),
       });
-      expect(data.activeItems).toEqual<typeof data.activeItems>([
+      expect(data.activeItems.filter((val) => (val.chainId === 31337n))).toEqual<
+        typeof data.activeItems
+      >([
         {
           __typename: "ActiveItem",
           seller: seller.address,
@@ -357,7 +404,9 @@ describe("NFTMarketPlace Monitor Server", () => {
           }
         `),
       });
-      expect(data.activeItems).toEqual<typeof data.activeItems>([
+      expect(data.activeItems.filter((val) => (val.chainId === 31337n))).toEqual<
+        typeof data.activeItems
+      >([
         {
           __typename: "ActiveItem",
           seller: seller.address,
@@ -386,11 +435,14 @@ describe("NFTMarketPlace Monitor Server", () => {
               seller
               nftAddress
               tokenId
+              chainId
             }
           }
         `),
       });
-      expect(data.activeItems).toEqual<typeof data.activeItems>([]);
+      expect(data.activeItems.filter((val) => (val.chainId === 31337n))).toEqual<
+        typeof data.activeItems
+      >([]);
     });
     it("Delete record when item is bought", async () => {
       const priceWETH = ethers.parseUnits("0.4", await weth.decimals());
@@ -409,11 +461,14 @@ describe("NFTMarketPlace Monitor Server", () => {
               seller
               nftAddress
               tokenId
+              chainId
             }
           }
         `),
       });
-      expect(data.activeItems).toEqual<typeof data.activeItems>([]);
+      expect(data.activeItems.filter((val) => (val.chainId === 31337n))).toEqual<
+        typeof data.activeItems
+      >([]);
     });
     it("Delete record when offer is accepted", async () => {
       const price = ethers.parseUnits("0.3", await weth.decimals());
@@ -445,11 +500,14 @@ describe("NFTMarketPlace Monitor Server", () => {
               seller
               nftAddress
               tokenId
+              chainId
             }
           }
         `),
       });
-      expect(data.activeItems).toEqual<typeof data.activeItems>([]);
+      expect(data.activeItems.filter((val) => (val.chainId === 31337n))).toEqual<
+        typeof data.activeItems
+      >([]);
     });
   });
 });
