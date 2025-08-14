@@ -54,6 +54,10 @@ export const getServerSideProps: GetServerSideProps<
 		);
 		console.log('refresh:', refresh);
 		if (refresh) {
+			if (locale) {
+				resolvedUrl = `/${locale}${resolvedUrl}`;
+			}
+			console.log('resolved url:', resolvedUrl);
 			return {
 				redirect: {
 					destination: resolvedUrl,

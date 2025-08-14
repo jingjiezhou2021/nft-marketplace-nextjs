@@ -33,6 +33,7 @@ import MARKETPLACE_ADDRESS from '@/lib/market';
 import { LoadingMask, LoadingSpinner } from '@/components/loading';
 import { useEffect } from 'react';
 import useMessage from 'antd/es/message/useMessage';
+import TransferNFTDialog from '@/components/nft/dialog/transfer';
 export const getServerSideProps: GetServerSideProps<
 	SSRConfig,
 	{ chainId: string; address: `0x${string}`; tokenId: string }
@@ -45,6 +46,10 @@ export const getServerSideProps: GetServerSideProps<
 		);
 		console.log('refresh:', refresh);
 		if (refresh) {
+			if (locale) {
+				resolvedUrl = `/${locale}${resolvedUrl}`;
+			}
+			console.log('resolved url:', resolvedUrl);
 			return {
 				redirect: {
 					destination: resolvedUrl,
@@ -256,49 +261,70 @@ export default function NFTDetailPage(
 								<Separator orientation="horizontal" />
 							</>
 						)}
-					<div>
+					<div className="flex justify-between">
 						{userAddress?.toLowerCase() ===
 						owner?.address.toLowerCase() ? (
-							chainId && nftData?.findFirstNFT?.activeItem ? (
-								<Button
-									className="w-full"
-									variant="destructive"
-									disabled={
-										cancelListingConfirming ||
-										cancelListingPending
-									}
-									onClick={() => {
-										writeCancelListing({
-											address: MARKETPLACE_ADDRESS[
-												chainId
-											] as `0x${string}`,
-											chainId,
-											args: [address, BigInt(tokenId)],
-										});
-									}}
-								>
-									{t('Cancel Listing')}
-								</Button>
-							) : (
-								<Link
-									className="w-full"
-									href={`/nft/${chainId}/${address}/${tokenId}/list-item`}
-									locale={_props._nextI18Next?.initialLocale}
-								>
-									<Button className="w-full">
-										{t('List Item')}
+							<>
+								{chainId &&
+								nftData?.findFirstNFT?.activeItem ? (
+									<Button
+										className="w-[48%]"
+										variant="destructive"
+										disabled={
+											cancelListingConfirming ||
+											cancelListingPending
+										}
+										onClick={() => {
+											writeCancelListing({
+												address: MARKETPLACE_ADDRESS[
+													chainId
+												] as `0x${string}`,
+												chainId,
+												args: [
+													address,
+													BigInt(tokenId),
+												],
+											});
+										}}
+									>
+										{t('Cancel Listing')}
 									</Button>
-								</Link>
-							)
+								) : (
+									<Link
+										className="w-[48%]"
+										href={`/nft/${chainId}/${address}/${tokenId}/list-item`}
+										locale={
+											_props._nextI18Next?.initialLocale
+										}
+									>
+										<Button className="w-full">
+											{t('List Item')}
+										</Button>
+									</Link>
+								)}
+								{nftData?.findFirstNFT && (
+									<TransferNFTDialog
+										nft={{
+											contractAddress: address,
+											chainId,
+											tokenId,
+										}}
+									>
+										<Button className="w-[48%]">
+											{t('Transfer')}
+										</Button>
+									</TransferNFTDialog>
+								)}
+							</>
 						) : (
-							<div className="flex justify-between">
+							<>
 								<Button className="w-[48%]">
 									{t('Buy Now')}
 								</Button>
 								<Button className="w-[48%]">
 									{t('Make Offer')}
 								</Button>
-							</div>
+							</>
 						)}
 					</div>
 				</div>
