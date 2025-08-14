@@ -4,8 +4,8 @@ import { erc20Abi } from 'viem';
 import { useReadContract } from 'wagmi';
 
 export default function useCurrencyDecimals(
-	address: `0x${string}`,
-	chainId: ChainIdParameter<typeof config>['chainId'],
+	address?: `0x${string}`,
+	chainId?: ChainIdParameter<typeof config>['chainId'],
 ) {
 	const { data, isPending, error } = useReadContract({
 		address,

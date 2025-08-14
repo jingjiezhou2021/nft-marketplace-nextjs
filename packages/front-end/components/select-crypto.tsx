@@ -9,11 +9,14 @@ import {
 import { useTranslation } from 'next-i18next';
 import { ChainIdParameter } from '@wagmi/core/internal';
 import { config } from './providers/RainbowKitAllProvider';
+import { cn } from '@/lib/utils';
 export default function SelectCrypto({
 	chainId,
+	className,
 	...props
 }: React.ComponentProps<typeof Select> & {
 	chainId: ChainIdParameter<typeof config>['chainId'];
+	className?: string;
 }) {
 	const { t } = useTranslation('common');
 	if (chainId === undefined) {
@@ -22,7 +25,7 @@ export default function SelectCrypto({
 	return (
 		<Select {...props}>
 			<SelectTrigger
-				className="group"
+				className={cn('group', className)}
 				id="currency"
 			>
 				<SelectValue

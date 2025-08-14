@@ -34,6 +34,7 @@ import { LoadingMask, LoadingSpinner } from '@/components/loading';
 import { useEffect } from 'react';
 import useMessage from 'antd/es/message/useMessage';
 import TransferNFTDialog from '@/components/nft/dialog/transfer';
+import UpdateListingDialog from '@/components/nft/dialog/update-listing';
 export const getServerSideProps: GetServerSideProps<
 	SSRConfig,
 	{ chainId: string; address: `0x${string}`; tokenId: string }
@@ -246,16 +247,35 @@ export default function NFTDetailPage(
 					{chainId !== undefined &&
 						nftData?.findFirstNFT?.activeItem && (
 							<>
-								<div className="flex">
-									<div className="flex flex-col gap-1">
+								<div className="flex w-full">
+									<div className="flex flex-col gap-1 w-full">
 										<h4 className="text-muted-foreground text-xs">
 											{t('Price')}&nbsp;
 										</h4>
-										<CryptoPrice
-											chainId={chainId}
-											{...nftData.findFirstNFT.activeItem
-												.listing}
-										/>
+										<div className="flex justify-between w-full items-center">
+											<CryptoPrice
+												chainId={chainId}
+												{...nftData.findFirstNFT
+													.activeItem.listing}
+											/>
+											{userAddress?.toLowerCase() ===
+												owner?.address.toLowerCase() && (
+												<UpdateListingDialog
+													nft={{
+														contractAddress:
+															address,
+														chainId,
+														tokenId,
+													}}
+												>
+													<Button
+														variant={'secondary'}
+													>
+														{t('Edit')}
+													</Button>
+												</UpdateListingDialog>
+											)}
+										</div>
 									</div>
 								</div>
 								<Separator orientation="horizontal" />

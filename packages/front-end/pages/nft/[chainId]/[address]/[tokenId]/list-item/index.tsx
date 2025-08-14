@@ -217,11 +217,12 @@ const Page: NextPageWithLayout = (
 													></SelectCrypto>
 													<Input
 														id="amount"
+														name="amount"
 														onChange={handleChange}
 														onBlur={handleBlur}
 														type="number"
 														placeholder={t(
-															'Amount',
+															'Please input price amount',
 														)}
 														step="any"
 													/>
