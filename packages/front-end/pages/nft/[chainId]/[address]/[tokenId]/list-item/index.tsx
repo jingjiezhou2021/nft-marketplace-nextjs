@@ -42,6 +42,7 @@ import findNFT from '@/lib/graphql/queries/find-nft';
 import { QueryMode } from '@/apollo/gql/graphql';
 import NFTAlreadyListed from '@/components/nft/nft-already-listed';
 import checkOwnerShip from '@/lib/nft/check-ownership';
+import SelectCrypto from '@/components/select-crypto';
 export const getServerSideProps: GetServerSideProps<
 	SSRConfig,
 	{ chainId: string; address: `0x${string}`; tokenId: string }
@@ -199,7 +200,8 @@ const Page: NextPageWithLayout = (
 													{t('Price')}
 												</Label>
 												<div className="flex items-center gap-2 mt-1">
-													<Select
+													<SelectCrypto
+														chainId={chainId}
 														value={
 															values.currencyAddress
 														}
@@ -212,42 +214,7 @@ const Page: NextPageWithLayout = (
 																val,
 															);
 														}}
-													>
-														<SelectTrigger
-															className="group"
-															id="currency"
-														>
-															<SelectValue
-																placeholder={t(
-																	'Please select the currency you wanna trade with this item',
-																)}
-															/>
-														</SelectTrigger>
-														<SelectContent>
-															<SelectItem
-																value={
-																	WETH_ADDR
-																}
-															>
-																{getCryptoIcon(
-																	chainId,
-																	WETH_ADDR,
-																)}
-																ETH
-															</SelectItem>
-															<SelectItem
-																value={
-																	USDT_ADDR
-																}
-															>
-																{getCryptoIcon(
-																	chainId,
-																	USDT_ADDR,
-																)}
-																USDT
-															</SelectItem>
-														</SelectContent>
-													</Select>
+													></SelectCrypto>
 													<Input
 														id="amount"
 														onChange={handleChange}
