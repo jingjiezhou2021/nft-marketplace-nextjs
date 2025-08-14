@@ -45,6 +45,7 @@ model NftMarketplace__ItemCanceled {
   seller     String
   nftAddress String
   tokenId    BigInt
+  listing    Listing
   chainId    BigInt @default(31337)
 }
 

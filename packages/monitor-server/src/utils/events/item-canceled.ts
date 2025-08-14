@@ -18,13 +18,7 @@ export default function listenForItemCanceled(
           tokenId,
         },
       });
-      if (existingActiveItem) {
-        await prisma.activeItem.delete({
-          where: {
-            id: existingActiveItem.id,
-          },
-        });
-      } else {
+      if (!existingActiveItem) {
         throw new PrismaClientKnownRequestError(
           "active item should have existed before canceling",
           {
@@ -33,12 +27,19 @@ export default function listenForItemCanceled(
           }
         );
       }
+      const { listing } = existingActiveItem;
+      await prisma.activeItem.delete({
+        where: {
+          id: existingActiveItem.id,
+        },
+      });
       await prisma.nftMarketplace__ItemCanceled.create({
         data: {
           seller,
           nftAddress,
           tokenId,
           chainId: chainId,
+          listing,
         },
       });
     })

@@ -25,9 +25,14 @@ import ProfileAvatar from '@/components/profile/avatar';
 import Link from 'next/link';
 import findCollection from '@/lib/graphql/queries/find-collection';
 import { QueryMode } from '@/apollo/gql/graphql';
-import { useAccount } from 'wagmi';
+import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
 import CryptoPrice from '@/components/crypto-price';
 import checkOwnerShip from '@/lib/nft/check-ownership';
+import { useWriteNftMarketplaceCancelListing } from 'smart-contract/wagmi/generated';
+import MARKETPLACE_ADDRESS from '@/lib/market';
+import { LoadingMask, LoadingSpinner } from '@/components/loading';
+import { useEffect } from 'react';
+import useMessage from 'antd/es/message/useMessage';
 export const getServerSideProps: GetServerSideProps<
 	SSRConfig,
 	{ chainId: string; address: `0x${string}`; tokenId: string }
@@ -75,6 +80,8 @@ function CustomTabsTrigger({
 export default function NFTDetailPage(
 	_props: Awaited<InferGetStaticPropsType<typeof getServerSideProps>>,
 ) {
+	const [messageApi, contextHolder] = useMessage();
+	const router = useRouter();
 	const params = useParams<{
 		chainId: string;
 		address: `0x${string}`;
@@ -122,13 +129,43 @@ export default function NFTDetailPage(
 		},
 	});
 	const { metadata: nftMetadata } = useNFTMetadata(address, tokenId, chainId);
+	const {
+		writeContract: writeCancelListing,
+		isPending: cancelListingPending,
+		data: cancelListingHash,
+	} = useWriteNftMarketplaceCancelListing();
+	const {
+		isLoading: cancelListingConfirming,
+		isSuccess: cancelListingConfirmed,
+		isError: cancelListingErrorEncountered,
+		error: cancelListingError,
+	} = useWaitForTransactionReceipt({
+		hash: cancelListingHash,
+	});
 	const dispName = nftMetadata?.name ?? `# ${tokenId}`;
 	const { dispName: ownerDispName, user: owner } = useUser(
 		nftData?.findFirstNFT?.user.address,
 	);
 	const { address: userAddress } = useAccount();
+	useEffect(() => {
+		if (cancelListingConfirmed) {
+			messageApi.success(t('Cancel Listing item successful'));
+			router.reload();
+		}
+		if (cancelListingErrorEncountered) {
+			messageApi.error(t('Cancel Listing item failed'));
+			console.error(cancelListingError);
+		}
+	}, [cancelListingConfirmed, cancelListingErrorEncountered]);
 	return (
-		<div className="flex flex-col lg:flex-row gap-6 p-4 lg:py-6 lg:pl-2 h-full">
+		<div className="flex flex-col lg:flex-row gap-6 p-4 lg:py-6 lg:pl-2 h-full relative">
+			{contextHolder}
+			<LoadingMask
+				loading={cancelListingConfirming || cancelListingPending}
+				className="flex justify-center items-center"
+			>
+				<LoadingSpinner size={48} />
+			</LoadingMask>
 			{/* Left Side: NFT Image */}
 			<div className="h-full aspect-square shrink-0">
 				<Card className="h-full overflow-hidden rounded-2xl shadow-lg p-0">
@@ -222,24 +259,37 @@ export default function NFTDetailPage(
 					<div>
 						{userAddress?.toLowerCase() ===
 						owner?.address.toLowerCase() ? (
-							<Link
-								className="w-full"
-								href={`/nft/${chainId}/${address}/${tokenId}/list-item`}
-								locale={_props._nextI18Next?.initialLocale}
-							>
-								{nftData?.findFirstNFT?.activeItem ? (
-									<Button
-										className="w-full"
-										variant="destructive"
-									>
-										{t('Cancel Listing')}
-									</Button>
-								) : (
+							chainId && nftData?.findFirstNFT?.activeItem ? (
+								<Button
+									className="w-full"
+									variant="destructive"
+									disabled={
+										cancelListingConfirming ||
+										cancelListingPending
+									}
+									onClick={() => {
+										writeCancelListing({
+											address: MARKETPLACE_ADDRESS[
+												chainId
+											] as `0x${string}`,
+											chainId,
+											args: [address, BigInt(tokenId)],
+										});
+									}}
+								>
+									{t('Cancel Listing')}
+								</Button>
+							) : (
+								<Link
+									className="w-full"
+									href={`/nft/${chainId}/${address}/${tokenId}/list-item`}
+									locale={_props._nextI18Next?.initialLocale}
+								>
 									<Button className="w-full">
 										{t('List Item')}
 									</Button>
-								)}
-							</Link>
+								</Link>
+							)
 						) : (
 							<div className="flex justify-between">
 								<Button className="w-[48%]">
