@@ -40,6 +40,16 @@ model NftMarketplace__ItemListed {
   chainId    BigInt  @default(31337)
 }
 
+model NftMarketplace__ItemTransfered {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  sender     String
+  receiver   String
+  chainId    BigInt @default(31337)
+  nftAddress String
+  tokenId    BigInt
+  createdAt  DateTime @default(now())
+}
+
 model NftMarketplace__ItemCanceled {
   id         String @id @default(auto()) @map("_id") @db.ObjectId
   seller     String

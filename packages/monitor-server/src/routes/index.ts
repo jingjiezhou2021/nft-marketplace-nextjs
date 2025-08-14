@@ -93,6 +93,15 @@ router.get("/check-ownership/:chainId/:address/:tokenId", async (req, res) => {
     } else {
       console.log("new owner exists in db");
     }
+    await prisma.nftMarketplace__ItemTransfered.create({
+      data:{
+        sender:ownerInDb!,
+        receiver:currentOwner,
+        nftAddress:address,
+        tokenId,
+        chainId
+      }
+    })
     await prisma.nFT.update({
       where: {
         id: nftInDb?.id,
