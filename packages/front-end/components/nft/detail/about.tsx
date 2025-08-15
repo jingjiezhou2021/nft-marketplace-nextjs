@@ -24,7 +24,7 @@ export default function NFTDetailAbout({
 	tokenId,
 	chainId,
 }: NFTDetailProps) {
-	const { t } = useTranslation('common');
+	const { t, i18n } = useTranslation('common');
 	const [ownerAddress, setOwnerAddress] = useState('');
 	const { metadata, loading: metadataLoading } = useNFTMetadata(
 		contractAddress,
@@ -84,7 +84,11 @@ export default function NFTDetailAbout({
 				<div className="text-xs text-muted-foreground flex items-center">
 					{t('A collection by')}
 					&nbsp;
-					<div className="flex items-center cursor-pointer">
+					<Link
+						href={`/profile/${collectionCreator?.address}`}
+						locale={i18n.language}
+						className="flex items-center cursor-pointer"
+					>
 						<ProfileAvatar
 							avatar={collectionCreator?.avatar}
 							address={ownerAddress}
@@ -93,7 +97,7 @@ export default function NFTDetailAbout({
 						<span className="text-foreground">
 							{collectionCreatorDispName}
 						</span>
-					</div>
+					</Link>
 				</div>
 				<LoadingMask
 					loading={
