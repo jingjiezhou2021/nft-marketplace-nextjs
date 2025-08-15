@@ -30,3 +30,33 @@ const findNFT = graphql(`
 	}
 `);
 export default findNFT;
+const findNFTs = graphql(`
+	query NFTS($where: NFTWhereInput) {
+		nFTS(where: $where) {
+			user {
+				address
+				username
+				id
+				avatar
+			}
+			importedAt
+			userId
+			collection {
+				description
+			}
+			activeItem {
+				id
+				seller
+				nftAddress
+				tokenId
+				listing {
+					price
+					erc20TokenAddress
+					erc20TokenName
+				}
+				chainId
+			}
+		}
+	}
+`);
+export { findNFTs };

@@ -35,6 +35,7 @@ import { useEffect } from 'react';
 import useMessage from 'antd/es/message/useMessage';
 import TransferNFTDialog from '@/components/nft/dialog/transfer';
 import UpdateListingDialog from '@/components/nft/dialog/update-listing';
+import { CheckoutDrawer } from '@/components/nft/detail/checkout';
 export const getServerSideProps: GetServerSideProps<
 	SSRConfig,
 	{ chainId: string; address: `0x${string}`; tokenId: string }
@@ -338,10 +339,29 @@ export default function NFTDetailPage(
 							</>
 						) : (
 							<>
-								<Button className="w-[48%]">
-									{t('Buy Now')}
-								</Button>
-								<Button className="w-[48%]">
+								{nftData?.findFirstNFT?.activeItem && (
+									<CheckoutDrawer
+										nfts={[
+											{
+												contractAddress: address,
+												chainId,
+												tokenId,
+											},
+										]}
+										chainId={chainId}
+									>
+										<Button className="w-[48%]">
+											{t('Buy Now')}
+										</Button>
+									</CheckoutDrawer>
+								)}
+								<Button
+									className={cn(
+										nftData?.findFirstNFT?.activeItem
+											? 'w-[48%]'
+											: 'w-full',
+									)}
+								>
 									{t('Make Offer')}
 								</Button>
 							</>

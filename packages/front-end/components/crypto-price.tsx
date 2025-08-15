@@ -4,13 +4,18 @@ import { getCryptoIcon } from '@/lib/currency';
 import { formatUnits } from 'viem';
 import { config } from './providers/RainbowKitAllProvider';
 import { ChainIdParameter } from '@wagmi/core/internal';
+import { cn } from '@/lib/utils';
 
 export default function CryptoPrice({
 	chainId,
 	erc20TokenAddress,
 	erc20TokenName,
 	price,
-}: Listing & { chainId: ChainIdParameter<typeof config>['chainId'] }) {
+	className,
+}: Listing & {
+	className?: string;
+	chainId: ChainIdParameter<typeof config>['chainId'];
+}) {
 	const { data: decimals } = useCurrencyDecimals(
 		erc20TokenAddress as `0x${string}`,
 		chainId,
@@ -19,7 +24,7 @@ export default function CryptoPrice({
 		return null;
 	}
 	return (
-		<div className="inline-flex gap-1 text-xs">
+		<div className={cn('inline-flex gap-1 text-xs', className)}>
 			{getCryptoIcon(chainId, erc20TokenAddress)}
 			<span className="font-mono font-bold">
 				{formatUnits(price, decimals)}
