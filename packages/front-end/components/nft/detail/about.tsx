@@ -32,7 +32,7 @@ export default function NFTDetailAbout({
 	);
 	const description = metadata?.description;
 	const name = metadata?.name;
-	const { data: ownerAddress } = useCollectionCreatorAddress(
+	const { data: collectionCreatorAddress } = useCollectionCreatorAddress(
 		chainId,
 		contractAddress,
 	);
@@ -49,20 +49,45 @@ export default function NFTDetailAbout({
 			},
 		},
 	});
+	const { data: nftData, loading: nftDataLoading } = useQuery(findNFT, {
+		variables: {
+			where: {
+				contractAddress: {
+					equals: contractAddress,
+					mode: QueryMode.Insensitive,
+				},
+				tokenId: {
+					equals: tokenId,
+				},
+				collection: {
+					is: {
+						chainId: {
+							equals: chainId,
+						},
+					},
+				},
+			},
+		},
+	});
+	const {
+		user: owner,
+		dispName: ownerDispName,
+		loading: ownerLoading,
+	} = useUser(nftData?.findFirstNFT?.user.address);
 	const collectionDescription =
 		collectionData?.findFirstCollection?.description;
 	const {
 		user: collectionCreator,
 		loading: collectionCreatorLoading,
 		dispName: collectionCreatorDispName,
-	} = useUser(ownerAddress);
+	} = useUser(collectionCreatorAddress);
 	const { name: collectionName, loading: collectionNameLoading } =
 		useCollectionName(contractAddress, chainId);
 	return (
 		<div>
 			<div className="relative">
 				<LoadingMask
-					loading={metadataLoading}
+					loading={metadataLoading || ownerLoading || nftDataLoading}
 					className="flex justify-center items-center"
 				>
 					<LoadingSpinner size={14} />
@@ -70,6 +95,22 @@ export default function NFTDetailAbout({
 				<h3 className="text-foreground font-bold">
 					{t('About')}&nbsp;{name}
 				</h3>
+				<div className="text-xs text-muted-foreground flex items-center">
+					{t('Owned by')}
+					&nbsp;
+					<Link
+						href={`/profile/${nftData?.findFirstNFT?.user.address}`}
+						locale={i18n.language}
+						className="flex items-center cursor-pointer hover:text-primary text-foreground"
+					>
+						<ProfileAvatar
+							avatar={owner?.avatar}
+							address={nftData?.findFirstNFT?.user.address ?? ''}
+							className="inline-block size-4 mr-1 ml-2"
+						/>
+						<span>{ownerDispName}</span>
+					</Link>
+				</div>
 				<p className="text-sm text-muted-foreground">{description}</p>
 			</div>
 			<Separator className="my-4 " />
@@ -83,16 +124,14 @@ export default function NFTDetailAbout({
 					<Link
 						href={`/profile/${collectionCreator?.address}`}
 						locale={i18n.language}
-						className="flex items-center cursor-pointer"
+						className="flex items-center cursor-pointer hover:text-primary text-foreground"
 					>
 						<ProfileAvatar
 							avatar={collectionCreator?.avatar}
-							address={ownerAddress}
+							address={collectionCreatorAddress}
 							className="inline-block size-4 mr-1 ml-2"
 						/>
-						<span className="text-foreground">
-							{collectionCreatorDispName}
-						</span>
+						<span>{collectionCreatorDispName}</span>
 					</Link>
 				</div>
 				<LoadingMask

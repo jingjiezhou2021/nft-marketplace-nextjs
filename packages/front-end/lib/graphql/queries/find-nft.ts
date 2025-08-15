@@ -7,6 +7,7 @@ const findNFT = graphql(`
 				address
 				username
 				id
+				avatar
 			}
 			importedAt
 			userId
