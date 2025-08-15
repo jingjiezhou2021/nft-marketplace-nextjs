@@ -108,91 +108,93 @@ export default function TransferNFTDialog({
 		>
 			{contextHolder}
 			<DialogTrigger asChild>{children}</DialogTrigger>
-			<DialogContent className="sm:max-w-[425px]">
-				<DialogHeader>
-					<DialogTitle>{t(`Transfer NFT`)}</DialogTitle>
-				</DialogHeader>
-				<form
-					onSubmit={formik.handleSubmit}
-					className="grid gap-4 relative"
-				>
+			<DialogContent className="sm:max-w-[425px] p-0">
+				<div className="relative grid gap-4 p-6">
 					<LoadingMask
 						loading={formik.isSubmitting}
 						className="flex justify-center items-center"
 					>
 						<LoadingSpinner size={48} />
 					</LoadingMask>
-					<div className="grid gap-4">
-						<div className="grid gap-3">
-							<Label htmlFor="contractAddress">
-								{t('Contract Address')}
-							</Label>
-							<Input
-								id="contractAddress"
-								name="contractAddress"
-								value={nft.contractAddress}
-								disabled
-							/>
+					<DialogHeader>
+						<DialogTitle>{t(`Transfer NFT`)}</DialogTitle>
+					</DialogHeader>
+					<form
+						onSubmit={formik.handleSubmit}
+						className="grid gap-4"
+					>
+						<div className="grid gap-4">
+							<div className="grid gap-3">
+								<Label htmlFor="contractAddress">
+									{t('Contract Address')}
+								</Label>
+								<Input
+									id="contractAddress"
+									name="contractAddress"
+									value={nft.contractAddress}
+									disabled
+								/>
+							</div>
+							<div className="grid gap-3">
+								<Label htmlFor="tokenId">{t('Token ID')}</Label>
+								<Input
+									id="tokenId"
+									disabled
+									name="tokenId"
+									value={nft.tokenId}
+								/>
+							</div>
+							<div className="grid gap-3">
+								<Label htmlFor="chain">{t('Chain')}</Label>
+								<SelectChain
+									name="chain"
+									disabled
+									value={nft.chainId?.toString()}
+								/>
+							</div>
+							<div className="grid gap-3">
+								<Label htmlFor="receiver">
+									{t('Receiver Address')}
+								</Label>
+								<Input
+									id="receiver"
+									name="receiverAddress"
+									value={formik.values.receiverAddress}
+									onChange={formik.handleChange}
+									onBlur={formik.handleBlur}
+									className={
+										formik.errors.receiverAddress &&
+										formik.touched.receiverAddress
+											? 'border-destructive'
+											: ''
+									}
+								></Input>
+								{formik.touched.receiverAddress &&
+									formik.errors.receiverAddress && (
+										<p className="text-sm text-destructive">
+											{formik.errors.receiverAddress}
+										</p>
+									)}
+							</div>
 						</div>
-						<div className="grid gap-3">
-							<Label htmlFor="tokenId">{t('Token ID')}</Label>
-							<Input
-								id="tokenId"
-								disabled
-								name="tokenId"
-								value={nft.tokenId}
-							/>
-						</div>
-						<div className="grid gap-3">
-							<Label htmlFor="chain">{t('Chain')}</Label>
-							<SelectChain
-								name="chain"
-								disabled
-								value={nft.chainId?.toString()}
-							/>
-						</div>
-						<div className="grid gap-3">
-							<Label htmlFor="receiver">
-								{t('Receiver Address')}
-							</Label>
-							<Input
-								id="receiver"
-								name="receiverAddress"
-								value={formik.values.receiverAddress}
-								onChange={formik.handleChange}
-								onBlur={formik.handleBlur}
-								className={
-									formik.errors.receiverAddress &&
-									formik.touched.receiverAddress
-										? 'border-destructive'
-										: ''
-								}
-							></Input>
-							{formik.touched.receiverAddress &&
-								formik.errors.receiverAddress && (
-									<p className="text-sm text-destructive">
-										{formik.errors.receiverAddress}
-									</p>
-								)}
-						</div>
-					</div>
-					<DialogFooter>
-						<DialogClose asChild>
+						<DialogFooter>
+							<DialogClose asChild>
+								<Button
+									variant="outline"
+									disabled={formik.isSubmitting}
+								>
+									{t('Cancel')}
+								</Button>
+							</DialogClose>
 							<Button
-								variant="outline"
+								type="submit"
 								disabled={formik.isSubmitting}
 							>
-								{t('Cancel')}
+								{t('Confirm')}
 							</Button>
-						</DialogClose>
-						<Button
-							type="submit"
-							disabled={formik.isSubmitting}
-						>
-							{t('Confirm')}
-						</Button>
-					</DialogFooter>
-				</form>
+						</DialogFooter>
+					</form>
+				</div>
 			</DialogContent>
 		</Dialog>
 	);
