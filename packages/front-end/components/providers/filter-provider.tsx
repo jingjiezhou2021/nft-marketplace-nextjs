@@ -1,6 +1,6 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
 import { Choice } from '../filter/selection/button-selection';
-import { Range } from '@/hooks/use-range';
+import { Range } from '@/lib/hooks/use-range';
 
 export const FilterContext = createContext<{
 	filterData: FilterData;

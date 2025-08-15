@@ -1,7 +1,7 @@
 import { LoadingMask, LoadingSpinner } from '@/components/loading';
 import { config } from '@/components/providers/RainbowKitAllProvider';
 import CustomTable from '@/components/tables/custom-table';
-import useNFTMetadata from '@/hooks/use-nft-metadata';
+import useNFTMetadata from '@/lib/hooks/use-nft-metadata';
 import { ColumnDef } from '@tanstack/react-table';
 import { ChainIdParameter } from '@wagmi/core/internal';
 import { useTranslation } from 'next-i18next';

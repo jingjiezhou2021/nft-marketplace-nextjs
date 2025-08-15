@@ -7,7 +7,7 @@ import { useTranslation } from 'next-i18next';
 import { cn } from '@/lib/utils';
 import { CHAIN, ChainFilterTags } from './selection/chain-selection';
 import { PriceFilterTags, RangeFilterTagInner } from './range';
-import { Range } from '@/hooks/use-range';
+import { Range } from '@/lib/hooks/use-range';
 import { ALL } from '.';
 import { FLOOR_PRICE, PRICE, TOP_OFFER } from './range/price-range';
 

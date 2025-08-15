@@ -1,5 +1,5 @@
 import { Listing } from '@/apollo/gql/graphql';
-import useCurrencyDecimals from '@/hooks/use-currency-decimals';
+import useCurrencyDecimals from '@/lib/hooks/use-currency-decimals';
 import { getCryptoIcon } from '@/lib/currency';
 import { formatUnits } from 'viem';
 import { config } from './providers/RainbowKitAllProvider';

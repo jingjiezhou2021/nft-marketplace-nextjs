@@ -1,4 +1,4 @@
-import useRange from '@/hooks/use-range';
+import useRange from '@/lib/hooks/use-range';
 import { createContext } from 'react';
 
 export const RangeContext = createContext<ReturnType<typeof useRange> | null>(

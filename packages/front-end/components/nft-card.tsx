@@ -11,7 +11,7 @@ import { ValuesType } from 'utility-types';
 import { LoadingSpinner } from './loading';
 import Link from 'next/link';
 import CryptoPrice from './crypto-price';
-import useNFTMetadata from '@/hooks/use-nft-metadata';
+import useNFTMetadata from '@/lib/hooks/use-nft-metadata';
 
 export type NFTCardData = {
 	imageUrl: string;

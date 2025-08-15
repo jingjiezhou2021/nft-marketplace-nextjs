@@ -9,7 +9,7 @@ import { produce } from 'immer';
 import { RangeContext } from '../../providers/range-provider';
 import { Context, useContext, useEffect } from 'react';
 import { SimpleRange } from '.';
-import useRange from '@/hooks/use-range';
+import useRange from '@/lib/hooks/use-range';
 
 function PriceRangeInner() {
 	const defaultCurrency = 'ETH';

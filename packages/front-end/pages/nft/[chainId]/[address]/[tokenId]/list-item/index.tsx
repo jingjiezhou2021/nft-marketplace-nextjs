@@ -14,8 +14,8 @@ import { ChainIdParameter } from '@wagmi/core/internal';
 import { config } from '@/components/providers/RainbowKitAllProvider';
 import { useTranslation } from 'next-i18next';
 import ProfileAvatar from '@/components/profile/avatar';
-import useNFTMetadata from '@/hooks/use-nft-metadata';
-import useCollectionName from '@/hooks/use-collection-name';
+import useNFTMetadata from '@/lib/hooks/use-nft-metadata';
+import useCollectionName from '@/lib/hooks/use-collection-name';
 import * as Yup from 'yup';
 import {
 	Select,
@@ -31,7 +31,7 @@ import {
 	useWaitForTransactionReceipt,
 	useWriteContract,
 } from 'wagmi';
-import useNFTOwner from '@/hooks/use-nft-owner';
+import useNFTOwner from '@/lib/hooks/use-nft-owner';
 import NotOwnerOfNFT from '@/components/nft/not-owner-of-nft';
 import { Form, Formik } from 'formik';
 import useMessage from 'antd/es/message/useMessage';

@@ -25,7 +25,7 @@ import {
 	formatUnits,
 	parseUnits,
 } from 'viem';
-import useCurrencyDecimals from '@/hooks/use-currency-decimals';
+import useCurrencyDecimals from '@/lib/hooks/use-currency-decimals';
 import * as Yup from 'yup';
 import useMessage from 'antd/es/message/useMessage';
 import { useConfig } from 'wagmi';

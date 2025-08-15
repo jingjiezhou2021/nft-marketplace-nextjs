@@ -3,7 +3,7 @@ import { LoadingMask, LoadingSpinner } from '@/components/loading';
 import ProfileAvatar from '@/components/profile/avatar';
 import { config } from '@/components/providers/RainbowKitAllProvider';
 import { Separator } from '@/components/ui/separator';
-import useNFTMetadata from '@/hooks/use-nft-metadata';
+import useNFTMetadata from '@/lib/hooks/use-nft-metadata';
 import { getAddressAbbreviation } from '@/lib/address';
 import { getExplorerOfChain, getNameOfChain } from '@/lib/chain';
 import findCollection from '@/lib/graphql/queries/find-collection';
@@ -16,8 +16,8 @@ import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { NFTDetailProps } from '.';
-import useUser from '@/hooks/use-user';
-import useCollectionName from '@/hooks/use-collection-name';
+import useUser from '@/lib/hooks/use-user';
+import useCollectionName from '@/lib/hooks/use-collection-name';
 
 export default function NFTDetailAbout({
 	contractAddress,

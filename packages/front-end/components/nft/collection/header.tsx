@@ -4,7 +4,7 @@ import ExpandableBannerHeader, {
 	ExpandableBannerHeaderContentRight,
 } from '@/components/expandable-banner-header';
 import { config } from '@/components/providers/RainbowKitAllProvider';
-import useUser from '@/hooks/use-user';
+import useUser from '@/lib/hooks/use-user';
 import findCollection from '@/lib/graphql/queries/find-collection';
 import { getNFTCollectionCreatorAddress } from '@/lib/nft';
 import { useQuery } from '@apollo/client';
@@ -21,7 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { getIconOfChain, getNameOfChain } from '@/lib/chain';
 import { useTranslation } from 'next-i18next';
 import { LoadingMask, LoadingSpinner } from '@/components/loading';
-import useCollectionName from '@/hooks/use-collection-name';
+import useCollectionName from '@/lib/hooks/use-collection-name';
 import Link from 'next/link';
 import { useAccount } from 'wagmi';
 import EmojiAvatar from '@/components/emojo-avatar';

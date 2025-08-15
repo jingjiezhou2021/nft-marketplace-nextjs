@@ -3,7 +3,7 @@ import {
 	RangeContext,
 	RangeProvider,
 } from '@/components/providers/range-provider';
-import useRange, { Range } from '@/hooks/use-range';
+import useRange, { Range } from '@/lib/hooks/use-range';
 import { produce } from 'immer';
 import { ReactNode, useContext, useEffect, useState } from 'react';
 import FilterTag from '../tag';

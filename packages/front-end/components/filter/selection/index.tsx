@@ -1,4 +1,4 @@
-import useChoices from '@/hooks/use-choices';
+import useChoices from '@/lib/hooks/use-choices';
 import ButtonSelection, { Choice } from './button-selection';
 import { useContext, useEffect } from 'react';
 import { FilterContext } from '../../providers/filter-provider';
