@@ -21,7 +21,7 @@ import WalletNotConnected from '@/components/wallet-not-connected';
 import { getIconOfChain } from '@/lib/chain';
 import updateCollectionInfo from '@/lib/graphql/mutations/update-collection';
 import findCollection from '@/lib/graphql/queries/find-collection';
-import { getNFTCollectionCreatorAddress } from '@/lib/nft';
+import useCollectionCreatorAddress from '@/lib/hooks/use-collection-creator-address';
 import { useMutation, useQuery } from '@apollo/client';
 import { ChainIdParameter } from '@wagmi/core/internal';
 import useMessage from 'antd/es/message/useMessage';
@@ -65,8 +65,10 @@ const Page = (
 	}
 	const collectionAddress = params.address;
 	const { address: userAddress, status } = useAccount();
-	const [collectionCreatorAddress, setCollectionCreatorAddress] =
-		useState('');
+	const { data: collectionCreatorAddress } = useCollectionCreatorAddress(
+		chainId,
+		collectionAddress,
+	);
 	const { data, loading, refetch } = useQuery(findCollection, {
 		variables: {
 			where: {
@@ -134,16 +136,6 @@ const Page = (
 			}
 		},
 	});
-	useEffect(() => {
-		getNFTCollectionCreatorAddress(collectionAddress, chainId).then(
-			(res) => {
-				if (!res) {
-					return;
-				}
-				setCollectionCreatorAddress(res);
-			},
-		);
-	}, [collectionAddress, chainId]);
 	useEffect(() => {
 		if (!userAddress) {
 			setAvatar({ file: null, url: null });

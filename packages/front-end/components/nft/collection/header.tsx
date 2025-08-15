@@ -6,7 +6,6 @@ import ExpandableBannerHeader, {
 import { config } from '@/components/providers/RainbowKitAllProvider';
 import useUser from '@/lib/hooks/use-user';
 import findCollection from '@/lib/graphql/queries/find-collection';
-import { getNFTCollectionCreatorAddress } from '@/lib/nft';
 import { useQuery } from '@apollo/client';
 import { ChainIdParameter } from '@wagmi/core/internal';
 import useMessage from 'antd/es/message/useMessage';
@@ -25,6 +24,7 @@ import useCollectionName from '@/lib/hooks/use-collection-name';
 import Link from 'next/link';
 import { useAccount } from 'wagmi';
 import EmojiAvatar from '@/components/emojo-avatar';
+import useCollectionCreatorAddress from '@/lib/hooks/use-collection-creator-address';
 export function CollectionHeader({
 	address,
 	chainId,
@@ -33,12 +33,10 @@ export function CollectionHeader({
 	chainId: ChainIdParameter<typeof config>['chainId'];
 }) {
 	const { address: userAddress } = useAccount();
-	const [collectionCreatorAddress, setCollectionCreatorAddress] =
-		useState('');
-	const [
-		collectionCreatorAddressLoading,
-		setCollectionCreatorAddressLoading,
-	] = useState(true);
+	const {
+		data: collectionCreatorAddress,
+		loading: collectionCreatorAddressLoading,
+	} = useCollectionCreatorAddress(chainId, address);
 	const [messageApi, contextHolder] = useMessage();
 	const { t, i18n } = useTranslation('common');
 	const { data, loading } = useQuery(findCollection, {
@@ -58,15 +56,6 @@ export function CollectionHeader({
 	);
 	const { name: collectionName, loading: collectionNameLoading } =
 		useCollectionName(address, chainId);
-	useEffect(() => {
-		setCollectionCreatorAddressLoading(true);
-		getNFTCollectionCreatorAddress(address, chainId).then((res) => {
-			if (res) {
-				setCollectionCreatorAddress(res);
-			}
-			setCollectionCreatorAddressLoading(false);
-		});
-	}, [address, chainId]);
 	return (
 		<div>
 			{contextHolder}

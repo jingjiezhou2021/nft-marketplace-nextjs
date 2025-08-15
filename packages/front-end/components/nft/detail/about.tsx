@@ -9,7 +9,6 @@ import { getExplorerOfChain, getNameOfChain } from '@/lib/chain';
 import findCollection from '@/lib/graphql/queries/find-collection';
 import findNFT from '@/lib/graphql/queries/find-nft';
 import findUserProfile from '@/lib/graphql/queries/find-user-profile';
-import { getNFTCollectionCreatorAddress, getNFTMetadata } from '@/lib/nft';
 import { useQuery } from '@apollo/client';
 import { ChainIdParameter } from '@wagmi/core/internal';
 import { useTranslation } from 'next-i18next';
@@ -18,6 +17,7 @@ import { useEffect, useState } from 'react';
 import { NFTDetailProps } from '.';
 import useUser from '@/lib/hooks/use-user';
 import useCollectionName from '@/lib/hooks/use-collection-name';
+import useCollectionCreatorAddress from '@/lib/hooks/use-collection-creator-address';
 
 export default function NFTDetailAbout({
 	contractAddress,
@@ -25,7 +25,6 @@ export default function NFTDetailAbout({
 	chainId,
 }: NFTDetailProps) {
 	const { t, i18n } = useTranslation('common');
-	const [ownerAddress, setOwnerAddress] = useState('');
 	const { metadata, loading: metadataLoading } = useNFTMetadata(
 		contractAddress,
 		tokenId,
@@ -33,13 +32,10 @@ export default function NFTDetailAbout({
 	);
 	const description = metadata?.description;
 	const name = metadata?.name;
-	useEffect(() => {
-		getNFTCollectionCreatorAddress(contractAddress, chainId).then((res) => {
-			if (res) {
-				setOwnerAddress(res);
-			}
-		});
-	}, [contractAddress, chainId, tokenId]);
+	const { data: ownerAddress } = useCollectionCreatorAddress(
+		chainId,
+		contractAddress,
+	);
 	const { data: collectionData } = useQuery(findCollection, {
 		variables: {
 			where: {
