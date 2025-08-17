@@ -12,7 +12,8 @@ export default function CryptoPrice({
 	erc20TokenName,
 	price,
 	className,
-}: Listing & {
+}: Pick<Listing, 'erc20TokenAddress' | 'erc20TokenName' | 'price'> & {
+	id?: string;
 	className?: string;
 	chainId: ChainIdParameter<typeof config>['chainId'];
 }) {
