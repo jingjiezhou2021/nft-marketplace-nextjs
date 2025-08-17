@@ -48,8 +48,14 @@ describe("NFTMarketPlace Monitor Server", () => {
         const dfs = (data) => {
           if (data && typeof data === "object") {
             for (const key of Object.keys(data)) {
-              if (typeof data[key] === "number"||key==="price") {
-                data[key] = BigInt(data[key]);
+              if (typeof data[key] === "number" || key === "price") {
+                const n = Number(data[key]);
+                data[key] = BigInt(
+                  n.toLocaleString("fullwide", {
+                    useGrouping: false,
+                  })
+                );
+                console.log(data[key]);
               }
               dfs(data[key]);
             }
@@ -141,44 +147,89 @@ describe("NFTMarketPlace Monitor Server", () => {
     await clear();
   });
   describe("Event Logging", () => {
-    it("NftMarketplace__ItemListed", async () => {
-      const price = ethers.parseUnits("1000", await usdt.decimals());
-      const tokenId = await mintAndList(market, basicNFT, usdt, price);
-      await sleep(5000);
-      const { data } = await client.query({
-        query: graphql(`
-          query Query1 {
-            nftMarketplace__ItemListeds {
-              seller
-              nftAddress
-              tokenId
-              listing {
-                price
-                erc20TokenAddress
-                erc20TokenName
+    describe("NftMarketplace__ItemListed", () => {
+      it("", async () => {
+        const price = ethers.parseUnits("1000", await usdt.decimals());
+        const tokenId = await mintAndList(market, basicNFT, usdt, price);
+        await sleep(5000);
+        const { data } = await client.query({
+          query: graphql(`
+            query Query1 {
+              nftMarketplace__ItemListeds {
+                seller
+                nftAddress
+                tokenId
+                listing {
+                  price
+                  erc20TokenAddress
+                  erc20TokenName
+                }
+                chainId
               }
-              chainId
             }
-          }
-        `),
-      });
-      expect(
-        data.nftMarketplace__ItemListeds.filter((val) => (val.chainId === 31337n))
-      ).toEqual<typeof data.nftMarketplace__ItemListeds>([
-        {
-          __typename: "NftMarketplace__ItemListed",
-          seller: seller.address,
-          nftAddress: await basicNFT.getAddress(),
-          tokenId,
-          listing: {
-            __typename: "Listing",
-            price,
-            erc20TokenAddress: await usdt.getAddress(),
-            erc20TokenName: await usdt.name(),
+          `),
+        });
+        expect(
+          data.nftMarketplace__ItemListeds.filter(
+            (val) => val.chainId === 31337n
+          )
+        ).toEqual<typeof data.nftMarketplace__ItemListeds>([
+          {
+            __typename: "NftMarketplace__ItemListed",
+            seller: seller.address,
+            nftAddress: await basicNFT.getAddress(),
+            tokenId,
+            listing: {
+              __typename: "Listing",
+              price,
+              erc20TokenAddress: await usdt.getAddress(),
+              erc20TokenName: await usdt.name(),
+            },
+            chainId: provider._network.chainId,
           },
-          chainId: provider._network.chainId,
-        },
-      ]);
+        ]);
+      });
+      it("very high price", async () => {
+        const price = ethers.parseUnits("19373.2728", await weth.decimals());
+        const tokenId = await mintAndList(market, basicNFT, weth, price);
+        await sleep(5000);
+        const { data } = await client.query({
+          query: graphql(`
+            query Query1_1 {
+              nftMarketplace__ItemListeds {
+                seller
+                nftAddress
+                tokenId
+                listing {
+                  price
+                  erc20TokenAddress
+                  erc20TokenName
+                }
+                chainId
+              }
+            }
+          `),
+        });
+        expect(
+          data.nftMarketplace__ItemListeds.filter(
+            (val) => val.chainId === 31337n
+          )
+        ).toEqual<typeof data.nftMarketplace__ItemListeds>([
+          {
+            __typename: "NftMarketplace__ItemListed",
+            seller: seller.address,
+            nftAddress: await basicNFT.getAddress(),
+            tokenId,
+            listing: {
+              __typename: "Listing",
+              price,
+              erc20TokenAddress: await weth.getAddress(),
+              erc20TokenName: await weth.name(),
+            },
+            chainId: provider._network.chainId,
+          },
+        ]);
+      });
     });
     it("NftMarketplace__ItemCanceled", async () => {
       const price = ethers.parseUnits("0.3", await weth.decimals());
@@ -200,7 +251,7 @@ describe("NFTMarketPlace Monitor Server", () => {
       });
       expect(
         data.nftMarketplace__ItemCanceleds.filter(
-          (val) => (val.chainId === 31337n)
+          (val) => val.chainId === 31337n
         )
       ).toEqual<typeof data.nftMarketplace__ItemCanceleds>([
         {
@@ -244,7 +295,7 @@ describe("NFTMarketPlace Monitor Server", () => {
         `),
       });
       expect(
-        data.nftMarketplace__ItemBoughts.filter((val) => (val.chainId === 31337n))
+        data.nftMarketplace__ItemBoughts.filter((val) => val.chainId === 31337n)
       ).toEqual<typeof data.nftMarketplace__ItemBoughts>([
         {
           __typename: "NftMarketplace__ItemBought",
@@ -318,7 +369,7 @@ describe("NFTMarketPlace Monitor Server", () => {
       });
       expect(
         data.nftMarketplace__ItemOfferMades.filter(
-          (val) => (val.chainId === 31337n)
+          (val) => val.chainId === 31337n
         )
       ).toEqual<typeof data.nftMarketplace__ItemOfferMades>([
         {
@@ -342,44 +393,85 @@ describe("NFTMarketPlace Monitor Server", () => {
     });
   });
   describe("ActiveItem", () => {
-    it("Add record when listing item", async () => {
-      const price = ethers.parseUnits("1000", await usdt.decimals());
-      const tokenId = await mintAndList(market, basicNFT, usdt, price);
-      await sleep(5000);
-      const { data } = await client.query({
-        query: graphql(`
-          query AcQuery1 {
-            activeItems {
-              seller
-              nftAddress
-              tokenId
-              listing {
-                price
-                erc20TokenAddress
-                erc20TokenName
+    describe("Add record when listing item", () => {
+      it("", async () => {
+        const price = ethers.parseUnits("1000", await usdt.decimals());
+        const tokenId = await mintAndList(market, basicNFT, usdt, price);
+        await sleep(5000);
+        const { data } = await client.query({
+          query: graphql(`
+            query AcQuery1 {
+              activeItems {
+                seller
+                nftAddress
+                tokenId
+                listing {
+                  price
+                  erc20TokenAddress
+                  erc20TokenName
+                }
+                chainId
               }
-              chainId
             }
-          }
-        `),
-      });
-      expect(data.activeItems.filter((val) => (val.chainId === 31337n))).toEqual<
-        typeof data.activeItems
-      >([
-        {
-          __typename: "ActiveItem",
-          seller: seller.address,
-          nftAddress: await basicNFT.getAddress(),
-          tokenId,
-          listing: {
-            __typename: "Listing",
-            price,
-            erc20TokenAddress: await usdt.getAddress(),
-            erc20TokenName: await usdt.name(),
+          `),
+        });
+        expect(
+          data.activeItems.filter((val) => val.chainId === 31337n)
+        ).toEqual<typeof data.activeItems>([
+          {
+            __typename: "ActiveItem",
+            seller: seller.address,
+            nftAddress: await basicNFT.getAddress(),
+            tokenId,
+            listing: {
+              __typename: "Listing",
+              price,
+              erc20TokenAddress: await usdt.getAddress(),
+              erc20TokenName: await usdt.name(),
+            },
+            chainId: provider._network.chainId,
           },
-          chainId: provider._network.chainId,
-        },
-      ]);
+        ]);
+      });
+      it("very high price", async () => {
+        const price = ethers.parseUnits("19368.3747", await weth.decimals());
+        const tokenId = await mintAndList(market, basicNFT, weth, price);
+        await sleep(5000);
+        const { data } = await client.query({
+          query: graphql(`
+            query AcQuery1_1 {
+              activeItems {
+                seller
+                nftAddress
+                tokenId
+                listing {
+                  price
+                  erc20TokenAddress
+                  erc20TokenName
+                }
+                chainId
+              }
+            }
+          `),
+        });
+        expect(
+          data.activeItems.filter((val) => val.chainId === 31337n)
+        ).toEqual<typeof data.activeItems>([
+          {
+            __typename: "ActiveItem",
+            seller: seller.address,
+            nftAddress: await basicNFT.getAddress(),
+            tokenId,
+            listing: {
+              __typename: "Listing",
+              price,
+              erc20TokenAddress: await weth.getAddress(),
+              erc20TokenName: await weth.name(),
+            },
+            chainId: provider._network.chainId,
+          },
+        ]);
+      });
     });
     it("Update record when updating item", async () => {
       const price = ethers.parseUnits("1000", await usdt.decimals());
@@ -404,7 +496,7 @@ describe("NFTMarketPlace Monitor Server", () => {
           }
         `),
       });
-      expect(data.activeItems.filter((val) => (val.chainId === 31337n))).toEqual<
+      expect(data.activeItems.filter((val) => val.chainId === 31337n)).toEqual<
         typeof data.activeItems
       >([
         {
@@ -440,7 +532,7 @@ describe("NFTMarketPlace Monitor Server", () => {
           }
         `),
       });
-      expect(data.activeItems.filter((val) => (val.chainId === 31337n))).toEqual<
+      expect(data.activeItems.filter((val) => val.chainId === 31337n)).toEqual<
         typeof data.activeItems
       >([]);
     });
@@ -466,7 +558,7 @@ describe("NFTMarketPlace Monitor Server", () => {
           }
         `),
       });
-      expect(data.activeItems.filter((val) => (val.chainId === 31337n))).toEqual<
+      expect(data.activeItems.filter((val) => val.chainId === 31337n)).toEqual<
         typeof data.activeItems
       >([]);
     });
@@ -506,7 +598,7 @@ describe("NFTMarketPlace Monitor Server", () => {
           }
         `),
       });
-      expect(data.activeItems.filter((val) => (val.chainId === 31337n))).toEqual<
+      expect(data.activeItems.filter((val) => val.chainId === 31337n)).toEqual<
         typeof data.activeItems
       >([]);
     });
