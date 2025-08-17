@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { getNFTMetadata, NFTMetadata } from '@/lib/nft';
 import { NFTCardData } from '@/components/nft-card';
 import { SSRConfig } from 'next-i18next';
+import { useAccount } from 'wagmi';
 export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
 	locale,
 }) => {
@@ -24,6 +25,7 @@ export default function Page(
 	_props: InferGetStaticPropsType<typeof getServerSideProps>,
 ) {
 	const router = useRouter();
+	const { address: userAddress } = useAccount();
 	const address = router.query.address as string;
 	const { loading, data } = useQuery(findUserProfile, {
 		variables: {
@@ -51,6 +53,9 @@ export default function Page(
 					<ProfileNFTGallery
 						nfts={data?.findFirstUserProfile?.importedNFTs ?? []}
 						className="mt-1"
+						disableImport={
+							userAddress?.toLowerCase() !== address.toLowerCase()
+						}
 					/>
 				</div>
 			)}

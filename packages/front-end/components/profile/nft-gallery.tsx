@@ -10,11 +10,13 @@ import { NFTGalleryContent } from '../nft-gallery';
 export default function ProfileNFTGallery({
 	nfts,
 	className,
+	disableImport,
 }: {
 	nfts: NonNullable<
 		FindFirstUserProfileQuery['findFirstUserProfile']
 	>['importedNFTs'];
 	className?: string;
+	disableImport?: boolean;
 }) {
 	const { t } = useTranslation('common');
 	return (
@@ -33,7 +35,10 @@ export default function ProfileNFTGallery({
 				</Filter>
 			</div>
 			<FilterTags />
-			<NFTGalleryContent nfts={nfts} />
+			<NFTGalleryContent
+				nfts={nfts}
+				disableImport={disableImport}
+			/>
 		</div>
 	);
 }
