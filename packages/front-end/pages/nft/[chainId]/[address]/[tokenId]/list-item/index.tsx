@@ -126,6 +126,8 @@ const Page: NextPageWithLayout = (
 				},
 			},
 		},
+		fetchPolicy: 'network-only',
+		nextFetchPolicy: 'cache-first',
 	});
 	let mainContent: ReactElement;
 	if (data?.findFirstNFT?.activeItem) {

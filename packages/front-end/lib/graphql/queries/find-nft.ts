@@ -41,6 +41,8 @@ const findNFTs = graphql(`
 			}
 			importedAt
 			userId
+			contractAddress
+			tokenId
 			collection {
 				description
 			}

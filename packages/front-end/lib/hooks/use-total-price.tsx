@@ -6,6 +6,7 @@ import { ChainIdParameter } from '@wagmi/core/internal';
 import { config } from '@/components/providers/RainbowKitAllProvider';
 import { useAccount, useBalance, useReadContracts } from 'wagmi';
 import { erc20Abi } from 'smart-contract/wagmi/generated';
+import { CHAIN_CURRENCY_ADDRESS } from '../currency';
 
 export default function useTotalPrice(
 	chainId: ChainIdParameter<typeof config>['chainId'],
@@ -41,9 +42,16 @@ export default function useTotalPrice(
 		},
 	});
 	const ret = new Map<string, { price: bigint; name: string }>();
-
+	let ethPayAmount = 0n;
 	data?.nFTS.forEach((nft) => {
 		if (nft.activeItem) {
+			if (
+				chainId &&
+				nft.activeItem.listing.erc20TokenAddress ===
+					CHAIN_CURRENCY_ADDRESS[chainId].WETH
+			) {
+				ethPayAmount += nft.activeItem.listing.price;
+			}
 			const old = ret.get(nft.activeItem.listing.erc20TokenAddress);
 			ret.set(
 				nft.activeItem.listing.erc20TokenAddress,
@@ -94,5 +102,5 @@ export default function useTotalPrice(
 		console.log(`the price of ${e[1].name} is`, e[1].price);
 		return (bal ?? 0) > e[1].price;
 	});
-	return { totalPrice: ret, loading, balanceEnough };
+	return { totalPrice: ret, loading, balanceEnough, ethPayAmount };
 }

@@ -33,6 +33,7 @@ export default function StepsDialog({
 					<Steps
 						current={currentStep}
 						items={steps}
+						className="justify-center"
 					/>
 					<div className="w-full flex-col items-center gap-4 flex relative">
 						{currentStep !== steps.length ? (

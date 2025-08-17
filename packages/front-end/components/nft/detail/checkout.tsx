@@ -51,6 +51,7 @@ import {
 	erc20Abi,
 	useReadIerc20BalanceOf,
 } from 'smart-contract/wagmi/generated';
+import ConfirmBuyDialog from '../dialog/confirm-buy';
 function NftPriceCard({ nft }: { nft: NFTDetailProps }) {
 	const { metadata, loading: metadataLoading } = useNFTMetadata(
 		nft.contractAddress,
@@ -159,6 +160,7 @@ export function CheckoutDrawer({
 	const { connector, address } = useAccount();
 	const { openConnectModal } = useConnectModal();
 	const [open, setOpen] = React.useState(false);
+	const [openActionModal, setOpenActionModal] = React.useState(false);
 	React.useEffect(() => {
 		if (open && !address) {
 			openConnectModal?.();
@@ -180,7 +182,7 @@ export function CheckoutDrawer({
 						<LoadingSpinner size={36} />
 					</LoadingMask>
 					{/* Header */}
-					<DrawerHeader className="px-0">
+					<DrawerHeader className="px-0 py-2">
 						<DrawerTitle
 							className="text-xl font-semibold"
 							asChild
@@ -276,6 +278,9 @@ export function CheckoutDrawer({
 								<Button
 									className="w-[48%]"
 									disabled={!balanceEnough}
+									onClick={() => {
+										setOpenActionModal(true);
+									}}
 								>
 									{t('Buy')}
 								</Button>
@@ -288,6 +293,13 @@ export function CheckoutDrawer({
 									</Button>
 								</DrawerClose>
 							</DrawerFooter>
+							{chainId && (
+								<ConfirmBuyDialog
+									open={openActionModal}
+									nfts={nfts}
+									chainId={chainId}
+								/>
+							)}
 						</div>
 					</div>
 				</div>

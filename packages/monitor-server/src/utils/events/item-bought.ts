@@ -41,6 +41,50 @@ export default function listenForItemBought(
           chainId: chainId,
         },
       });
+      const existingNft = await prisma.nFT.findFirst({
+        where: {
+          contractAddress: {
+            equals: nftAddress,
+            mode: "insensitive",
+          },
+          tokenId,
+          collection: {
+            is: {
+              chainId: {
+                equals: chainId,
+              },
+            },
+          },
+        },
+      });
+      if (existingNft) {
+        console.log("changing the ownership of nft in db...");
+        const newOwner = await prisma.userProfile.findFirst({
+          where: {
+            address: {
+              equals: buyer,
+              mode: "insensitive",
+            },
+          },
+        });
+        await prisma.nFT.update({
+          where: {
+            id: existingNft.id,
+          },
+          data: {
+            user: {
+              connectOrCreate: {
+                where: {
+                  id: newOwner?.id??"-1",
+                },
+                create: {
+                  address: buyer,
+                },
+              },
+            },
+          },
+        });
+      }
     })
   );
 }
