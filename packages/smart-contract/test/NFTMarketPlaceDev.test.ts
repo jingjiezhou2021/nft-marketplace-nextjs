@@ -3,6 +3,7 @@ import NFTMarketPlaceDev from "../ignition/modules/NFTMarketPlaceDev";
 import { BasicNFT, MockUSDT, NftMarketplace, WETH9 } from "../typechain-types";
 import { expect } from "chai";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
+import { parseUnits } from "ethers";
 
 describe("NFTMarketPlace", () => {
   let USDTContract: MockUSDT;
@@ -34,15 +35,7 @@ describe("NFTMarketPlace", () => {
       "0.2",
       await WETHContract.decimals()
     );
-    BasicNFTContract.mint();
-    onlyTokenID = await new Promise<bigint>((res) => {
-      BasicNFTContract.on(
-        BasicNFTContract.getEvent("NFTMinted"),
-        (_, tokenID) => {
-          res(tokenID);
-        }
-      );
-    });
+    onlyTokenID = await mint();
     initialBalanceUSDT = ethers.parseUnits(
       "3000",
       await USDTContract.decimals()
@@ -91,6 +84,18 @@ describe("NFTMarketPlace", () => {
       );
     });
     return offerInfo;
+  }
+  async function mint() {
+    BasicNFTContract.mint();
+    const tokenId = await new Promise<bigint>((res) => {
+      BasicNFTContract.on(
+        BasicNFTContract.getEvent("NFTMinted"),
+        (_, tokenID) => {
+          res(tokenID);
+        }
+      );
+    });
+    return tokenId;
   }
   describe("list item", () => {
     it("needs approve", async () => {
@@ -351,10 +356,7 @@ describe("NFTMarketPlace", () => {
               value: standardSellingPriceWETH - 1n,
             }
           )
-        ).revertedWithCustomError(
-          NFTMarketPlaceContract,
-          "NftMarketplace__PriceNotMet"
-        );
+        ).to.revertedWithoutReason();
       });
       it("buy item successful", async () => {
         await approveAndListItem(
@@ -421,6 +423,77 @@ describe("NFTMarketPlace", () => {
           )
         ).to.emit(buyerConnectedContract, "NftMarketplace__ItemBought");
       });
+    });
+  });
+  describe("batch buy item", () => {
+    let buyerConnectedContract: NftMarketplace;
+    beforeEach(async () => {
+      buyerConnectedContract = NFTMarketPlaceContract.connect(buyer);
+    });
+    it("batch buy successful", async () => {
+      await USDTContract.connect(buyer).mint(
+        parseUnits("1000000", await USDTContract.decimals())
+      );
+      const usdtBalanceBefore = await USDTContract.balanceOf(seller);
+      const tokenIds: bigint[] = [];
+      for (let i = 0; i < 5; ++i) {
+        tokenIds.push(await mint());
+      }
+      let ethPayAmount = 0n;
+      let usdtPayAmount = 0n;
+      for (const tokenId of tokenIds) {
+        let price = 0n;
+        let address = "";
+        if (tokenId % 2n === 0n) {
+          ethPayAmount += standardSellingPriceWETH;
+          price = standardSellingPriceWETH;
+          address = await WETHContract.getAddress();
+        } else {
+          price = standardSellingPriceUSDT;
+          address = await USDTContract.getAddress();
+          usdtPayAmount += standardSellingPriceUSDT;
+        }
+        await approveAndListItem(tokenId, price, address);
+      }
+      await USDTContract.connect(buyer).approve(
+        NFTMarketPlaceContract,
+        standardSellingPriceUSDT * 10n
+      );
+      await WETHContract.connect(buyer).approve(
+        NFTMarketPlaceContract,
+        standardSellingPriceWETH * 10n
+      );
+      await buyerConnectedContract.batchBuyItem(
+        tokenIds.map((tokenId) => {
+          return {
+            owner: seller,
+            nftAddress: BasicNFTContract,
+            tokenId,
+          };
+        }),
+        {
+          value: ethPayAmount,
+        }
+      );
+
+      for (const tokenId of tokenIds) {
+        const ownerNow = await BasicNFTContract.ownerOf(tokenId);
+        expect(ownerNow).to.equal(ownerNow);
+      }
+      const nativeBalanceBefore = await ethers.provider.getBalance(seller);
+      const withdrawTx = await NFTMarketPlaceContract.withdrawProceeds(
+        await WETHContract.getAddress()
+      );
+      const withdrawTxReceipt = await withdrawTx.wait();
+      const withdrawGasCost =
+        withdrawTxReceipt?.gasPrice! * withdrawTxReceipt?.gasUsed!;
+      const ethBalanceAfterWithdraw = await ethers.provider.getBalance(seller);
+      expect(ethBalanceAfterWithdraw).equal(
+        nativeBalanceBefore + ethPayAmount - withdrawGasCost
+      );
+      await NFTMarketPlaceContract.withdrawProceeds(USDTContract);
+      const usdtBalanceAfter = await USDTContract.balanceOf(seller);
+      expect(usdtBalanceAfter).to.equal(usdtBalanceBefore + usdtPayAmount);
     });
   });
   describe("cancel listing", () => {

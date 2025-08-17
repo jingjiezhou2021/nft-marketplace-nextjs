@@ -67,6 +67,12 @@ contract NftMarketplace is ReentrancyGuard{
         Listing listing;
     }
 
+    struct BuyItemInput {
+        address owner;
+        address nftAddress;
+        uint256 tokenId;
+    }
+
     modifier notListed(
         address owner,
         address nftAddress,
@@ -205,24 +211,18 @@ contract NftMarketplace is ReentrancyGuard{
         address nftAddress,
         uint256 tokenId
     )
-        external
+        public
         payable
         isListed(owner, nftAddress, tokenId)
         isNotOwner(nftAddress, tokenId, msg.sender)
-        nonReentrant
     {
         if(!getIsOwner(nftAddress,tokenId,owner)) {
             revert NftMarketplace__ListedButNowOwnerAnymore(nftAddress,tokenId,owner);
         }
         Listing memory listedItem = s_listings[owner][nftAddress][tokenId];
-        if (msg.value > 0) {
+        if (listedItem.erc20TokenAddress == address(i_weth)) {
             // native payment
-            if (msg.value < listedItem.price) {
-                revert NftMarketplace__PriceNotMet(nftAddress, tokenId, listedItem.price);
-            }
-            else {
-                i_weth.deposit{value:msg.value}();
-            }
+            i_weth.deposit{value:listedItem.price}();
         } else {
             // pay with erc20 token
             IERC20 erc20Token = IERC20(listedItem.erc20TokenAddress);
@@ -242,6 +242,14 @@ contract NftMarketplace is ReentrancyGuard{
             tokenId
         );
         emit NftMarketplace__ItemBought(msg.sender, nftAddress, tokenId, listedItem);
+    }
+
+    function batchBuyItem(
+        BuyItemInput[] memory batches
+    ) external payable nonReentrant {
+        for(uint64 i=0;i<batches.length;++i) {
+            buyItem(batches[i].owner,batches[i].nftAddress,batches[i].tokenId);
+        }
     }
 
     function withdrawProceeds(address erc20TokenAddress) external nonReentrant{
