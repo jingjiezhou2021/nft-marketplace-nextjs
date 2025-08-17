@@ -1,5 +1,6 @@
 import {
 	ApolloClient,
+	ApolloLink,
 	InMemoryCache,
 	NormalizedCacheObject,
 } from '@apollo/client';
@@ -10,12 +11,35 @@ const createApolloClient = () => {
 		return apolloClient;
 	} else {
 		apolloClient = new ApolloClient({
-			link: createUploadLink({
-				uri: process.env.NEXT_PUBLIC_APOLLO_SERVER_ENDPOINT,
-				headers: {
-					'apollo-require-preflight': 'true',
-				},
-			}),
+			link: new ApolloLink((operation, forward) => {
+				return forward(operation).map((response) => {
+					const dfs = (data) => {
+						if (data && typeof data === 'object') {
+							for (const key of Object.keys(data)) {
+								if (key === 'price') {
+									const n = Number(data[key]);
+									data[key] = BigInt(
+										n.toLocaleString('fullwide', {
+											useGrouping: false,
+										}),
+									);
+									console.log(data[key]);
+								}
+								dfs(data[key]);
+							}
+						}
+					};
+					dfs(response.data);
+					return response;
+				});
+			}).concat(
+				createUploadLink({
+					uri: process.env.NEXT_PUBLIC_APOLLO_SERVER_ENDPOINT,
+					headers: {
+						'apollo-require-preflight': 'true',
+					},
+				}),
+			),
 			cache: new InMemoryCache(),
 		});
 		return apolloClient;

@@ -14,80 +14,105 @@ generator typegraphql {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-type Listing {
-  price             BigInt
+model Listing {
+  id                String @id @default(uuid())
+  price             Decimal @db.Decimal(90,0)
   erc20TokenAddress String
   erc20TokenName    String
+
+  // relations back to referencing models
+  itemListed   NftMarketplace__ItemListed?
+  itemCanceled NftMarketplace__ItemCanceled?
+  itemBought   NftMarketplace__ItemBought?
+  activeItem   ActiveItem?
+  Offer        Offer?
 }
 
-type Offer {
+model Offer {
+  id         String @id @default(uuid())
   buyer      String
   nftAddress String
   tokenId    BigInt
-  listing    Listing
+
+  // relation to Listing
+  listingId String  @unique
+  listing   Listing @relation(fields: [listingId], references: [id])
+
+  itemOfferMade NftMarketplace__ItemOfferMade?
 }
 
 model NftMarketplace__ItemListed {
-  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  id         String @id @default(uuid())
   seller     String
   nftAddress String
   tokenId    BigInt
-  listing    Listing
-  chainId    BigInt  @default(31337)
+  chainId    BigInt @default(31337)
+
+  listingId String  @unique
+  listing   Listing @relation(fields: [listingId], references: [id])
 }
 
 model NftMarketplace__ItemTransfered {
-  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  id         String   @id @default(uuid())
   sender     String
   receiver   String
-  chainId    BigInt @default(31337)
+  chainId    BigInt   @default(31337)
   nftAddress String
   tokenId    BigInt
   createdAt  DateTime @default(now())
 }
 
 model NftMarketplace__ItemCanceled {
-  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  id         String @id @default(uuid())
   seller     String
   nftAddress String
   tokenId    BigInt
-  listing    Listing
   chainId    BigInt @default(31337)
+
+  listingId String  @unique
+  listing   Listing @relation(fields: [listingId], references: [id])
 }
 
 model NftMarketplace__ItemBought {
-  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  id         String @id @default(uuid())
   buyer      String
   nftAddress String
   tokenId    BigInt
-  listing    Listing
-  chainId    BigInt  @default(31337)
-}
+  chainId    BigInt @default(31337)
 
-model NftMarketplace__ItemOfferMade {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  offerId BigInt
-  offer   Offer
-  chainId BigInt @default(31337)
+  listingId String  @unique
+  listing   Listing @relation(fields: [listingId], references: [id])
 }
 
 model ActiveItem {
-  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  id         String @id @default(uuid())
   seller     String
   nftAddress String
   tokenId    BigInt
-  listing    Listing
-  chainId    BigInt  @default(31337)
-  nft        NFT?    @relation(fields: [nftId], references: [id])
-  nftId      String? @unique @db.ObjectId
+  chainId    BigInt @default(31337)
+
+  nft   NFT?    @relation(fields: [nftId], references: [id])
+  nftId String? @unique
+
+  listingId String  @unique
+  listing   Listing @relation(fields: [listingId], references: [id])
+}
+
+model NftMarketplace__ItemOfferMade {
+  id      String @id @default(uuid())
+  offerId BigInt
+  chainId BigInt @default(31337)
+
+  offerIdRef String @unique
+  offer      Offer  @relation(fields: [offerIdRef], references: [id])
 }
 
 model UserProfile {
-  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  id           String  @id @default(uuid())
   address      String  @unique
   username     String?
   bio          String?
@@ -98,17 +123,17 @@ model UserProfile {
 }
 
 model NFT {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  id              String   @id @default(uuid())
   contractAddress String // NFT contract address
   tokenId         BigInt
   importedAt      DateTime @default(now())
 
   user   UserProfile @relation(fields: [userId], references: [id])
-  userId String      @db.ObjectId
+  userId String
 
   // 🔗 Relation to Collection
   collection   Collection @relation(fields: [collectionId], references: [id])
-  collectionId String     @db.ObjectId
+  collectionId String
 
   activeItem ActiveItem?
 
@@ -116,7 +141,7 @@ model NFT {
 }
 
 model Collection {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  id           String   @id @default(uuid())
   address      String   @unique // contract address
   createdAt    DateTime @default(now())
   chainId      BigInt

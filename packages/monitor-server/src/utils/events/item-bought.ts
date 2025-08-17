@@ -1,6 +1,7 @@
 import { TypeChain } from "smart-contract";
 import logListener from "./listener/logListener";
 import { PrismaClient } from "@/prisma/generated/prisma";
+import { Prisma } from "@/prisma/generated/prisma";
 
 export default function listenForItemBought(
   marketContract: TypeChain.contracts.nftMarketPlaceSol.NftMarketplace,
@@ -31,9 +32,11 @@ export default function listenForItemBought(
           nftAddress,
           tokenId,
           listing: {
-            price: listing[0],
-            erc20TokenAddress: listing[1],
-            erc20TokenName: listing[2],
+            create: {
+              price: listing[0].toString(),
+              erc20TokenAddress: listing[1],
+              erc20TokenName: listing[2],
+            },
           },
           chainId: chainId,
         },

@@ -15,9 +15,11 @@ export default function listenForItemListed(
         nftAddress,
         tokenId,
         listing: {
-          price: listing[0],
-          erc20TokenAddress: listing[1],
-          erc20TokenName: listing[2],
+          create: {
+            price: listing[0].toString(),
+            erc20TokenAddress: listing[1],
+            erc20TokenName: listing[2],
+          },
         },
         chainId: chainId,
       };

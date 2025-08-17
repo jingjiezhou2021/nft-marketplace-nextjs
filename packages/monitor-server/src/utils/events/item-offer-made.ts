@@ -14,13 +14,17 @@ export default function listenForItemOfferMade(
         data: {
           offerId,
           offer: {
-            buyer: offer[0],
-            nftAddress: offer[1],
-            tokenId: offer[2],
-            listing: {
-              price: offer[3][0],
-              erc20TokenAddress: offer[3][1],
-              erc20TokenName: offer[3][2],
+            create: {
+              buyer: offer[0],
+              nftAddress: offer[1],
+              tokenId: offer[2],
+              listing: {
+                create: {
+                  price: offer[3][0].toString(),
+                  erc20TokenAddress: offer[3][1],
+                  erc20TokenName: offer[3][2],
+                },
+              },
             },
           },
           chainId: chainId,

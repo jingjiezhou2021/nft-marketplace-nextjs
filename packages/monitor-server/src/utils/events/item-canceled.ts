@@ -17,6 +17,9 @@ export default function listenForItemCanceled(
           nftAddress,
           tokenId,
         },
+        include: {
+          listing: true,
+        },
       });
       if (!existingActiveItem) {
         throw new PrismaClientKnownRequestError(
@@ -39,7 +42,11 @@ export default function listenForItemCanceled(
           nftAddress,
           tokenId,
           chainId: chainId,
-          listing,
+          listing: {
+            connect: {
+              id: listing.id,
+            },
+          },
         },
       });
     })

@@ -48,7 +48,7 @@ describe("NFTMarketPlace Monitor Server", () => {
         const dfs = (data) => {
           if (data && typeof data === "object") {
             for (const key of Object.keys(data)) {
-              if (typeof data[key] === "number") {
+              if (typeof data[key] === "number"||key==="price") {
                 data[key] = BigInt(data[key]);
               }
               dfs(data[key]);
@@ -475,6 +475,7 @@ describe("NFTMarketPlace Monitor Server", () => {
       await weth.connect(buyer).deposit({ value: price });
       await weth.connect(buyer).approve(market, price);
       const tokenId = await mintAndList(market, basicNFT, weth, price);
+      await sleep(3000);
       market
         .connect(buyer)
         .makeOffer(

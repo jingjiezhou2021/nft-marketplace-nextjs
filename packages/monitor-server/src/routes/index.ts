@@ -42,22 +42,32 @@ router.get("/check-ownership/:chainId/:address/:tokenId", async (req, res) => {
   if (
     (await marketContract?.getIsListed(currentOwner, address, tokenId)) &&
     !nftInDb?.activeItem &&
-    existsingListing
+    existsingListing &&
+    nftInDb
   ) {
     console.log(
       "there was a existing listing on chain, and there is no active item for it, recreating it in db..."
     );
     await prisma.activeItem.create({
+      include: {
+        listing: true,
+      },
       data: {
         seller: currentOwner,
         nftAddress: address,
         tokenId,
         chainId,
-        nftId: nftInDb?.id,
+        nft: {
+          connect: {
+            id: nftInDb.id,
+          },
+        },
         listing: {
-          price: existsingListing[0],
-          erc20TokenAddress: existsingListing[1],
-          erc20TokenName: existsingListing[2],
+          create: {
+            price: existsingListing[0].toString(),
+            erc20TokenAddress: existsingListing[1],
+            erc20TokenName: existsingListing[2],
+          },
         },
       },
     });
@@ -94,14 +104,14 @@ router.get("/check-ownership/:chainId/:address/:tokenId", async (req, res) => {
       console.log("new owner exists in db");
     }
     await prisma.nftMarketplace__ItemTransfered.create({
-      data:{
-        sender:ownerInDb!,
-        receiver:currentOwner,
-        nftAddress:address,
+      data: {
+        sender: ownerInDb!,
+        receiver: currentOwner,
+        nftAddress: address,
         tokenId,
-        chainId
-      }
-    })
+        chainId,
+      },
+    });
     await prisma.nFT.update({
       where: {
         id: nftInDb?.id,

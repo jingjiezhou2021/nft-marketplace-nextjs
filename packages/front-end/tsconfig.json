@@ -10,6 +10,7 @@
     "skipLibCheck": true,
     "strict": true,
     "strictNullChecks": true,
+    "noImplicitAny": false,
     "noEmit": true,
     "incremental": true,
     "module": "esnext",
