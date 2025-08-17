@@ -69,94 +69,99 @@ export default function ListItemActionDialog({
 		}
 	}, [authorizeConfirmed, postListingConfirmed]);
 	return (
-		<StepsDialog
-			{...props}
-			successContent={
-				<div className="w-full flex flex-col gap-4 items-center">
-					{contextHolder}
-					<CircleCheckIcon
-						className="text-primary"
-						size={36}
-					/>
-					<h3>{t('Post Listing Item successful')}</h3>
-					<Link
-						href={`/nft/${chainId}/${address}/${tokenId}`}
-						locale={i18n.language}
-					>
-						<Button>{t('Go back to detail page')}</Button>
-					</Link>
-				</div>
-			}
-			loading={
-				authorizeConfirming ||
-				authorizePending ||
-				postListingConfirming ||
-				postListingPending
-			}
-			currentStep={currentStep}
-			steps={[
-				{
-					title: t('Authorization'),
-					description: t('Allow the transfer of this NFT when sold'),
-				},
-				{
-					title: t('Post'),
-					description: t(
-						'Everything is ready, now you can finally post your listing',
-					),
-				},
-			]}
-		>
-			<>
-				{contextHolder}
-				<Button
-					className="flex w-1/2 py-3 h-auto max-w-64"
-					disabled={currentStep !== 0}
-					variant={currentStep === 0 ? 'default' : 'secondary'}
-					onClick={() => {
-						writeAuthorize({
-							address,
-							chainId,
-							args: [
-								MARKETPLACE_ADDRESS[chainId!] as `0x${string}`,
-								BigInt(tokenId),
-							],
-						});
-					}}
-				>
-					{t('Authorize')}
-				</Button>
-				<Button
-					className="flex w-1/2 py-3 h-auto max-w-64"
-					disabled={currentStep !== 1}
-					variant={currentStep === 1 ? 'default' : 'secondary'}
-					onClick={() => {
-						if (decimals === undefined) {
-							const errMsg =
-								'Unable to read decimal of the currency';
-							// t(
-							// 	'Unable to read decimal of the currency',
-							// );
-							messageApi.error(t(errMsg));
-							throw new Error(errMsg);
-						}
-						writePostListing({
-							address: MARKETPLACE_ADDRESS[
-								chainId!
-							] as `0x${string}`,
-							chainId,
-							args: [
+		<>
+			{contextHolder}
+			<StepsDialog
+				{...props}
+				successContent={
+					<div className="w-full flex flex-col gap-4 items-center">
+						<CircleCheckIcon
+							className="text-primary"
+							size={36}
+						/>
+						<h3>{t('Post Listing Item successful')}</h3>
+						<Link
+							href={`/nft/${chainId}/${address}/${tokenId}`}
+							locale={i18n.language}
+						>
+							<Button>{t('Go back to detail page')}</Button>
+						</Link>
+					</div>
+				}
+				loading={
+					authorizeConfirming ||
+					authorizePending ||
+					postListingConfirming ||
+					postListingPending
+				}
+				currentStep={currentStep}
+				steps={[
+					{
+						title: t('Authorization'),
+						description: t(
+							'Allow the transfer of this NFT when sold',
+						),
+					},
+					{
+						title: t('Post'),
+						description: t(
+							'Everything is ready, now you can finally post your listing',
+						),
+					},
+				]}
+			>
+				<>
+					<Button
+						className="flex w-1/2 py-3 h-auto max-w-64"
+						disabled={currentStep !== 0}
+						variant={currentStep === 0 ? 'default' : 'secondary'}
+						onClick={() => {
+							writeAuthorize({
 								address,
-								BigInt(tokenId),
-								parseUnits(amount.toString(), decimals),
-								currencyAddress,
-							],
-						});
-					}}
-				>
-					{t('Post')}
-				</Button>
-			</>
-		</StepsDialog>
+								chainId,
+								args: [
+									MARKETPLACE_ADDRESS[
+										chainId!
+									] as `0x${string}`,
+									BigInt(tokenId),
+								],
+							});
+						}}
+					>
+						{t('Authorize')}
+					</Button>
+					<Button
+						className="flex w-1/2 py-3 h-auto max-w-64"
+						disabled={currentStep !== 1}
+						variant={currentStep === 1 ? 'default' : 'secondary'}
+						onClick={() => {
+							if (decimals === undefined) {
+								const errMsg =
+									'Unable to read decimal of the currency';
+								// t(
+								// 	'Unable to read decimal of the currency',
+								// );
+								messageApi.error(t(errMsg));
+								throw new Error(errMsg);
+							}
+							writePostListing({
+								address: MARKETPLACE_ADDRESS[
+									chainId!
+								] as `0x${string}`,
+								chainId,
+								args: [
+									address,
+									BigInt(tokenId),
+									parseUnits(amount.toString(), decimals),
+									currencyAddress,
+								],
+							});
+						}}
+					>
+						{t('Post')}
+					</Button>
+				</>
+			</StepsDialog>
+		</>
 	);
 }
