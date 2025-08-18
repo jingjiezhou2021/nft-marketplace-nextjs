@@ -40,6 +40,8 @@ export default function useTotalPrice(
 				}),
 			},
 		},
+		pollInterval: 2000,
+		fetchPolicy: 'network-only',
 	});
 	const ret = new Map<string, { price: bigint; name: string }>();
 	let ethPayAmount = 0n;

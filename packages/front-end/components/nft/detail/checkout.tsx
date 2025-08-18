@@ -52,6 +52,7 @@ import {
 	useReadIerc20BalanceOf,
 } from 'smart-contract/wagmi/generated';
 import ConfirmBuyDialog from '../dialog/confirm-buy';
+import { getWalletIcon } from '@/lib/wallet';
 function NftPriceCard({ nft }: { nft: NFTDetailProps }) {
 	const { metadata, loading: metadataLoading } = useNFTMetadata(
 		nft.contractAddress,
@@ -79,6 +80,8 @@ function NftPriceCard({ nft }: { nft: NFTDetailProps }) {
 				},
 			},
 		},
+		fetchPolicy: 'network-only',
+		nextFetchPolicy: 'cache-first',
 	});
 	return (
 		<div className="flex justify-between relative items-center mt-6 min-h-20">
@@ -240,7 +243,7 @@ export function CheckoutDrawer({
 									<CardContent className="p-0">
 										<div className="p-4 rounded-lg flex items-center justify-between">
 											<div className="md:flex md:items-center space-x-3">
-												<MetaMaskColorful />
+												{getWalletIcon(connector?.name)}
 												<div className="font-medium">
 													{connector?.name}&nbsp;
 													<span className="text-sm text-muted-foreground">
