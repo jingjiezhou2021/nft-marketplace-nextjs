@@ -29,6 +29,7 @@ error NftMarketplace__PriceMustBeAboveZero();
 error NftMarketplace__ERC20TokenAllowanceNotEnough();
 error NftMarketplace__ERC20TokenBalanceNotEnough();
 error NftMarketplace__OfferNotExist(uint256 offerId);
+error NftMarketplace__NotCreatorOfOffer(uint256 offerId,address creator,address sender);
 error NftMarketplace__WithdrawFailed();
 
 contract NftMarketplace is ReentrancyGuard{
@@ -50,6 +51,10 @@ contract NftMarketplace is ReentrancyGuard{
         uint256 indexed tokenId
     );
     event NftMarketplace__ItemOfferMade (
+        uint256 indexed offerId,
+        Offer offer
+    );
+    event NftMarketPlace__ItemOfferCanceled (
         uint256 indexed offerId,
         Offer offer
     );
@@ -113,6 +118,13 @@ contract NftMarketplace is ReentrancyGuard{
     ) {
         if (getIsOwner(nftAddress, tokenId, spender)) {
             revert NftMarketplace__IsOwner();
+        }
+        _;
+    }
+
+    modifier offerExists(uint256 offerId) {
+        if(!getOfferExist(offerId)) {
+            revert NftMarketplace__OfferNotExist(offerId);
         }
         _;
     }
@@ -335,12 +347,19 @@ contract NftMarketplace is ReentrancyGuard{
         }
     }
 
+    function cancelOffer(uint256 offerId) external offerExists(offerId) nonReentrant {
+        Offer memory offer = getOffer(offerId);
+        if(offer.buyer!=msg.sender) {
+            revert NftMarketplace__NotCreatorOfOffer(offerId,offer.buyer,msg.sender);
+        }
+        delete s_offers[offerId];
+        emit NftMarketPlace__ItemOfferCanceled(offerId,offer);
+    }
+
     function acceptOffer(uint256 offerId) 
         external 
+        offerExists(offerId)
         nonReentrant {
-        if(!getOfferExist(offerId)) {
-            revert NftMarketplace__OfferNotExist(offerId);
-        }
         Offer memory offer = getOffer(offerId);
         if(!getIsOwner(offer.nftAddress,offer.tokenId,msg.sender)) {
             revert NftMarketplace__NotOwner();
@@ -369,6 +388,7 @@ contract NftMarketplace is ReentrancyGuard{
             offer.tokenId
         );
         emit NftMarketplace__ItemBought(offer.buyer, offer.nftAddress, offer.tokenId, offer.listing);
+        delete s_offers[offerId];
     }
 
 

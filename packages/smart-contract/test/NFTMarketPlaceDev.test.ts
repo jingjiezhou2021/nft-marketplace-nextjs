@@ -909,6 +909,68 @@ describe("NFTMarketPlace", () => {
       ).to.emit(buyerConnectedContract, "NftMarketplace__ItemOfferMade");
     });
   });
+  describe("cancel offer", () => {
+    let buyerConnectedContract: NftMarketplace;
+    beforeEach(async () => {
+      buyerConnectedContract = NFTMarketPlaceContract.connect(buyer);
+    });
+    it("offer needs to exist", async () => {
+      await expect(
+        buyerConnectedContract.cancelOffer(20)
+      ).revertedWithCustomError(
+        buyerConnectedContract,
+        "NftMarketplace__OfferNotExist"
+      );
+    });
+    it("only the creator of offer can cancel the offer", async () => {
+      await approveAndListItem(
+        onlyTokenID,
+        standardSellingPriceUSDT,
+        await USDTContract.getAddress()
+      );
+      await USDTContract.connect(buyer).approve(
+        await NFTMarketPlaceContract.getAddress(),
+        standardSellingPriceUSDT / 2n
+      );
+      const offerInfo = await makeOffer(
+        buyerConnectedContract,
+        onlyTokenID,
+        standardSellingPriceUSDT / 2n,
+        await USDTContract.getAddress()
+      );
+      await expect(
+        NFTMarketPlaceContract.connect(thirdPlayer).cancelOffer(
+          offerInfo.offerId
+        )
+      ).revertedWithCustomError(
+        NFTMarketPlaceContract,
+        "NftMarketplace__NotCreatorOfOffer"
+      );
+    });
+    it("cancel successful", async () => {
+      await approveAndListItem(
+        onlyTokenID,
+        standardSellingPriceUSDT,
+        await USDTContract.getAddress()
+      );
+      await USDTContract.connect(buyer).approve(
+        await NFTMarketPlaceContract.getAddress(),
+        standardSellingPriceUSDT / 2n
+      );
+      const offerInfo = await makeOffer(
+        buyerConnectedContract,
+        onlyTokenID,
+        standardSellingPriceUSDT / 2n,
+        await USDTContract.getAddress()
+      );
+      await expect(
+        buyerConnectedContract.cancelOffer(offerInfo.offerId)
+      ).to.emit(buyerConnectedContract, "NftMarketPlace__ItemOfferCanceled");
+      expect(
+        await NFTMarketPlaceContract.getOfferExist(offerInfo.offerId)
+      ).to.equal(false);
+    });
+  });
   describe("accept offer", () => {
     let buyerConnectedContract: NftMarketplace;
     beforeEach(async () => {
@@ -995,6 +1057,9 @@ describe("NFTMarketPlace", () => {
           expect(await BasicNFTContract.ownerOf(onlyTokenID)).equal(
             buyer.address
           );
+          expect(await NFTMarketPlaceContract.getOfferExist(offerId)).to.equal(
+            false
+          );
         });
         it("accept offer successful will delete existing listing", async () => {
           await approveAndListItem(
@@ -1003,6 +1068,9 @@ describe("NFTMarketPlace", () => {
             await USDTContract.getAddress()
           );
           await NFTMarketPlaceContract.acceptOffer(offerId);
+          expect(await NFTMarketPlaceContract.getOfferExist(offerId)).to.equal(
+            false
+          );
           expect(
             await NFTMarketPlaceContract.getIsListed(
               seller,
