@@ -36,6 +36,7 @@ import useMessage from 'antd/es/message/useMessage';
 import TransferNFTDialog from '@/components/nft/dialog/transfer';
 import UpdateListingDialog from '@/components/nft/dialog/update-listing';
 import { CheckoutDrawer } from '@/components/nft/detail/checkout';
+import MakeOfferDrawer from '@/components/nft/detail/make-offer';
 export const getServerSideProps: GetServerSideProps<
 	SSRConfig,
 	{ chainId: string; address: `0x${string}`; tokenId: string }
@@ -355,15 +356,24 @@ export default function NFTDetailPage(
 										</Button>
 									</CheckoutDrawer>
 								)}
-								<Button
-									className={cn(
-										nftData?.findFirstNFT?.activeItem
-											? 'w-[48%]'
-											: 'w-full',
-									)}
+								<MakeOfferDrawer
+									nft={{
+										contractAddress: address,
+										chainId,
+										tokenId,
+									}}
+									chainId={chainId}
 								>
-									{t('Make Offer')}
-								</Button>
+									<Button
+										className={cn(
+											nftData?.findFirstNFT?.activeItem
+												? 'w-[48%]'
+												: 'w-full',
+										)}
+									>
+										{t('Make Offer')}
+									</Button>
+								</MakeOfferDrawer>
 							</>
 						)}
 					</div>

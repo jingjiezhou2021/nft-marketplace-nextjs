@@ -13,10 +13,12 @@ import { cn } from '@/lib/utils';
 export default function SelectCrypto({
 	chainId,
 	className,
+	placeholder,
 	...props
 }: React.ComponentProps<typeof Select> & {
 	chainId: ChainIdParameter<typeof config>['chainId'];
 	className?: string;
+	placeholder?: string;
 }) {
 	const { t } = useTranslation('common');
 	if (chainId === undefined) {
@@ -29,9 +31,12 @@ export default function SelectCrypto({
 				id="currency"
 			>
 				<SelectValue
-					placeholder={t(
-						'Please select the currency you wanna trade with this item',
-					)}
+					placeholder={
+						placeholder ??
+						t(
+							'Please select the currency you wanna trade with this item',
+						)
+					}
 				/>
 			</SelectTrigger>
 			<SelectContent>

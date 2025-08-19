@@ -49,6 +49,15 @@ export function getCryptoIcon(
 	};
 	return map[Number(chainId)][tokenContractAddress];
 }
+export function getCryptoName(chainId: number, tokenContractAddress: string) {
+	const map: Record<number, Record<string, string>> = {
+		[sepolia.id]: {
+			[SEPOLIA_AAVE_USDT]: 'USDT',
+			[SEPOLIA_AAVE_WETH]: 'WETH',
+		},
+	};
+	return map[chainId][tokenContractAddress];
+}
 export async function getCurrencyDecimals(
 	address: `0x${string}`,
 	chainId: ChainIdParameter<typeof config>['chainId'],
