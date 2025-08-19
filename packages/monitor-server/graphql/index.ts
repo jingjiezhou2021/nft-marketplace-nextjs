@@ -38,6 +38,11 @@ async function deleteAllHardhatData(prisma: MyPrismaClient) {
         chainId: 31337,
       },
     });
+    await prisma.offer.deleteMany({
+      where: {
+        chainId: 31337,
+      },
+    });
     console.log("✅ All data in hardhat deleted.");
   } catch (err) {
     console.error("❌ Failed to delete data in hardhat:", err);

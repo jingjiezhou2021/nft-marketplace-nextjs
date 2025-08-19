@@ -1,6 +1,6 @@
 import { TypeChain } from "smart-contract";
 import logListener from "./listener/logListener";
-import { PrismaClient } from "@/prisma/generated/prisma";
+import { PrismaClient, Prisma } from "@/prisma/generated/prisma";
 
 export default function listenForItemOfferMade(
   marketContract: TypeChain.contracts.nftMarketPlaceSol.NftMarketplace,
@@ -12,9 +12,10 @@ export default function listenForItemOfferMade(
     logListener(async (offerId, offer) => {
       await prisma.nftMarketplace__ItemOfferMade.create({
         data: {
-          offerId,
           offer: {
             create: {
+              id: offerId,
+              chainId,
               buyer: offer[0],
               nftAddress: offer[1],
               tokenId: offer[2],
@@ -25,7 +26,7 @@ export default function listenForItemOfferMade(
                   erc20TokenName: offer[3][2],
                 },
               },
-            },
+            } satisfies Prisma.OfferCreateWithoutItemOfferMadeInput,
           },
           chainId: chainId,
         },
