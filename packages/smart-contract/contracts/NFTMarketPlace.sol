@@ -54,6 +54,10 @@ contract NftMarketplace is ReentrancyGuard{
         uint256 indexed offerId,
         Offer offer
     );
+    event NftMarketplace__ItemOfferAccepted (
+        uint256 indexed offerId,
+        Offer offer
+    );
     event NftMarketPlace__ItemOfferCanceled (
         uint256 indexed offerId,
         Offer offer
@@ -388,6 +392,7 @@ contract NftMarketplace is ReentrancyGuard{
             offer.tokenId
         );
         emit NftMarketplace__ItemBought(offer.buyer, offer.nftAddress, offer.tokenId, offer.listing);
+        emit NftMarketplace__ItemOfferAccepted(offerId,offer);
         delete s_offers[offerId];
     }
 

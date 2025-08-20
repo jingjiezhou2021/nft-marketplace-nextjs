@@ -1085,10 +1085,12 @@ describe("NFTMarketPlace", () => {
             standardSellingPriceUSDT,
             await USDTContract.getAddress()
           );
-          await expect(NFTMarketPlaceContract.acceptOffer(offerId)).to.emit(
-            NFTMarketPlaceContract,
-            "NftMarketplace__ItemBought"
-          );
+          await expect(NFTMarketPlaceContract.acceptOffer(offerId))
+            .to.emit(NFTMarketPlaceContract, "NftMarketplace__ItemBought")
+            .to.emit(
+              NFTMarketPlaceContract,
+              "NftMarketplace__ItemOfferAccepted"
+            );
         });
       });
     });
