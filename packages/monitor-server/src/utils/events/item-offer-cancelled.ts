@@ -14,7 +14,12 @@ export default function listenForItemOfferCancelled(
       const previousOfferMade =
         await prisma.nftMarketplace__ItemOfferMade.findFirst({
           where: {
-            offerId,
+            chainId,
+            offer: {
+              is: {
+                offerId,
+              },
+            },
           },
         });
       if (previousOfferMade === null) {
@@ -29,7 +34,7 @@ export default function listenForItemOfferCancelled(
       await prisma.nftMarketplace__ItemOfferCanceled.create({
         data: {
           chainId,
-          offerId,
+          offerId: previousOfferMade.offerId,
         },
       });
     })

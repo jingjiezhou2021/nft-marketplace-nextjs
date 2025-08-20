@@ -14,7 +14,7 @@ export default function listenForItemOfferMade(
         data: {
           offer: {
             create: {
-              id: offerId,
+              offerId,
               chainId,
               buyer: offer[0],
               nftAddress: offer[1],
@@ -31,6 +31,35 @@ export default function listenForItemOfferMade(
           chainId: chainId,
         },
       });
+      const existingNft = await prisma.nFT.findFirst({
+        where: {
+          contractAddress: {
+            equals: offer[1],
+            mode: "insensitive",
+          },
+          tokenId: offer[2],
+          collection: {
+            is: {
+              chainId: {
+                equals: chainId,
+              },
+            },
+          },
+        },
+      });
+      if (existingNft) {
+        await prisma.offer.update({
+          where: {
+            chainId_offerId: {
+              chainId,
+              offerId,
+            },
+          },
+          data: {
+            nftId: existingNft.id,
+          },
+        });
+      }
     })
   );
 }

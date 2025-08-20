@@ -88,6 +88,7 @@ describe("NFTMarketPlace Monitor Server", () => {
           $deleteManyNftMarketplaceItemCanceledWhere2: NftMarketplace__ItemCanceledWhereInput
           $deleteManyNftMarketplaceItemListedWhere2: NftMarketplace__ItemListedWhereInput
           $deleteManyNftMarketplaceItemOfferMadeWhere2: NftMarketplace__ItemOfferMadeWhereInput
+          $deleteManyNftMarketplace__ItemOfferCanceledWhere2: NftMarketplace__ItemOfferCanceledWhereInput
         ) {
           deleteManyNftMarketplace__ItemListed(
             where: $deleteManyNftMarketplaceItemListedWhere2
@@ -101,6 +102,11 @@ describe("NFTMarketPlace Monitor Server", () => {
           }
           deleteManyNftMarketplace__ItemCanceled(
             where: $deleteManyNftMarketplaceItemCanceledWhere2
+          ) {
+            count
+          }
+          deleteManyNftMarketplace__ItemOfferCanceled(
+            where: $deleteManyNftMarketplace__ItemOfferCanceledWhere2
           ) {
             count
           }
@@ -136,6 +142,11 @@ describe("NFTMarketPlace Monitor Server", () => {
           },
         },
         deleteManyNftMarketplaceItemOfferMadeWhere2: {
+          chainId: {
+            equals: 31337,
+          },
+        },
+        deleteManyNftMarketplace__ItemOfferCanceledWhere2: {
           chainId: {
             equals: 31337,
           },
@@ -351,9 +362,9 @@ describe("NFTMarketPlace Monitor Server", () => {
         query: graphql(`
           query Query4 {
             nftMarketplace__ItemOfferMades {
-              offerId
               offer {
                 buyer
+                offerId
                 nftAddress
                 tokenId
                 listing {
@@ -374,9 +385,9 @@ describe("NFTMarketPlace Monitor Server", () => {
       ).toEqual<typeof data.nftMarketplace__ItemOfferMades>([
         {
           __typename: "NftMarketplace__ItemOfferMade",
-          offerId,
           offer: {
             __typename: "Offer",
+            offerId,
             buyer: buyer.address,
             nftAddress: await basicNFT.getAddress(),
             tokenId,
@@ -423,7 +434,7 @@ describe("NFTMarketPlace Monitor Server", () => {
               chainId
               offer {
                 buyer
-                id
+                offerId
                 listing {
                   price
                   erc20TokenAddress
@@ -432,7 +443,9 @@ describe("NFTMarketPlace Monitor Server", () => {
                 nftAddress
                 tokenId
                 itemOfferMade {
-                  offerId
+                  offer {
+                    offerId
+                  }
                 }
               }
             }
@@ -447,7 +460,7 @@ describe("NFTMarketPlace Monitor Server", () => {
         {
           __typename: "NftMarketplace__ItemOfferCanceled",
           offer: {
-            id: offerId,
+            offerId,
             __typename: "Offer",
             buyer: buyer.address,
             nftAddress: await basicNFT.getAddress(),
@@ -460,7 +473,10 @@ describe("NFTMarketPlace Monitor Server", () => {
             },
             itemOfferMade: {
               __typename: "NftMarketplace__ItemOfferMade",
-              offerId,
+              offer: {
+                __typename: "Offer",
+                offerId,
+              },
             },
           },
           chainId: provider._network.chainId,

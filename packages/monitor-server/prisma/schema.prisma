@@ -33,11 +33,17 @@ model Listing {
 }
 
 model Offer {
-  id         BigInt @id
+  id         String @id @default(uuid())
+  offerId    BigInt
   buyer      String
   nftAddress String
   tokenId    BigInt
   chainId    BigInt
+
+  @@unique([chainId,offerId])
+
+  nft   NFT?    @relation(fields: [nftId], references: [id])
+  nftId String?
 
   // relation to Listing
   listingId String  @unique
@@ -106,7 +112,7 @@ model ActiveItem {
 
 model NftMarketplace__ItemOfferMade {
   id      String @id @default(uuid())
-  offerId BigInt @unique
+  offerId String @unique
   chainId BigInt @default(31337)
 
   offer      Offer  @relation(fields: [offerId], references: [id])
@@ -114,7 +120,7 @@ model NftMarketplace__ItemOfferMade {
 
 model NftMarketplace__ItemOfferCanceled {
   id      String @id @default(uuid())
-  offerId BigInt @unique
+  offerId String @unique
   chainId BigInt @default(31337)
 
   offer      Offer  @relation(fields: [offerId], references: [id])
@@ -145,6 +151,8 @@ model NFT {
   collectionId String
 
   activeItem ActiveItem?
+
+  offers Offer[]
 
   @@unique([contractAddress, tokenId, collectionId])
 }
