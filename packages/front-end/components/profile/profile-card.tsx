@@ -47,12 +47,18 @@ export function ProfileCard({
 	return (
 		<HoverCard openDelay={300}>
 			<HoverCardTrigger asChild>
-				{children(
-					dispName,
-					userAddress?.toLowerCase() === address.toLowerCase(),
-				)}
+				<Link
+					className="cursor-pointer"
+					href={`/profile/${address}`}
+					locale={i18n.language}
+				>
+					{children(
+						dispName,
+						userAddress?.toLowerCase() === address.toLowerCase(),
+					)}
+				</Link>
 			</HoverCardTrigger>
-			<HoverCardContent className="w-64">
+			<HoverCardContent className="w-64 z-[60]!">
 				<Link
 					className="flex gap-4 relative cursor-pointer"
 					href={`/profile/${address}`}

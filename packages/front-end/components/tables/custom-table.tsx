@@ -60,6 +60,7 @@ export default function CustomTable<TData extends RowData>(props: {
 	columnPinningState: ColumnPinningState;
 	rowCursor: boolean;
 	rowCNFn?: (row: Row<TData>) => clsx.ClassValue;
+	onRowClick?: (row: Row<TData>) => void;
 }) {
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] =
@@ -134,6 +135,7 @@ export default function CustomTable<TData extends RowData>(props: {
 										props.rowCursor && 'cursor-pointer',
 										props.rowCNFn?.(row),
 									)}
+									onClick={() => props.onRowClick?.(row)}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell

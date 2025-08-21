@@ -22,6 +22,8 @@ import {
 	HoverCardContent,
 	HoverCardTrigger,
 } from '@/components/ui/hover-card';
+import { useState } from 'react';
+import OfferDetailDialog from '../dialog/offer-detail';
 type OfferTableData = {
 	priceListing: Pick<
 		Listing,
@@ -29,6 +31,7 @@ type OfferTableData = {
 	>;
 	buyer: `0x${string}`;
 	time: Date;
+	offerId: bigint;
 	unableToPayButYours?: boolean;
 };
 export default function NFTDetailOffers({
@@ -163,6 +166,7 @@ export default function NFTDetailOffers({
 				priceListing: offer.listing,
 				buyer: offer.buyer as `0x${string}`,
 				time: offer.itemOfferMade?.createdAt,
+				offerId: offer.offerId,
 			};
 		})
 		.concat(
@@ -171,10 +175,13 @@ export default function NFTDetailOffers({
 					priceListing: offer.listing,
 					buyer: offer.buyer as `0x${string}`,
 					time: offer.itemOfferMade?.createdAt,
+					offerId: offer.offerId,
 					unableToPayButYours: true,
 				};
 			}),
 		);
+	const [dialogOffer, setDialogOffer] = useState<bigint>();
+	const [openActionDialog, setOpenActionDialog] = useState(false);
 	return (
 		<div className="relative">
 			<CustomTable
@@ -184,6 +191,11 @@ export default function NFTDetailOffers({
 				rowCNFn={(row) => {
 					return row.original.unableToPayButYours && 'opacity-50';
 				}}
+				onRowClick={(row) => {
+					console.log('row clicked');
+					setDialogOffer(row.original.offerId);
+					setOpenActionDialog(true);
+				}}
 				columnPinningState={{ left: [], right: [] }}
 			/>
 			<LoadingMask
@@ -192,6 +204,16 @@ export default function NFTDetailOffers({
 			>
 				<LoadingSpinner size={24}></LoadingSpinner>
 			</LoadingMask>
+			<OfferDetailDialog
+				nft={{
+					contractAddress,
+					tokenId,
+					chainId,
+				}}
+				offerId={dialogOffer}
+				open={openActionDialog}
+				onOpenChange={setOpenActionDialog}
+			/>
 		</div>
 	);
 }
