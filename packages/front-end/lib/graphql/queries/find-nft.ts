@@ -58,6 +58,24 @@ const findNFTs = graphql(`
 				}
 				chainId
 			}
+			offers {
+				buyer
+				chainId
+				offerId
+				listing {
+					erc20TokenAddress
+					erc20TokenName
+					price
+				}
+				itemOfferMade {
+					createdAt
+					id
+				}
+				itemOfferCanceled {
+					createdAt
+					id
+				}
+			}
 		}
 	}
 `);

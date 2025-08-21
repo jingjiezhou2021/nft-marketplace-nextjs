@@ -64,7 +64,9 @@ export default function NFTDetailTraits({
 				} else {
 					return {
 						attribute: Object.entries(a)[0][0],
-						trait: Object.entries(a)[0][1].toString(),
+						trait: (
+							Object.entries(a)[0][1] as string | number
+						).toString(),
 					};
 				}
 			});

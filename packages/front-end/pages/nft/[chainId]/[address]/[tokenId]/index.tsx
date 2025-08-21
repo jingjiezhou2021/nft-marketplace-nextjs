@@ -37,6 +37,7 @@ import TransferNFTDialog from '@/components/nft/dialog/transfer';
 import UpdateListingDialog from '@/components/nft/dialog/update-listing';
 import { CheckoutDrawer } from '@/components/nft/detail/checkout';
 import MakeOfferDrawer from '@/components/nft/detail/make-offer';
+import NFTDetailOffers from '@/components/nft/detail/offers';
 export const getServerSideProps: GetServerSideProps<
 	SSRConfig,
 	{ chainId: string; address: `0x${string}`; tokenId: string }
@@ -377,6 +378,16 @@ export default function NFTDetailPage(
 							</>
 						)}
 					</div>
+					<Separator orientation="horizontal" />
+					<h3>{t('Offers')}</h3>
+					<p className="text-xs text-muted-foreground">
+						{t('You can click the offer item to view the detail')}
+					</p>
+					<NFTDetailOffers
+						contractAddress={address}
+						tokenId={tokenId}
+						chainId={chainId}
+					/>
 				</div>
 
 				<Separator />
