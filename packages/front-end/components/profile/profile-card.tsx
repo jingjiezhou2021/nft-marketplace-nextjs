@@ -19,6 +19,7 @@ import { Address } from '@ant-design/web3';
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
 import { useAccount } from 'wagmi';
+import AddressBadge from '../address-badge';
 
 export function ProfileCard({
 	address,
@@ -73,16 +74,7 @@ export function ProfileCard({
 					<div className="space-y-1 grow min-w-0">
 						<h4 className="text-sm font-semibold">{dispName}</h4>
 						{data?.findFirstUserProfile?.username && (
-							<Badge
-								variant="outline"
-								className="border-border bg-[oklch(var(--muted-foreground)_/_0.5)]"
-							>
-								<Address
-									ellipsis
-									address={address}
-									className="font-light! leading-tight! text-secondary-foreground! text-xs! select-text opacity-100"
-								/>
-							</Badge>
+							<AddressBadge address={address} />
 						)}
 					</div>
 				</Link>

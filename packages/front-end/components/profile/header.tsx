@@ -24,6 +24,7 @@ import ExpandableBannerHeader, {
 	ExpandableBannerHeaderContentLeft,
 	ExpandableBannerHeaderContentRight,
 } from '../expandable-banner-header';
+import AddressBadge from '../address-badge';
 
 export default function ProfileHeader({
 	data,
@@ -140,16 +141,9 @@ export default function ProfileHeader({
 									)}
 								</div>
 								{data?.findFirstUserProfile?.username && (
-									<Badge
-										variant="outline"
-										className="border-border bg-[oklch(var(--muted-foreground)_/_0.5)]"
-									>
-										<Address
-											ellipsis
-											address={address}
-											className="font-light! leading-tight! text-secondary-foreground! text-xs! select-text opacity-100"
-										/>
-									</Badge>
+									<AddressBadge
+										address={address as `0x${string}`}
+									/>
 								)}
 								{data?.findFirstUserProfile?.bio && (
 									<p className="text-foreground text-sm">
