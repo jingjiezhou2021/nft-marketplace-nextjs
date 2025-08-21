@@ -28,6 +28,16 @@ async function deleteAllHardhatData(prisma: MyPrismaClient) {
         chainId: 31337,
       },
     });
+    await prisma.nftMarketplace__ItemOfferCanceled.deleteMany({
+      where: {
+        chainId: 31337,
+      },
+    });
+    await prisma.nftMarketplace__ItemOfferAccepted.deleteMany({
+      where: {
+        chainId: 31337,
+      },
+    });
     await prisma.nftMarketplace__ItemOfferMade.deleteMany({
       where: {
         chainId: 31337,

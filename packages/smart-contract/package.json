@@ -7,7 +7,7 @@
     "hardhat": "^2.25.0"
   },
   "scripts": {
-    "build": "tsc && tsc-alias",
+    "build": "wagmi generate && tsc && tsc-alias",
     "deploy-dev": "hardhat ignition deploy ignition/modules/NFTMarketPlaceDev.ts --network localhost && yarn build",
     "deploy": "hardhat ignition deploy ignition/modules/NFTMarketPlaceProduction.ts --network sepolia --verify && yarn build",
     "test": "hardhat test"

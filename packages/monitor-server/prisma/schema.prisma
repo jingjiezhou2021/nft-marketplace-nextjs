@@ -51,6 +51,7 @@ model Offer {
 
   itemOfferMade NftMarketplace__ItemOfferMade?
   itemOfferCanceled NftMarketplace__ItemOfferCanceled?
+  itemOfferAccepted NftMarketplace__ItemOfferAccepted?
 }
 
 model NftMarketplace__ItemListed {
@@ -114,6 +115,7 @@ model NftMarketplace__ItemOfferMade {
   id      String @id @default(uuid())
   offerId String @unique
   chainId BigInt @default(31337)
+  createdAt  DateTime @default(now())
 
   offer      Offer  @relation(fields: [offerId], references: [id])
 }
@@ -122,6 +124,16 @@ model NftMarketplace__ItemOfferCanceled {
   id      String @id @default(uuid())
   offerId String @unique
   chainId BigInt @default(31337)
+  createdAt  DateTime @default(now())
+
+  offer      Offer  @relation(fields: [offerId], references: [id])
+}
+
+model NftMarketplace__ItemOfferAccepted {
+  id      String @id @default(uuid())
+  offerId String @unique
+  chainId BigInt @default(31337)
+  createdAt  DateTime @default(now())
 
   offer      Offer  @relation(fields: [offerId], references: [id])
 }
