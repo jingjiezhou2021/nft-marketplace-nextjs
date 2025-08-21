@@ -18,15 +18,17 @@ import { Badge } from '../ui/badge';
 import { Address } from '@ant-design/web3';
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
+import { useAccount } from 'wagmi';
 
 export function ProfileCard({
 	address,
 	children,
 }: {
 	address: `0x${string}`;
-	children: (dispName: string) => ReactNode;
+	children: (dispName: string, isYou: boolean) => ReactNode;
 }) {
 	const { i18n } = useTranslation('common');
+	const { address: userAddress } = useAccount();
 	const { loading, data } = useQuery(findUserProfile, {
 		variables: {
 			where: {
@@ -43,7 +45,12 @@ export function ProfileCard({
 		data?.findFirstUserProfile?.username ?? getAddressAbbreviation(address);
 	return (
 		<HoverCard openDelay={300}>
-			<HoverCardTrigger asChild>{children(dispName)}</HoverCardTrigger>
+			<HoverCardTrigger asChild>
+				{children(
+					dispName,
+					userAddress?.toLowerCase() === address.toLowerCase(),
+				)}
+			</HoverCardTrigger>
 			<HoverCardContent className="w-64">
 				<Link
 					className="flex gap-4 relative cursor-pointer"

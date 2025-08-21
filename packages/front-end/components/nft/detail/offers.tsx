@@ -89,10 +89,10 @@ export default function NFTDetailOffers({
 				return (
 					<div>
 						<ProfileCard address={row.original.buyer}>
-							{(dispName) => {
+							{(dispName, isYou) => {
 								return (
 									<div className="cursor-pointer">
-										{dispName}
+										{isYou ? t('You') : dispName}
 									</div>
 								);
 							}}
