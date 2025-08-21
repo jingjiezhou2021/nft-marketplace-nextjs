@@ -9,6 +9,7 @@ import {
 	getFilteredRowModel,
 	getPaginationRowModel,
 	getSortedRowModel,
+	Row,
 	RowData,
 	SortingState,
 	useReactTable,
@@ -25,6 +26,7 @@ import {
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
+import clsx from 'clsx';
 export function CustomTableHeaderFilterButton<TData extends RowData>({
 	children,
 	column,
@@ -57,6 +59,7 @@ export default function CustomTable<TData extends RowData>(props: {
 	data: TData[];
 	columnPinningState: ColumnPinningState;
 	rowCursor: boolean;
+	rowCNFn?: (row: Row<TData>) => clsx.ClassValue;
 }) {
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] =
@@ -101,6 +104,9 @@ export default function CustomTable<TData extends RowData>(props: {
 												header.column.getIsPinned() ===
 													'left' &&
 													'sticky left-0 bg-background md:bg-transparent md:static',
+												header.column.getIsPinned() ===
+													'right' &&
+													'sticky right-0 bg-background md:bg-transparent md:static',
 											)}
 										>
 											{header.isPlaceholder
@@ -126,6 +132,7 @@ export default function CustomTable<TData extends RowData>(props: {
 									}
 									className={cn(
 										props.rowCursor && 'cursor-pointer',
+										props.rowCNFn?.(row),
 									)}
 								>
 									{row.getVisibleCells().map((cell) => (
@@ -135,6 +142,9 @@ export default function CustomTable<TData extends RowData>(props: {
 												cell.column.getIsPinned() ===
 													'left' &&
 													'sticky left-0 bg-background md:bg-transparent md:static',
+												cell.column.getIsPinned() ===
+													'right' &&
+													'sticky right-0 bg-background md:bg-transparent md:static',
 											)}
 										>
 											{flexRender(

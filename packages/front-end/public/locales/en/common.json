@@ -55,6 +55,7 @@
   "Crypto": "Crypto",
   "Currency": "Currency",
   "Currency approval successful": "Currency approval successful",
+  "Currently you don't have enough balance or allowance to afford this offer": "Currently you don't have enough balance or allowance to afford this offer",
   "Deposit WETH failed": "Deposit WETH failed",
   "Description": "Description",
   "Done": "Done",

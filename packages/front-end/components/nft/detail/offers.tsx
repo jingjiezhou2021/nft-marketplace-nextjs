@@ -16,6 +16,12 @@ import { formatDistance } from 'date-fns';
 import getDateFnsLocale from '@/lib/getDateFnsLocale';
 import { IconArrowUpRight, IconTag } from '@tabler/icons-react';
 import { getDateDiffStr } from '@/lib/utils';
+import { CircleAlert } from 'lucide-react';
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from '@/components/ui/hover-card';
 type OfferTableData = {
 	priceListing: Pick<
 		Listing,
@@ -23,6 +29,7 @@ type OfferTableData = {
 	>;
 	buyer: `0x${string}`;
 	time: Date;
+	unableToPayButYours?: boolean;
 };
 export default function NFTDetailOffers({
 	contractAddress,
@@ -30,7 +37,7 @@ export default function NFTDetailOffers({
 	chainId,
 }: NFTDetailProps) {
 	const { t, i18n } = useTranslation('common');
-	const { filteredOffers, loading } = useNFTOffers([
+	const { filteredOffers, loading, unableToPayButYourOffers } = useNFTOffers([
 		{ contractAddress, tokenId, chainId },
 	]);
 	const columns: ColumnDef<OfferTableData>[] = [
@@ -124,20 +131,59 @@ export default function NFTDetailOffers({
 				);
 			},
 		},
+		{
+			id: 'status',
+			cell({ row }) {
+				if (row.original.unableToPayButYours) {
+					return (
+						<HoverCard>
+							<HoverCardTrigger asChild>
+								<div>
+									<CircleAlert className="text-destructive" />
+								</div>
+							</HoverCardTrigger>
+							<HoverCardContent>
+								<p>
+									{t(
+										"Currently you don't have enough balance or allowance to afford this offer",
+									)}
+								</p>
+							</HoverCardContent>
+						</HoverCard>
+					);
+				} else {
+					return null;
+				}
+			},
+		},
 	];
-	const data: OfferTableData[] = filteredOffers.map((offer) => {
-		return {
-			priceListing: offer.listing,
-			buyer: offer.buyer as `0x${string}`,
-			time: offer.itemOfferMade?.createdAt,
-		};
-	});
+	const data: OfferTableData[] = filteredOffers
+		.map((offer) => {
+			return {
+				priceListing: offer.listing,
+				buyer: offer.buyer as `0x${string}`,
+				time: offer.itemOfferMade?.createdAt,
+			};
+		})
+		.concat(
+			unableToPayButYourOffers.map((offer) => {
+				return {
+					priceListing: offer.listing,
+					buyer: offer.buyer as `0x${string}`,
+					time: offer.itemOfferMade?.createdAt,
+					unableToPayButYours: true,
+				};
+			}),
+		);
 	return (
 		<div className="relative">
 			<CustomTable
 				columns={columns}
 				data={data}
 				rowCursor
+				rowCNFn={(row) => {
+					return row.original.unableToPayButYours && 'opacity-50';
+				}}
 				columnPinningState={{ left: [], right: [] }}
 			/>
 			<LoadingMask

@@ -5,11 +5,12 @@ import { NftsQuery, QueryMode } from '@/apollo/gql/graphql';
 import { ValuesType } from 'utility-types';
 import { useEffect, useMemo, useState } from 'react';
 import { erc20Abi } from 'smart-contract/wagmi/generated';
-import { useConfig } from 'wagmi';
+import { useAccount, useConfig } from 'wagmi';
 import { readContract } from '@wagmi/core';
 import MARKETPLACE_ADDRESS from '../market';
 type OfferDetail = ValuesType<ValuesType<NftsQuery['nFTS']>['offers']>;
 export default function useNFTOffers(nfts: NFTDetailProps[]) {
+	const { address } = useAccount();
 	const { data, loading } = useQuery(findNFTs, {
 		variables: {
 			where: {
@@ -49,7 +50,6 @@ export default function useNFTOffers(nfts: NFTDetailProps[]) {
 	const [filteredOffers, setFilteredOffers] = useState<OfferDetail[]>([]);
 	const [filtering, setFiltering] = useState(true);
 	useEffect(() => {
-		debugger;
 		setFiltering(true);
 		const uncanceledOffers: OfferDetail[] = unfilteredOffers.filter(
 			(offer) => offer.itemOfferMade && !offer.itemOfferCanceled,
@@ -105,9 +105,24 @@ export default function useNFTOffers(nfts: NFTDetailProps[]) {
 				setFiltering(false);
 			});
 	}, [unfilteredOffers, config]);
+	const unableToPayButYourOffers = useMemo<OfferDetail[]>(() => {
+		const ret: OfferDetail[] = [];
+		unfilteredOffers.forEach((offer) => {
+			if (
+				filteredOffers.find((fo) => fo.offerId === offer.offerId) ===
+					undefined &&
+				!offer.itemOfferCanceled &&
+				offer.buyer.toLowerCase() === address?.toLowerCase()
+			) {
+				ret.push(offer);
+			}
+		});
+		return ret;
+	}, [unfilteredOffers, filteredOffers, address]);
 	return {
 		filteredOffers,
 		unfilteredOffers,
+		unableToPayButYourOffers,
 		loading: loading || filtering,
 	};
 }

@@ -55,6 +55,7 @@
   "Crypto": "加密货币",
   "Currency": "选择货币",
   "Currency approval successful": "授权货币转移成功",
+  "Currently you don't have enough balance or allowance to afford this offer": "当前您没有足够余额或信托来支付该出价",
   "Deposit WETH failed": "存储WETH失败",
   "Description": "描述",
   "Done": "完成",
