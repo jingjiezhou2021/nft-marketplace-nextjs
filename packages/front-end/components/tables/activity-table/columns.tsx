@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn, getDateDiffStr } from '@/lib/utils';
 import { IconArrowUpRight, IconTag } from '@tabler/icons-react';
 import { ColumnDef } from '@tanstack/react-table';
 import Image from 'next/image';
@@ -158,10 +158,11 @@ export default function GetActivityColumns(
 			cell({ row }) {
 				return (
 					<div className="font-serif flex items-center cursor-pointer">
-						{formatDistance(new Date(), row.original.time, {
-							addSuffix: true,
-							locale: getDateFnsLocale(i18n.language),
-						})}
+						{getDateDiffStr(
+							new Date(),
+							row.original.time,
+							getDateFnsLocale(i18n.language),
+						)}
 						<IconArrowUpRight className="text-muted-foreground" />
 					</div>
 				);

@@ -15,6 +15,7 @@ import { ProfileCard } from '@/components/profile/profile-card';
 import { formatDistance } from 'date-fns';
 import getDateFnsLocale from '@/lib/getDateFnsLocale';
 import { IconArrowUpRight, IconTag } from '@tabler/icons-react';
+import { getDateDiffStr } from '@/lib/utils';
 type OfferTableData = {
 	priceListing: Pick<
 		Listing,
@@ -113,10 +114,11 @@ export default function NFTDetailOffers({
 			cell({ row }) {
 				return (
 					<div className="font-serif flex items-center cursor-pointer">
-						{formatDistance(new Date(), row.original.time, {
-							addSuffix: true,
-							locale: getDateFnsLocale(i18n.language),
-						})}
+						{getDateDiffStr(
+							new Date(),
+							row.original.time,
+							getDateFnsLocale(i18n.language),
+						)}
 						<IconArrowUpRight className="text-muted-foreground" />
 					</div>
 				);
