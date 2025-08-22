@@ -28,6 +28,7 @@ import { Button } from '@/components/ui/button';
 import { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { ProfileCard } from '@/components/profile/profile-card';
+import ChainBadge from '@/components/chain-badge';
 function Description({
 	children,
 	className,
@@ -188,16 +189,10 @@ export default function OfferDetailDialog({
 						<DescriptionItem
 							label={t('Chain')}
 							content={
-								<Badge
-									variant="secondary"
+								<ChainBadge
 									className="-ml-1"
-								>
-									{getIconOfChain(nft.chainId)}
-									&nbsp;
-									<span className="text-sm text-muted-foreground">
-										{getNameOfChain(nft.chainId)}
-									</span>
-								</Badge>
+									chainId={nft.chainId}
+								/>
 							}
 						/>
 					</Description>

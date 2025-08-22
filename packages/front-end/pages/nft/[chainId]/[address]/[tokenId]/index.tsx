@@ -38,6 +38,7 @@ import UpdateListingDialog from '@/components/nft/dialog/update-listing';
 import { CheckoutDrawer } from '@/components/nft/detail/checkout';
 import MakeOfferDrawer from '@/components/nft/detail/make-offer';
 import NFTDetailOffers from '@/components/nft/detail/offers';
+import ChainBadge from '@/components/chain-badge';
 export const getServerSideProps: GetServerSideProps<
 	SSRConfig,
 	{ chainId: string; address: `0x${string}`; tokenId: string }
@@ -216,10 +217,7 @@ export default function NFTDetailPage(
 				</div>
 
 				<div className="flex items-center gap-1">
-					<Badge variant="outline">
-						{getIconOfChain(chainId)}&nbsp;
-						{getNameOfChain(chainId)}
-					</Badge>
+					<ChainBadge chainId={chainId} />
 					<Badge variant="outline">
 						{t('TOKEN')}&nbsp;#{tokenId}
 					</Badge>
