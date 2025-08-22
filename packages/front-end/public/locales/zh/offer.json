@@ -1,0 +1,14 @@
+{
+  "Accept": "接受",
+  "Accept offer": "接受出价",
+  "Accept offer failed": "接受出价失败",
+  "Accept offer successful": "接受出价成功",
+  "Approve": "授权",
+  "Approve failed": "授权失败",
+  "Approve successful": "授权成功",
+  "Approve transfer": "授权转移",
+  "As the owner of this token, you need to approve the market to transfer your token when the offer is accepted": "作为此数字藏品持有者，您需要授权市场转移数字藏品的权限从而在出价被接受时将其移交至买家",
+  "Everything is ready, now you can finally accept offer": "一切准备就绪，现在您可以接受出价",
+  "Go back to detail page": "返回数字藏品详情页",
+  "Please retry": "请重试"
+}

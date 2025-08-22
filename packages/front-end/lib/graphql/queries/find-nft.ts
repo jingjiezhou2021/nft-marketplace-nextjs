@@ -75,6 +75,10 @@ const findNFTs = graphql(`
 					createdAt
 					id
 				}
+				itemOfferAccepted {
+					createdAt
+					id
+				}
 			}
 		}
 	}

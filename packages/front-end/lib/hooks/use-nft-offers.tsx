@@ -52,7 +52,10 @@ export default function useNFTOffers(nfts: NFTDetailProps[]) {
 	useEffect(() => {
 		setFiltering(true);
 		const uncanceledOffers: OfferDetail[] = unfilteredOffers.filter(
-			(offer) => offer.itemOfferMade && !offer.itemOfferCanceled,
+			(offer) =>
+				offer.itemOfferMade &&
+				!offer.itemOfferCanceled &&
+				!offer.itemOfferAccepted,
 		);
 		Promise.all(
 			uncanceledOffers.map((offer) => {
@@ -112,6 +115,7 @@ export default function useNFTOffers(nfts: NFTDetailProps[]) {
 				filteredOffers.find((fo) => fo.offerId === offer.offerId) ===
 					undefined &&
 				!offer.itemOfferCanceled &&
+				!offer.itemOfferAccepted &&
 				offer.buyer.toLowerCase() === address?.toLowerCase()
 			) {
 				ret.push(offer);

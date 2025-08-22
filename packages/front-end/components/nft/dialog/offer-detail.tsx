@@ -22,14 +22,18 @@ import useOffer, { OfferStatus } from '@/lib/hooks/use-offer';
 import OfferStatusBadge from '@/components/offer-status-badge';
 import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
 import { Button } from '@/components/ui/button';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ProfileCard } from '@/components/profile/profile-card';
 import ChainBadge from '@/components/chain-badge';
-import { useWriteNftMarketplaceCancelOffer } from 'smart-contract/wagmi/generated';
+import {
+	useWriteNftMarketplaceAcceptOffer,
+	useWriteNftMarketplaceCancelOffer,
+} from 'smart-contract/wagmi/generated';
 import MARKETPLACE_ADDRESS from '@/lib/market';
 import useMessage from 'antd/es/message/useMessage';
 import { useRouter } from 'next/router';
+import AcceptOfferDialog from './accept-offer';
 function Description({
 	children,
 	className,
@@ -126,7 +130,7 @@ export default function OfferDetailDialog({
 	});
 	const [messageApi, contextHolder] = useMessage();
 	useEffect(() => {
-		if (cancelOfferConfirmedError && cancelOfferError) {
+		if (cancelOfferConfirmedError || cancelOfferError) {
 			messageApi.error(t('Cancel offer failed'));
 		}
 	}, [cancelOfferConfirmedError, cancelOfferError]);
@@ -136,7 +140,12 @@ export default function OfferDetailDialog({
 			messageApi.success(t('Cancel offer successful'));
 		}
 	}, [cancelOfferConfirmed]);
-
+	const [openAcceptDialog, setOpenAcceptDialog] = useState(false);
+	useEffect(() => {
+		if (!openAcceptDialog) {
+			refetchOffer();
+		}
+	}, [openAcceptDialog]);
 	return (
 		<Dialog {...props}>
 			<DialogContent className="p-0">
@@ -298,9 +307,26 @@ export default function OfferDetailDialog({
 						offerStatus === OfferStatus.NON_PAYABLE) && (
 						<div className="flex justify-center">
 							{userAddress?.toLowerCase() ===
-								ownerAddress.toLowerCase() && (
-								<Button className="w-2/3">{t('Accept')}</Button>
-							)}
+								ownerAddress.toLowerCase() &&
+								offerId !== undefined &&
+								nft.chainId && (
+									<>
+										<Button
+											className="w-2/3"
+											onClick={() => {
+												setOpenAcceptDialog(true);
+											}}
+										>
+											{t('Accept')}
+										</Button>
+										<AcceptOfferDialog
+											open={openAcceptDialog}
+											onOpenChange={setOpenAcceptDialog}
+											offerId={offerId}
+											chainId={nft.chainId}
+										/>
+									</>
+								)}
 							{userAddress?.toLowerCase() ===
 								bidder?.address.toLowerCase() && (
 								<Button

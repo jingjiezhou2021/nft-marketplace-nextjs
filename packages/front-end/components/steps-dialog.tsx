@@ -9,23 +9,25 @@ export default function StepsDialog({
 	steps,
 	children,
 	successContent,
+	showCloseButton = false,
 	...props
 }: {
 	loading: boolean;
 	currentStep: number;
 	steps: StepProps[];
 	successContent: ReactNode;
+	showCloseButton?: boolean;
 } & React.ComponentProps<typeof Dialog>) {
 	return (
 		<Dialog {...props}>
 			<DialogContent
-				showCloseButton={false}
+				showCloseButton={showCloseButton}
 				onPointerDownOutside={(e) => e.preventDefault()}
 				className="md:max-w-5xl"
 			>
 				<div className="relative flex flex-col gap-6">
 					<LoadingMask
-						className="flex justify-center items-center top-0"
+						className="flex justify-center items-center top-0 left-0"
 						loading={loading}
 					>
 						<LoadingSpinner size={36} />
