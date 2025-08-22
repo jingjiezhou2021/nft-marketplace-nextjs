@@ -8,6 +8,7 @@ import { updateNFTsOfUserProfile } from '../graphql/mutations/update-user-profil
 import UpdateNFT from '../graphql/mutations/update-nft';
 import 'json-bigint-patch';
 import findUserProfile from '../graphql/queries/find-user-profile';
+import { QueryMode } from '@/apollo/gql/graphql';
 function normalizeURI(
 	uri: string,
 	gateway: string = 'https://ipfs.io/ipfs/',
@@ -105,6 +106,7 @@ export async function importNFT(
 			where: {
 				contractAddress: {
 					equals: address,
+					mode: QueryMode.Insensitive,
 				},
 				tokenId: {
 					equals: tokenId,
@@ -118,6 +120,7 @@ export async function importNFT(
 				},
 			},
 		},
+		fetchPolicy: 'network-only',
 	});
 	if (existedNFT.data.findFirstNFT === null) {
 		await client.mutate({
@@ -154,7 +157,10 @@ export async function importNFT(
 			},
 		});
 	} else {
-		if (existedNFT.data.findFirstNFT?.user.address !== importer) {
+		if (
+			existedNFT.data.findFirstNFT?.user.address.toLowerCase() !==
+			importer.toLowerCase()
+		) {
 			await client.mutate({
 				mutation: UpdateNFT,
 				variables: {
