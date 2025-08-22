@@ -22,7 +22,7 @@ import {
 	HoverCardContent,
 	HoverCardTrigger,
 } from '@/components/ui/hover-card';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import OfferDetailDialog from '../dialog/offer-detail';
 type OfferTableData = {
 	priceListing: Pick<
@@ -40,9 +40,12 @@ export default function NFTDetailOffers({
 	chainId,
 }: NFTDetailProps) {
 	const { t, i18n } = useTranslation('common');
-	const { filteredOffers, loading, unableToPayButYourOffers } = useNFTOffers([
-		{ contractAddress, tokenId, chainId },
-	]);
+	const {
+		filteredOffers,
+		loading,
+		unableToPayButYourOffers,
+		refetch: refetchOffers,
+	} = useNFTOffers([{ contractAddress, tokenId, chainId }]);
 	const columns: ColumnDef<OfferTableData>[] = [
 		{
 			accessorKey: 'priceListing',
@@ -182,6 +185,11 @@ export default function NFTDetailOffers({
 		);
 	const [dialogOffer, setDialogOffer] = useState<bigint>();
 	const [openActionDialog, setOpenActionDialog] = useState(false);
+	useEffect(() => {
+		if (!openActionDialog) {
+			refetchOffers();
+		}
+	}, [openActionDialog]);
 	return (
 		<div className="relative">
 			<CustomTable

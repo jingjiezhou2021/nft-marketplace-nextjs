@@ -13,7 +13,11 @@ export enum OfferStatus {
 	NON_PAYABLE,
 }
 export default function useOffer(offerId: bigint, chainId: number) {
-	const { data: offerData, loading: offerDataLoading } = useQuery(findOffer, {
+	const {
+		data: offerData,
+		loading: offerDataLoading,
+		refetch,
+	} = useQuery(findOffer, {
 		variables: {
 			where: {
 				offerId: {
@@ -66,5 +70,6 @@ export default function useOffer(offerId: bigint, chainId: number) {
 		data: offerData,
 		loading: offerDataLoading,
 		status,
+		refetch,
 	};
 }

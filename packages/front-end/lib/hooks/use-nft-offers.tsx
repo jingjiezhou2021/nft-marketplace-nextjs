@@ -11,7 +11,7 @@ import MARKETPLACE_ADDRESS from '../market';
 type OfferDetail = ValuesType<ValuesType<NftsQuery['nFTS']>['offers']>;
 export default function useNFTOffers(nfts: NFTDetailProps[]) {
 	const { address } = useAccount();
-	const { data, loading } = useQuery(findNFTs, {
+	const { data, loading, refetch } = useQuery(findNFTs, {
 		variables: {
 			where: {
 				OR: nfts.map((nft) => {
@@ -124,5 +124,6 @@ export default function useNFTOffers(nfts: NFTDetailProps[]) {
 		unfilteredOffers,
 		unableToPayButYourOffers,
 		loading: loading || filtering,
+		refetch,
 	};
 }

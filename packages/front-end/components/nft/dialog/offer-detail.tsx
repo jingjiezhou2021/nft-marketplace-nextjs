@@ -17,18 +17,19 @@ import useNFTMetadata from '@/lib/hooks/use-nft-metadata';
 import useNFTOwner from '@/lib/hooks/use-nft-owner';
 import useUser from '@/lib/hooks/use-user';
 import { Separator } from '@/components/ui/separator';
-import findOffer from '@/lib/graphql/queries/find-offer';
-import { getIconOfChain, getNameOfChain } from '@/lib/chain';
-import { Badge } from '@/components/ui/badge';
 import CryptoPrice from '@/components/crypto-price';
 import useOffer, { OfferStatus } from '@/lib/hooks/use-offer';
 import OfferStatusBadge from '@/components/offer-status-badge';
-import { useAccount } from 'wagmi';
+import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
 import { Button } from '@/components/ui/button';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ProfileCard } from '@/components/profile/profile-card';
 import ChainBadge from '@/components/chain-badge';
+import { useWriteNftMarketplaceCancelOffer } from 'smart-contract/wagmi/generated';
+import MARKETPLACE_ADDRESS from '@/lib/market';
+import useMessage from 'antd/es/message/useMessage';
+import { useRouter } from 'next/router';
 function Description({
 	children,
 	className,
@@ -104,14 +105,42 @@ export default function OfferDetailDialog({
 		data: offerData,
 		loading: offerDataLoading,
 		status: offerStatus,
+		refetch: refetchOffer,
 	} = useOffer(offerId!, nft.chainId!);
 	const { user: bidder, loading: bidderLoading } = useUser(
 		offerData?.findFirstOffer?.buyer,
 	);
 	const { address: userAddress } = useAccount();
+	const {
+		writeContract: writeCancelOffer,
+		isPending: cancelOfferPending,
+		data: cancelOfferHash,
+		error: cancelOfferError,
+	} = useWriteNftMarketplaceCancelOffer();
+	const {
+		isSuccess: cancelOfferConfirmed,
+		isLoading: cancelOfferConfirming,
+		error: cancelOfferConfirmedError,
+	} = useWaitForTransactionReceipt({
+		hash: cancelOfferHash,
+	});
+	const [messageApi, contextHolder] = useMessage();
+	useEffect(() => {
+		if (cancelOfferConfirmedError && cancelOfferError) {
+			messageApi.error(t('Cancel offer failed'));
+		}
+	}, [cancelOfferConfirmedError, cancelOfferError]);
+	useEffect(() => {
+		if (cancelOfferConfirmed) {
+			refetchOffer();
+			messageApi.success(t('Cancel offer successful'));
+		}
+	}, [cancelOfferConfirmed]);
+
 	return (
 		<Dialog {...props}>
 			<DialogContent className="p-0">
+				{contextHolder}
 				<div className="relative flex flex-col gap-4 p-6">
 					<LoadingMask
 						loading={
@@ -119,9 +148,11 @@ export default function OfferDetailDialog({
 							collectionDataLoading ||
 							metadataLoading ||
 							offerDataLoading ||
-							bidderLoading
+							bidderLoading ||
+							cancelOfferPending ||
+							cancelOfferConfirming
 						}
-						className="flex justify-center items-center top-0"
+						className="flex justify-center items-center top-0 left-0"
 					>
 						<LoadingSpinner size={48} />
 					</LoadingMask>
@@ -201,23 +232,27 @@ export default function OfferDetailDialog({
 						<DescriptionItem
 							label={t('Bidder')}
 							content={
-								<ProfileCard
-									address={bidder?.address as `0x${string}`}
-								>
-									{(dispName, isYou) => (
-										<div className="flex items-center">
-											<ProfileAvatar
-												address={
-													bidder?.address as `0x${string}`
-												}
-												avatar={bidder?.avatar}
-												className="mr-2 size-6"
-												size={12}
-											/>
-											{isYou ? t('You') : dispName}
-										</div>
-									)}
-								</ProfileCard>
+								bidder?.address && (
+									<ProfileCard
+										address={
+											bidder?.address as `0x${string}`
+										}
+									>
+										{(dispName, isYou) => (
+											<div className="flex items-center">
+												<ProfileAvatar
+													address={
+														bidder?.address as `0x${string}`
+													}
+													avatar={bidder?.avatar}
+													className="mr-2 size-6"
+													size={12}
+												/>
+												{isYou ? t('You') : dispName}
+											</div>
+										)}
+									</ProfileCard>
+								)
 							}
 						/>
 						<DescriptionItem
@@ -259,21 +294,44 @@ export default function OfferDetailDialog({
 							}
 						/>
 					</Description>
-					<div className="flex justify-center">
-						{userAddress?.toLowerCase() ===
-							ownerAddress.toLowerCase() && (
-							<Button className="w-2/3">{t('Accept')}</Button>
-						)}
-						{userAddress?.toLowerCase() ===
-							bidder?.address.toLowerCase() && (
-							<Button
-								variant="destructive"
-								className="w-2/3"
-							>
-								{t('Cancel')}
-							</Button>
-						)}
-					</div>
+					{(offerStatus === OfferStatus.OPEN ||
+						offerStatus === OfferStatus.NON_PAYABLE) && (
+						<div className="flex justify-center">
+							{userAddress?.toLowerCase() ===
+								ownerAddress.toLowerCase() && (
+								<Button className="w-2/3">{t('Accept')}</Button>
+							)}
+							{userAddress?.toLowerCase() ===
+								bidder?.address.toLowerCase() && (
+								<Button
+									variant="destructive"
+									className="w-2/3"
+									disabled={
+										cancelOfferConfirming ||
+										cancelOfferPending
+									}
+									onClick={() => {
+										if (
+											nft.chainId &&
+											offerId !== undefined
+										) {
+											writeCancelOffer({
+												address: MARKETPLACE_ADDRESS[
+													nft.chainId
+												] as `0x${string}`,
+												chainId: nft.chainId,
+												args: [offerId],
+											});
+										} else {
+											messageApi.error(t('Please retry'));
+										}
+									}}
+								>
+									{t('Cancel')}
+								</Button>
+							)}
+						</div>
+					)}
 				</div>
 			</DialogContent>
 		</Dialog>
