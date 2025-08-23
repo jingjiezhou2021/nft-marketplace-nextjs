@@ -181,7 +181,7 @@ export default function NFTDetailPage(
 				<Card className="h-full overflow-hidden rounded-2xl shadow-lg p-0">
 					<CardContent className="p-0 relative h-full">
 						<Image
-							src={nftMetadata?.image!} // Replace with actual NFT image URL
+							src={nftMetadata?.image ?? '/nft-placeholder.svg'} // Replace with actual NFT image URL
 							unoptimized
 							alt="NFT Image"
 							fill
