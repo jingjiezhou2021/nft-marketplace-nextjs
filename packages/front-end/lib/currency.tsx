@@ -4,7 +4,7 @@ import { readContract } from '@wagmi/core';
 import { ChainIdParameter } from '@wagmi/core/internal';
 import { ReactNode } from 'react';
 import { erc20Abi } from 'viem';
-import { base, hardhat, sepolia } from 'viem/chains';
+import { baseSepolia, hardhat, sepolia } from 'viem/chains';
 
 export enum Currency {
 	USD,
@@ -12,18 +12,18 @@ export enum Currency {
 }
 export const SEPOLIA_AAVE_USDT = '0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0';
 export const SEPOLIA_AAVE_WETH = '0xC558DBdd856501FCd9aaF1E62eae57A9F0629a3c';
+
+export const BASE_SEPOLIA_USDT = '0xfB28B76Cb34B42Bd02E94De7B204B06dCF905cf3';
+export const BASE_SEPOLIA_WETH = '0x4B43f657EF9cc53afA0f66D9D908b5e9F7Db7ce1';
+
 export const CHAIN_CURRENCY_ADDRESS = {
 	[sepolia.id]: {
 		WETH: SEPOLIA_AAVE_WETH,
 		USDT: SEPOLIA_AAVE_USDT,
 	},
-	[base.id]: {
-		WETH: '',
-		USDT: '',
-	},
-	[hardhat.id]: {
-		WETH: '',
-		USDT: '',
+	[baseSepolia.id]: {
+		WETH: BASE_SEPOLIA_WETH,
+		USDT: BASE_SEPOLIA_USDT,
 	},
 };
 export function getCryptoIcon(
@@ -46,6 +46,18 @@ export function getCryptoIcon(
 				</>
 			),
 		},
+		[baseSepolia.id]: {
+			[BASE_SEPOLIA_USDT]: (
+				<>
+					<USDTColorful />
+				</>
+			),
+			[BASE_SEPOLIA_WETH]: (
+				<>
+					<EthereumCircleColorful />
+				</>
+			),
+		},
 	};
 	return map[Number(chainId)][tokenContractAddress];
 }
@@ -54,6 +66,10 @@ export function getCryptoName(chainId: number, tokenContractAddress: string) {
 		[sepolia.id]: {
 			[SEPOLIA_AAVE_USDT]: 'USDT',
 			[SEPOLIA_AAVE_WETH]: 'WETH',
+		},
+		[baseSepolia.id]: {
+			[BASE_SEPOLIA_USDT]: 'USDT',
+			[BASE_SEPOLIA_WETH]: 'WETH',
 		},
 	};
 	return map[chainId][tokenContractAddress];
