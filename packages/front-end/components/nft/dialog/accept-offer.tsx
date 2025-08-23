@@ -164,7 +164,7 @@ export default function AcceptOfferDialog({
 					}
 					variant={currentStep === 1 ? 'default' : 'secondary'}
 					onClick={() => {
-						if (chainId && offerId) {
+						if (chainId && offerId !== undefined) {
 							writeAcceptOffer({
 								address: MARKETPLACE_ADDRESS[
 									chainId
