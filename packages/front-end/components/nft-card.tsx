@@ -116,6 +116,7 @@ export default function NFTCard({
 		nft.tokenId,
 		nft.collection.chainId,
 	);
+	const dispName = metadata?.name ?? `# ${nft.tokenId}`;
 	return (
 		<CardWrapper className={cn('min-h-32', className)}>
 			{loading || metadata === undefined ? (
@@ -145,7 +146,7 @@ export default function NFTCard({
 								fontSmaller && 'text-xs',
 							)}
 						>
-							{metadata.name}
+							{dispName}
 						</h3>
 						<div
 							className={cn(
