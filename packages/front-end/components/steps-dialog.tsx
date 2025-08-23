@@ -38,7 +38,7 @@ export default function StepsDialog({
 						className="justify-center"
 					/>
 					<div className="w-full flex-col items-center gap-4 flex relative">
-						{currentStep !== steps.length ? (
+						{currentStep < steps.length ? (
 							<>{children}</>
 						) : (
 							<>{successContent}</>
