@@ -9,7 +9,8 @@
   "scripts": {
     "build": "wagmi generate && tsc && tsc-alias",
     "deploy-dev": "hardhat ignition deploy ignition/modules/NFTMarketPlaceDev.ts --network localhost && yarn build",
-    "deploy": "hardhat ignition deploy ignition/modules/NFTMarketPlaceProduction.ts --network sepolia --verify && yarn build",
+    "deploy-sepolia":"hardhat run --network sepolia scripts/deploy.ts && yarn build",
+    "deploy-baseSepolia":"hardhat run --network baseSepolia scripts/deploy.ts && yarn build",
     "test": "hardhat test"
   },
   "devDependencies": {
