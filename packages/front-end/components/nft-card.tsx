@@ -134,6 +134,7 @@ export default function NFTCard({
 						<Image
 							src={metadata.image}
 							alt="nft-card"
+							unoptimized
 							fill
 						/>
 					</CardContentWrapper>

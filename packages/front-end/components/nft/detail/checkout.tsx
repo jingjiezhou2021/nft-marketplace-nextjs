@@ -95,6 +95,7 @@ function NftPriceCard({ nft }: { nft: NFTDetailProps }) {
 				<div className="flex items-center space-x-4">
 					<Image
 						src={metadata.image}
+						unoptimized
 						alt="Bored Ape"
 						width={60}
 						height={60}

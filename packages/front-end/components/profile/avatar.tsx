@@ -26,6 +26,7 @@ export default function ProfileAvatar({
 						process.env.NEXT_PUBLIC_SERVER_ENDPOINT,
 					).toString()}
 					fill
+					unoptimized
 					alt="profile-avatar"
 				/>
 			) : (

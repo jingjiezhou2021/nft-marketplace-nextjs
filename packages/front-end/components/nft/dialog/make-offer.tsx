@@ -329,6 +329,8 @@ export default function MakeOfferDialog({
 											),
 									],
 								});
+							} else {
+								messageApi.error(t('Please retry'));
 							}
 						}}
 					>

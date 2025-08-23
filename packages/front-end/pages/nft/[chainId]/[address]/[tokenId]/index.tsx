@@ -182,6 +182,7 @@ export default function NFTDetailPage(
 					<CardContent className="p-0 relative h-full">
 						<Image
 							src={nftMetadata?.image!} // Replace with actual NFT image URL
+							unoptimized
 							alt="NFT Image"
 							fill
 							className="h-full w-auto object-cover"

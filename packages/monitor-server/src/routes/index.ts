@@ -5,6 +5,8 @@ import {
 } from "@/src/utils/contracts";
 import { TypeChain } from "smart-contract";
 import { PrismaClient } from "@/prisma/generated/prisma";
+import fetch, { HeadersInit } from "node-fetch";
+
 const router = express.Router();
 router.get("/check-ownership/:chainId/:address/:tokenId", async (req, res) => {
   const chainId = parseInt(req.params.chainId);
@@ -127,6 +129,52 @@ router.get("/check-ownership/:chainId/:address/:tokenId", async (req, res) => {
   } else {
     console.log("the owner is consistent,no need to refresh");
     res.json({ refresh: false });
+  }
+});
+router.all("/proxy", async (req, res) => {
+  try {
+    const url = req.query.url as string;
+
+    if (!url) {
+      return res
+        .status(400)
+        .json({ error: "Missing or invalid url parameter" });
+    }
+
+    // Forward headers (avoid host & connection to prevent conflicts)
+    const headers: HeadersInit = {};
+    for (const [key, value] of Object.entries(req.headers)) {
+      if (value && !["host", "connection"].includes(key.toLowerCase())) {
+        headers[key] = Array.isArray(value) ? value.join(",") : value;
+      }
+    }
+
+    // Make the request
+    const response = await fetch(url, {
+      method: req.method,
+      headers,
+      body:
+        req.method !== "GET" && req.body ? JSON.stringify(req.body) : undefined,
+    });
+
+    // Forward content-type header
+    const contentType = response.headers.get("content-type");
+    if (contentType) res.setHeader("Content-Type", contentType);
+
+    // Status code
+    res.status(response.status);
+
+    if (contentType?.includes("json")) {
+      const data = await response.json();
+      res.json(data);
+    } else {
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      res.send(buffer);
+    }
+  } catch (err) {
+    console.error("Proxy error:", err);
+    res.status(500).json({ error: "Proxy error" });
   }
 });
 

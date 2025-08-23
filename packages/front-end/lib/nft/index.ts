@@ -15,8 +15,9 @@ function normalizeURI(
 ): string {
 	if (uri.startsWith('ipfs://')) {
 		return uri.replace('ipfs://', gateway);
+	} else {
+		return `${process.env.NEXT_PUBLIC_SERVER_ENDPOINT}api/proxy/?url=${uri}`;
 	}
-	return uri;
 }
 export async function getNFTCollectionCreatorAddress(
 	address: `0x${string}`,

@@ -28,6 +28,7 @@
     "graphql-upload-ts": "^2.1.2",
     "jest": "^30.0.4",
     "json-bigint-patch": "^0.0.8",
+    "node-fetch": "^3.3.2",
     "prisma": "^5.0.0",
     "reflect-metadata": "^0.2.2",
     "sleep-promise": "^9.1.0",
