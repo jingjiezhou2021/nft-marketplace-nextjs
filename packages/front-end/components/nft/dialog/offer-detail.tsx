@@ -279,20 +279,24 @@ export default function OfferDetailDialog({
 						<DescriptionItem
 							label={t('Price')}
 							content={
-								<CryptoPrice
-									erc20TokenAddress={
-										offerData?.findFirstOffer?.listing
-											.erc20TokenAddress!
-									}
-									erc20TokenName={
-										offerData?.findFirstOffer?.listing
-											.erc20TokenName!
-									}
-									price={
-										offerData?.findFirstOffer?.listing.price
-									}
-									chainId={nft.chainId}
-								/>
+								offerData?.findFirstOffer?.listing
+									.erc20TokenAddress && (
+									<CryptoPrice
+										erc20TokenAddress={
+											offerData?.findFirstOffer?.listing
+												.erc20TokenAddress
+										}
+										erc20TokenName={
+											offerData?.findFirstOffer?.listing
+												.erc20TokenName!
+										}
+										price={
+											offerData?.findFirstOffer?.listing
+												.price
+										}
+										chainId={nft.chainId}
+									/>
+								)
 							}
 						/>
 						<DescriptionItem
