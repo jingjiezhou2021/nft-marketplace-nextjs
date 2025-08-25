@@ -21,6 +21,7 @@ import MARKETPLACE_ADDRESS from '@/lib/market';
 import { useQuery } from '@apollo/client';
 import { findNFTs } from '@/lib/graphql/queries/find-nft';
 import { QueryMode } from '@/apollo/gql/graphql';
+import useLockedChain from '@/lib/hooks/use-locked-chain';
 export default function ConfirmBuyDialog({
 	nfts,
 	chainId,
@@ -29,6 +30,7 @@ export default function ConfirmBuyDialog({
 	nfts: NFTDetailProps[];
 	chainId: NonNullable<ChainIdParameter<typeof config>['chainId']>;
 }) {
+	useLockedChain(chainId);
 	const { data, loading: dataLoading } = useQuery(findNFTs, {
 		variables: {
 			where: {

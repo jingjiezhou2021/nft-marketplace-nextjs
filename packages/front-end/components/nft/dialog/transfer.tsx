@@ -28,6 +28,7 @@ import {
 	ContractFunctionRevertedError,
 	ContractFunctionZeroDataError,
 } from 'viem';
+import useLockedChain from '@/lib/hooks/use-locked-chain';
 export default function TransferNFTDialog({
 	children,
 	nft,
@@ -35,6 +36,7 @@ export default function TransferNFTDialog({
 	children: ReactNode;
 	nft: NFTDetailProps;
 }) {
+	useLockedChain(nft.chainId);
 	const config = useConfig();
 	const { t } = useTranslation('common');
 	const [open, setOpen] = useState(false);

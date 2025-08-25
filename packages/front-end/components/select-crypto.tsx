@@ -47,7 +47,9 @@ export default function SelectCrypto({
 							key={e[1]}
 						>
 							{getCryptoIcon(chainId, e[1])}
-							{e[0] === 'WETH' ? 'ETH' : e[0]}
+							{e[0] === 'WETH' || e[0] === 'Wrapped Ether'
+								? 'ETH'
+								: e[0]}
 						</SelectItem>
 					);
 				})}

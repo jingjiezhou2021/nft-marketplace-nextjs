@@ -39,6 +39,7 @@ import { CheckoutDrawer } from '@/components/nft/detail/checkout';
 import MakeOfferDrawer from '@/components/nft/detail/make-offer';
 import NFTDetailOffers from '@/components/nft/detail/offers';
 import ChainBadge from '@/components/chain-badge';
+import useLockedChain from '@/lib/hooks/use-locked-chain';
 export const getServerSideProps: GetServerSideProps<
 	SSRConfig,
 	{ chainId: string; address: `0x${string}`; tokenId: string }
@@ -102,6 +103,7 @@ export default function NFTDetailPage(
 	>['chainId'];
 	const address = params.address;
 	const tokenId = parseInt(params.tokenId);
+	useLockedChain(chainId);
 	const { name: collectionName } = useCollectionName(address, chainId);
 	const { data: collectionData } = useQuery(findCollection, {
 		variables: {

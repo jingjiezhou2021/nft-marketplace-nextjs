@@ -26,6 +26,7 @@ import { cn } from '@/lib/utils';
 import { formatUnits } from 'viem';
 import SelectCrypto from '@/components/select-crypto';
 import MakeOfferDialog from '../dialog/make-offer';
+import useLockedChain from '@/lib/hooks/use-locked-chain';
 export default function MakeOfferDrawer({
 	children,
 	nft,
@@ -35,6 +36,7 @@ export default function MakeOfferDrawer({
 	nft: NFTDetailProps;
 	chainId: ChainIdParameter<typeof config>['chainId'];
 }) {
+	useLockedChain(chainId);
 	const [open, setOpen] = useState(false);
 	const [openActionDialog, setOpenActionDialog] = useState(false);
 	const { t } = useTranslation('common');

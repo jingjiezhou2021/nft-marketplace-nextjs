@@ -31,7 +31,9 @@ export default function CryptoPrice({
 				{formatUnits(price, decimals)}
 			</span>
 			<span className="text-muted-foreground font-extralight">
-				{erc20TokenName === 'WETH' ? 'ETH' : erc20TokenName}
+				{erc20TokenName === 'WETH' || erc20TokenName === 'Wrapped Ether'
+					? 'ETH'
+					: erc20TokenName}
 			</span>
 		</div>
 	);

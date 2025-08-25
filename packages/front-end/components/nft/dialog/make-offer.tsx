@@ -28,6 +28,7 @@ import {
 } from '@/lib/currency';
 import MARKETPLACE_ADDRESS from '@/lib/market';
 import { useRouter } from 'next/router';
+import useLockedChain from '@/lib/hooks/use-locked-chain';
 
 export default function MakeOfferDialog({
 	nft,
@@ -39,6 +40,7 @@ export default function MakeOfferDialog({
 	offerPrice: number;
 	currencyAddress: `0x${string}`;
 }) {
+	useLockedChain(nft.chainId);
 	const router = useRouter();
 	const [messageApi, contextHolder] = useMessage();
 	const { t, i18n } = useTranslation('common');

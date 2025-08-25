@@ -34,6 +34,7 @@ import MARKETPLACE_ADDRESS from '@/lib/market';
 import useMessage from 'antd/es/message/useMessage';
 import { useRouter } from 'next/router';
 import AcceptOfferDialog from './accept-offer';
+import useLockedChain from '@/lib/hooks/use-locked-chain';
 function Description({
 	children,
 	className,
@@ -74,6 +75,7 @@ export default function OfferDetailDialog({
 	nft: NFTDetailProps;
 	offerId?: bigint;
 } & React.ComponentProps<typeof Dialog>) {
+	useLockedChain(nft.chainId);
 	const { t, i18n } = useTranslation('common');
 	const { name: collectionName, loading: collectionNameLoading } =
 		useCollectionName(nft.contractAddress, nft.chainId);

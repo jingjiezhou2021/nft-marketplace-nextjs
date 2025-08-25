@@ -97,7 +97,7 @@ export default function useTotalPrice(
 	});
 	const balanceEnough = Array.from(ret.entries()).every((e, index) => {
 		const bal =
-			e[1].name === 'WETH'
+			e[1].name === 'WETH' || e[1].name === 'Wrapped Ether'
 				? nativeBalance?.value
 				: balances.data?.at(index)?.result;
 		console.log(`the balance of ${e[1].name} in the wallet is`, bal);

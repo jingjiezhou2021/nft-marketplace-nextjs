@@ -17,6 +17,7 @@ import useMessage from 'antd/es/message/useMessage';
 import { CircleCheckIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import useLockedChain from '@/lib/hooks/use-locked-chain';
 export default function AcceptOfferDialog({
 	offerId,
 	chainId,
@@ -25,6 +26,7 @@ export default function AcceptOfferDialog({
 	offerId: bigint;
 	chainId: NonNullable<ChainIdParameter<typeof config>['chainId']>;
 }) {
+	useLockedChain(chainId);
 	const router = useRouter();
 	const [messageApi, contextHolder] = useMessage();
 	const [currentStep, setCurrentStep] = useState(0);

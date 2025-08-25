@@ -2,6 +2,7 @@ import { config } from '@/components/providers/RainbowKitAllProvider';
 import StepsDialog from '@/components/steps-dialog';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import useLockedChain from '@/lib/hooks/use-locked-chain';
 import MARKETPLACE_ADDRESS from '@/lib/market';
 import { ChainIdParameter } from '@wagmi/core/internal';
 import useMessage from 'antd/es/message/useMessage';
@@ -30,6 +31,7 @@ export default function ListItemActionDialog({
 	address: `0x${string}`;
 	tokenId: number;
 } & React.ComponentProps<typeof Dialog>) {
+	useLockedChain(chainId);
 	const [messageApi, contextHolder] = useMessage();
 	const { t, i18n } = useTranslation('common');
 	const { data: decimals } = useReadErc20Decimals({
@@ -39,24 +41,42 @@ export default function ListItemActionDialog({
 	const {
 		writeContract: writeAuthorize,
 		isPending: authorizePending,
+		error: authorizeError,
 		data: authorizeHash,
 	} = useWriteIerc721Approve();
-	const { isLoading: authorizeConfirming, isSuccess: authorizeConfirmed } =
-		useWaitForTransactionReceipt({
-			hash: authorizeHash,
-		});
+	const {
+		isLoading: authorizeConfirming,
+		isSuccess: authorizeConfirmed,
+		error: authorizeConfirmedError,
+	} = useWaitForTransactionReceipt({
+		hash: authorizeHash,
+	});
 	const {
 		writeContract: writePostListing,
 		isPending: postListingPending,
 		data: postListingHash,
+		error: postListingError,
 	} = useWriteNftMarketplaceListItem();
 	const {
 		isLoading: postListingConfirming,
 		isSuccess: postListingConfirmed,
+		error: postListingConfirmedError,
 	} = useWaitForTransactionReceipt({
 		hash: postListingHash,
 	});
 	const [currentStep, setCurrentStep] = useState(0);
+	useEffect(() => {
+		if (authorizeError || authorizeConfirmedError) {
+			messageApi.error(t('Authorize failed'));
+			console.error(authorizeError, authorizeConfirmedError);
+		}
+	}, [authorizeError, authorizeConfirmedError]);
+	useEffect(() => {
+		if (postListingError || postListingConfirmedError) {
+			messageApi.error(t('Post listing failed'));
+			console.error(postListingError, postListingConfirmedError);
+		}
+	}, [postListingError, postListingConfirmedError]);
 	useEffect(() => {
 		if (!authorizeConfirmed && !postListingConfirmed) {
 			setCurrentStep(0);

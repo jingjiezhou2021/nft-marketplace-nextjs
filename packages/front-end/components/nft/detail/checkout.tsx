@@ -53,6 +53,7 @@ import {
 } from 'smart-contract/wagmi/generated';
 import ConfirmBuyDialog from '../dialog/confirm-buy';
 import { getWalletIcon } from '@/lib/wallet';
+import useLockedChain from '@/lib/hooks/use-locked-chain';
 function NftPriceCard({ nft }: { nft: NFTDetailProps }) {
 	const { metadata, loading: metadataLoading } = useNFTMetadata(
 		nft.contractAddress,
@@ -155,6 +156,7 @@ export function CheckoutDrawer({
 	nfts: NFTDetailProps[];
 	chainId: ChainIdParameter<typeof config>['chainId'];
 }) {
+	useLockedChain(chainId);
 	const { t } = useTranslation('common');
 	const {
 		totalPrice,

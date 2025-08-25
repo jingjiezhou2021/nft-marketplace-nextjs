@@ -34,6 +34,7 @@ import { useRouter } from 'next/router';
 import { LoadingMask, LoadingSpinner } from '@/components/loading';
 import { cn } from '@/lib/utils';
 import MARKETPLACE_ADDRESS from '@/lib/market';
+import useLockedChain from '@/lib/hooks/use-locked-chain';
 export default function UpdateListingDialog({
 	children,
 	nft,
@@ -41,6 +42,7 @@ export default function UpdateListingDialog({
 	children: ReactNode;
 	nft: NFTDetailProps;
 }) {
+	useLockedChain(nft.chainId);
 	const config = useConfig();
 	const router = useRouter();
 	const [messageApi, contextHolder] = useMessage();
