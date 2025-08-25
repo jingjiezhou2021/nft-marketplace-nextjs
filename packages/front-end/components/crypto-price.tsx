@@ -1,6 +1,6 @@
 import { Listing } from '@/apollo/gql/graphql';
 import useCurrencyDecimals from '@/lib/hooks/use-currency-decimals';
-import { getCryptoIcon } from '@/lib/currency';
+import { getCryptoIcon, getCryptoName } from '@/lib/currency';
 import { formatUnits } from 'viem';
 import { config } from './providers/RainbowKitAllProvider';
 import { ChainIdParameter } from '@wagmi/core/internal';
@@ -31,9 +31,7 @@ export default function CryptoPrice({
 				{formatUnits(price, decimals)}
 			</span>
 			<span className="text-muted-foreground font-extralight">
-				{erc20TokenName === 'WETH' || erc20TokenName === 'Wrapped Ether'
-					? 'ETH'
-					: erc20TokenName}
+				{getCryptoName(chainId, erc20TokenAddress)}
 			</span>
 		</div>
 	);
