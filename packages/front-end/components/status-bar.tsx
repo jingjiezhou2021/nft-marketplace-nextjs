@@ -11,6 +11,7 @@ import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import CryptoDisplaySwitch from './crypto-display-switch';
+import CurrentETHRate from './current-eth-rate';
 
 export default function StatusBar(props: React.ComponentProps<'div'>) {
 	const { t } = useTranslation('common');
@@ -62,15 +63,7 @@ export default function StatusBar(props: React.ComponentProps<'div'>) {
 				</a>
 			</div>
 			<div className="flex items-center">
-				<div className="flex items-center gap-1 text-text-secondary">
-					<IconCurrencyEthereum
-						size={12}
-						className="text-primary"
-					/>
-					<span className="leading-normal">
-						<span className="font-mono">$3,431.97</span>
-					</span>
-				</div>
+				<CurrentETHRate />
 				<Separator
 					orientation="vertical"
 					className="mx-4 data-[orientation=vertical]:h-2/3"
