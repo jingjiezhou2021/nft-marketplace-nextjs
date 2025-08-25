@@ -16,6 +16,11 @@ export const SEPOLIA_AAVE_WETH = '0xC558DBdd856501FCd9aaF1E62eae57A9F0629a3c';
 export const BASE_SEPOLIA_USDT = '0xfB28B76Cb34B42Bd02E94De7B204B06dCF905cf3';
 export const BASE_SEPOLIA_WETH = '0x4B43f657EF9cc53afA0f66D9D908b5e9F7Db7ce1';
 
+export const BASE_SEPOLIA_PRICEFEED =
+	'0x1111AbA2164AcdC6D291b08DfB374280035E1111';
+
+export const SEPOLIA_PRICEFEED = '0x1111AbA2164AcdC6D291b08DfB374280035E1111';
+
 export const CHAIN_CURRENCY_ADDRESS = {
 	[sepolia.id]: {
 		WETH: SEPOLIA_AAVE_WETH,
@@ -24,6 +29,21 @@ export const CHAIN_CURRENCY_ADDRESS = {
 	[baseSepolia.id]: {
 		WETH: BASE_SEPOLIA_WETH,
 		USDT: BASE_SEPOLIA_USDT,
+	},
+};
+
+export const CHAIN_PRICEFEED_ADDRESSES = {
+	[baseSepolia.id]: BASE_SEPOLIA_PRICEFEED,
+	[sepolia.id]: SEPOLIA_PRICEFEED,
+};
+export const CHAIN_PRICEFEED_ID = {
+	[sepolia.id]: {
+		[SEPOLIA_AAVE_WETH]: '0x3d15f701',
+		[SEPOLIA_AAVE_USDT]: '0x00000000',
+	},
+	[baseSepolia.id]: {
+		[BASE_SEPOLIA_WETH]: '0x3d15f701',
+		[BASE_SEPOLIA_USDT]: '0x538f5a25',
 	},
 };
 export function getCryptoIcon(

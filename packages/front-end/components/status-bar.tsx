@@ -10,12 +10,12 @@ import ButtonSwitch from './button-switch';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
+import CryptoDisplaySwitch from './crypto-display-switch';
 
 export default function StatusBar(props: React.ComponentProps<'div'>) {
 	const { t } = useTranslation('common');
 	const { theme, setTheme } = useTheme();
 	const [themeChoice, setThemeChoice] = useState(0);
-	const [currencyChoice, setCurrencyChoice] = useState(0);
 	useEffect(() => {
 		setThemeChoice(theme === 'light' ? 0 : 1);
 	}, [theme]);
@@ -104,22 +104,7 @@ export default function StatusBar(props: React.ComponentProps<'div'>) {
 						})}
 						choice={themeChoice}
 					/>
-					<ButtonSwitch
-						buttons={[t('Crypto'), t('USD')].map((item, index) => ({
-							content: (
-								<span
-									className="text-xs font-light"
-									key={item}
-								>
-									{item}
-								</span>
-							),
-							clickCb() {
-								setCurrencyChoice(index);
-							},
-						}))}
-						choice={currencyChoice}
-					/>
+					<CryptoDisplaySwitch />
 				</div>
 			</div>
 		</div>

@@ -9,6 +9,7 @@ import { ThemeProvider } from '@/components/providers/theme-provider';
 import { NextPage } from 'next';
 import { ReactElement, ReactNode } from 'react';
 import AntDesignProvider from '@/components/providers/ant-design-provider';
+import { CryptoDisplayProvider } from '@/components/providers/crypto-display-provider';
 const client = createApolloClient();
 export type NextPageWithLayout<P = any, IP = P> = NextPage<P, IP> & {
 	GetLayout?: ({ children }: { children: ReactElement }) => ReactNode;
@@ -27,9 +28,11 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
 			>
 				<AntDesignProvider>
 					<RainbowKitAllProvider>
-						<GetLayout>
-							<Component {...pageProps} />
-						</GetLayout>
+						<CryptoDisplayProvider>
+							<GetLayout>
+								<Component {...pageProps} />
+							</GetLayout>
+						</CryptoDisplayProvider>
 					</RainbowKitAllProvider>
 				</AntDesignProvider>
 			</ThemeProvider>
