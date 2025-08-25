@@ -145,7 +145,11 @@ router.all("/proxy", async (req, res) => {
     const headers: HeadersInit = {};
     for (const [key, value] of Object.entries(req.headers)) {
       if (value && !["host", "connection"].includes(key.toLowerCase())) {
-        headers[key] = Array.isArray(value) ? value.join(",") : value;
+        if (key.toLowerCase() === "accept-encoding") {
+          headers[key] = "gzip";
+        } else {
+          headers[key] = Array.isArray(value) ? value.join(",") : value;
+        }
       }
     }
 
