@@ -4,7 +4,7 @@ export async function getServerSideProps({ locale }) {
 	const i18n = await serverSideTranslations(locale, ['common']);
 	return {
 		redirect: {
-			destination: `/${i18n._nextI18Next.initialLocale}/settings/profile`,
+			destination: `/${i18n._nextI18Next?.initialLocale ?? 'en'}/settings/profile`,
 			permanent: true,
 		},
 	};

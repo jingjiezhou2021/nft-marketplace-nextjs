@@ -83,6 +83,9 @@ export function ImportNFTDialog({ children }: { children: ReactNode }) {
 				),
 		}),
 		onSubmit: async (values) => {
+			if (address === undefined) {
+				return;
+			}
 			console.log('Form submitted:', values);
 			try {
 				await importNFT(

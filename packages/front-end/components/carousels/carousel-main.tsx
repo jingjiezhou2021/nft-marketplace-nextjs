@@ -73,7 +73,7 @@ export default function CarouselMain(props: PropsType) {
 				</CarouselContent>
 				<div
 					onClick={() => {
-						api.plugins().autoplay.reset();
+						api?.plugins().autoplay.reset();
 					}}
 					className="hidden sm:block"
 				>
@@ -83,7 +83,7 @@ export default function CarouselMain(props: PropsType) {
 				</div>
 				<div
 					onClick={() => {
-						api.plugins().autoplay.reset();
+						api?.plugins().autoplay.reset();
 					}}
 					className="hidden sm:block"
 				>

@@ -22,9 +22,9 @@ export default function Page(
 	useEffect(() => {
 		if (status === 'connected' && address) {
 			router.push(`/profile/${address}`, undefined, {
-				locale: _props._nextI18Next.initialLocale,
+				locale: _props._nextI18Next?.initialLocale,
 			});
 		}
-	}, [status, address, router, _props._nextI18Next.initialLocale]);
+	}, [status, address, router, _props._nextI18Next?.initialLocale]);
 	return <WalletNotConnected />;
 }

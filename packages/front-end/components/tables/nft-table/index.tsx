@@ -60,7 +60,9 @@ export default function NFTTable() {
 			const target = draft.find((d) => {
 				return d.id === row.original.id;
 			});
-			target.watched = !target.watched;
+			if (target !== undefined) {
+				target.watched = !target.watched;
+			}
 			return draft;
 		});
 		setData(nextData);

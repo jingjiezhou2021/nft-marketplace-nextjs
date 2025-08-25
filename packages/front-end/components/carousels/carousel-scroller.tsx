@@ -54,39 +54,47 @@ export default function CarouselScroller(props: PropsType) {
 		};
 	}, [refCarousel]);
 	useEffect(() => {
-		let gap = 0;
-		if (refCarousel.current.children.length > 1) {
-			const [first, second] = [
-				refCarousel.current.children[0],
-				refCarousel.current.children[1],
-			] as [HTMLDivElement, HTMLDivElement];
-			gap = second.offsetLeft - (first.offsetLeft + first.offsetWidth);
+		if (refCarousel.current !== null) {
+			let gap = 0;
+			if (refCarousel.current.children.length > 1) {
+				const [first, second] = [
+					refCarousel.current.children[0],
+					refCarousel.current.children[1],
+				] as [HTMLDivElement, HTMLDivElement];
+				gap =
+					second.offsetLeft - (first.offsetLeft + first.offsetWidth);
+			}
+			const lastChild: HTMLDivElement = refCarousel.current.children[
+				refCarousel.current.children.length - 1
+			] as HTMLDivElement;
+			const totalDistance =
+				lastChild.offsetLeft + lastChild.offsetWidth + gap;
+			const zone = [scrolledDistance, +scrolledDistance + widthCarousel];
+			const newInzone = [...refCarousel.current.children].map(
+				(c: Element) => {
+					if (c instanceof HTMLDivElement) {
+						if (zone[1] < totalDistance) {
+							return (
+								c.offsetLeft >= zone[0] &&
+								c.offsetLeft + c.offsetWidth <=
+									zone[1] % totalDistance
+							);
+						} else {
+							return (
+								(c.offsetLeft >= zone[0] &&
+									c.offsetLeft + c.offsetWidth <=
+										totalDistance) ||
+								(c.offsetLeft >= 0 &&
+									c.offsetLeft + c.offsetWidth <=
+										zone[1] % totalDistance)
+							);
+						}
+					}
+					return false;
+				},
+			);
+			setInZone(newInzone);
 		}
-		const lastChild: HTMLDivElement = refCarousel.current.children[
-			refCarousel.current.children.length - 1
-		] as HTMLDivElement;
-		const totalDistance =
-			lastChild.offsetLeft + lastChild.offsetWidth + gap;
-		const zone = [scrolledDistance, +scrolledDistance + widthCarousel];
-		const newInzone = [...refCarousel.current.children].map(
-			(c: HTMLDivElement) => {
-				if (zone[1] < totalDistance) {
-					return (
-						c.offsetLeft >= zone[0] &&
-						c.offsetLeft + c.offsetWidth <= zone[1] % totalDistance
-					);
-				} else {
-					return (
-						(c.offsetLeft >= zone[0] &&
-							c.offsetLeft + c.offsetWidth <= totalDistance) ||
-						(c.offsetLeft >= 0 &&
-							c.offsetLeft + c.offsetWidth <=
-								zone[1] % totalDistance)
-					);
-				}
-			},
-		);
-		setInZone(newInzone);
 	}, [widthCarousel, scrolledDistance]);
 	return (
 		<div>
@@ -115,7 +123,7 @@ export default function CarouselScroller(props: PropsType) {
 				</CarouselContent>
 				<div
 					onClick={() => {
-						api.plugins().autoplay.reset();
+						api?.plugins().autoplay.reset();
 					}}
 					className="hidden sm:block"
 				>
@@ -125,7 +133,7 @@ export default function CarouselScroller(props: PropsType) {
 				</div>
 				<div
 					onClick={() => {
-						api.plugins().autoplay.reset();
+						api?.plugins().autoplay.reset();
 					}}
 					className="hidden sm:block"
 				>

@@ -147,7 +147,7 @@ export function RangeFilterTagInner({
 	children?: ReactNode;
 }) {
 	if (min || max) {
-		let ret = null;
+		let ret: ReactNode = null;
 		if (min && max) {
 			ret = (
 				<>

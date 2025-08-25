@@ -2,7 +2,10 @@ import { Choice } from '@/components/filter/selection/button-selection';
 import { produce } from 'immer';
 import { useTranslation } from 'next-i18next';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-
+type Choices<T> = {
+	data: Choice<T>[];
+	inited: boolean;
+};
 export default function useChoices<T>({
 	data,
 	includeAll,
@@ -12,8 +15,8 @@ export default function useChoices<T>({
 	includeAll?: boolean;
 	multiple?: boolean;
 }): [
-	{ data: Choice<T>[] },
-	Dispatch<SetStateAction<{ data: Choice<T>[] }>>,
+	Choices<T>,
+	Dispatch<SetStateAction<Choices<T>>>,
 	(toggled: Choice<T>) => void,
 ] {
 	const { t } = useTranslation('common');
@@ -24,10 +27,10 @@ export default function useChoices<T>({
 			label: <>{t('All')}</>,
 		});
 	}
-	const [choices, setChoices] = useState<{
-		data: Choice<T>[];
-		inited: boolean;
-	}>({ data: initial, inited: false });
+	const [choices, setChoices] = useState<Choices<T>>({
+		data: initial,
+		inited: false,
+	});
 	const handleToggle = (toggled: Choice<T>) => {
 		const newChoices = produce((draft) => {
 			if (multiple) {
@@ -50,14 +53,15 @@ export default function useChoices<T>({
 					const selectedCountAfterToggle = draft.data.filter(
 						(choice) => choice.selected,
 					).length;
-					if (selectedCountAfterToggle === 0) {
-						draft.data.find(
-							(choice) => choice.value === null,
-						).selected = true;
-					} else if (selectedCountAfterToggle > 1) {
-						draft.data.find(
-							(choice) => choice.value === null,
-						).selected = false;
+					const t = draft.data.find(
+						(choice) => choice.value === null,
+					);
+					if (t !== undefined) {
+						if (selectedCountAfterToggle === 0) {
+							t.selected = true;
+						} else if (selectedCountAfterToggle > 1) {
+							t.selected = false;
+						}
 					}
 				}
 			} else {
