@@ -163,7 +163,7 @@ export default function MakeOfferDialog({
 				}
 			}
 		}
-	}, [balanceLoading, decimalsLoading, balance]);
+	}, [balanceLoading, decimalsLoading, balance, depositConfirmed]);
 	useEffect(() => {
 		if (erc20ApproveConfirmed) {
 			setCurrentStep((cur) => cur + 1);
