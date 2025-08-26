@@ -40,6 +40,8 @@ import MakeOfferDrawer from '@/components/nft/detail/make-offer';
 import NFTDetailOffers from '@/components/nft/detail/offers';
 import ChainBadge from '@/components/chain-badge';
 import useLockedChain from '@/lib/hooks/use-locked-chain';
+import useNFTsSaleInfo from '@/lib/hooks/use-nfts-sale-info';
+import useCollectionSaleInfo from '@/lib/hooks/use-collection-sale-info';
 export const getServerSideProps: GetServerSideProps<
 	SSRConfig,
 	{ chainId: string; address: `0x${string}`; tokenId: string }
@@ -169,11 +171,27 @@ export default function NFTDetailPage(
 			console.error(cancelListingError);
 		}
 	}, [cancelListingConfirmed, cancelListingErrorEncountered]);
+	const {
+		topOfferListing,
+		lastSaleListing,
+		loading: saleInfoLoading,
+	} = useNFTsSaleInfo({
+		nfts: [{ contractAddress: address, tokenId, chainId }],
+	});
+	const {
+		floorSaleListing: collectionFloorSaleListing,
+		loading: collectionFloorSaleListingLoading,
+	} = useCollectionSaleInfo(address, chainId);
 	return (
 		<div className="flex flex-col lg:flex-row gap-6 p-4 lg:py-6 lg:pl-2 h-full relative">
 			{contextHolder}
 			<LoadingMask
-				loading={cancelListingConfirming || cancelListingPending}
+				loading={
+					cancelListingConfirming ||
+					cancelListingPending ||
+					saleInfoLoading ||
+					collectionFloorSaleListingLoading
+				}
 				className="flex justify-center items-center"
 			>
 				<LoadingSpinner size={48} />
@@ -228,23 +246,35 @@ export default function NFTDetailPage(
 
 				<div className="border rounded-lg bg-card p-4 flex flex-col gap-2">
 					<div className="flex flex-wrap items-center gap-4">
-						<div className="flex flex-col">
+						<div className="flex flex-col justify-between h-10">
 							<span className="text-xs text-muted-foreground">
 								{t('Collection Floor')}
 							</span>
-							<span className="font-semibold">-</span>
+							{collectionFloorSaleListing ? (
+								<CryptoPrice {...collectionFloorSaleListing} />
+							) : (
+								<span className="font-semibold">-</span>
+							)}
 						</div>
-						<div className="flex flex-col">
+						<div className="flex flex-col justify-between h-10">
 							<span className="text-xs text-muted-foreground">
 								{t('Top Offer')}
 							</span>
-							<span className="font-semibold">-</span>
+							{topOfferListing ? (
+								<CryptoPrice {...topOfferListing} />
+							) : (
+								<span className="font-semibold">-</span>
+							)}
 						</div>
-						<div className="flex flex-col">
+						<div className="flex flex-col justify-between h-10">
 							<span className="text-xs text-muted-foreground">
 								{t('Last Sale')}
 							</span>
-							<span className="font-semibold">-</span>
+							{lastSaleListing ? (
+								<CryptoPrice {...lastSaleListing} />
+							) : (
+								<span className="font-semibold">-</span>
+							)}
 						</div>
 					</div>
 					<Separator orientation="horizontal" />

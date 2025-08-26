@@ -41,6 +41,15 @@ const createApolloClient = () => {
 				}),
 			),
 			cache: new InMemoryCache(),
+			defaultOptions: {
+				query: {
+					fetchPolicy: 'network-only',
+				},
+				watchQuery: {
+					fetchPolicy: 'network-only',
+					nextFetchPolicy: 'cache-first',
+				},
+			},
 		});
 		return apolloClient;
 	}

@@ -25,6 +25,8 @@ import Link from 'next/link';
 import { useAccount } from 'wagmi';
 import EmojiAvatar from '@/components/emojo-avatar';
 import useCollectionCreatorAddress from '@/lib/hooks/use-collection-creator-address';
+import useCollectionSaleInfo from '@/lib/hooks/use-collection-sale-info';
+import CryptoPrice from '@/components/crypto-price';
 export function CollectionHeader({
 	address,
 	chainId,
@@ -56,6 +58,12 @@ export function CollectionHeader({
 	);
 	const { name: collectionName, loading: collectionNameLoading } =
 		useCollectionName(address, chainId);
+	const {
+		topOfferListing,
+		floorSaleListing,
+		totalVolumeInUSD,
+		loading: saleInfoLoading,
+	} = useCollectionSaleInfo(address, chainId);
 	return (
 		<div>
 			{contextHolder}
@@ -82,7 +90,8 @@ export function CollectionHeader({
 				loading={
 					loading ||
 					collectionCreatorAddressLoading ||
-					collectionNameLoading
+					collectionNameLoading ||
+					saleInfoLoading
 				}
 			>
 				{(expand, toggle) => {
@@ -203,28 +212,38 @@ export function CollectionHeader({
 									</div>
 								</ExpandableBannerHeaderContentLeft>
 								<ExpandableBannerHeaderContentRight>
-									<div className="text-muted-foreground">
-										<h5 className="text-xs">
+									<div>
+										<h5 className="text-xs text-muted-foreground">
 											{t('TOP OFFER')}
 										</h5>
-										<p className="text-foreground font-mono text-sm md:text-base">
-											0.00 ETH
-										</p>
+										{topOfferListing ? (
+											<CryptoPrice {...topOfferListing} />
+										) : (
+											<p className="text-foreground font-mono text-sm md:text-base">
+												-
+											</p>
+										)}
 									</div>
-									<div className="text-muted-foreground">
-										<h5 className="text-xs">
+									<div>
+										<h5 className="text-xs text-muted-foreground">
 											{t('FLOOR PRICE')}
 										</h5>
-										<p className="text-foreground font-mono text-sm md:text-base">
-											0.00 ETH
-										</p>
+										{floorSaleListing ? (
+											<CryptoPrice
+												{...floorSaleListing}
+											/>
+										) : (
+											<p className="text-foreground font-mono text-sm md:text-base">
+												-
+											</p>
+										)}
 									</div>
 									<div className="text-muted-foreground">
 										<h5 className="text-xs">
 											{t('TOTAL VOLUME')}
 										</h5>
 										<p className="text-foreground font-mono text-sm md:text-base">
-											0.00 ETH
+											{totalVolumeInUSD.toFixed(2)} USD
 										</p>
 									</div>
 									{toggle}

@@ -1,10 +1,13 @@
+import { Listing } from '@/apollo/gql/graphql';
 import { config } from '@/components/providers/RainbowKitAllProvider';
 import { EthereumCircleColorful, USDTColorful } from '@ant-design/web3-icons';
 import { readContract } from '@wagmi/core';
 import { ChainIdParameter } from '@wagmi/core/internal';
 import { ReactNode } from 'react';
-import { erc20Abi } from 'viem';
+import { ierc2362Abi } from 'smart-contract/wagmi/generated';
+import { bytesToHex, erc20Abi, formatUnits, hexToBytes } from 'viem';
 import { baseSepolia, hardhat, sepolia } from 'viem/chains';
+import { PRICEFEED_DECIMALS } from './hooks/use-currency-rate';
 
 export enum Currency {
 	USD,
@@ -105,4 +108,137 @@ export async function getCurrencyDecimals(
 		functionName: 'decimals',
 	});
 	return res;
+}
+export async function getCurrencyRate({
+	erc20TokenAddress,
+	chainId,
+}: Pick<Listing, 'erc20TokenAddress'> & {
+	chainId: ChainIdParameter<typeof config>['chainId'];
+}) {
+	if (chainId === undefined) {
+		chainId = sepolia.id;
+	}
+	const priceFeedAddress = CHAIN_PRICEFEED_ADDRESSES[chainId];
+	const priceFeedId = CHAIN_PRICEFEED_ID[chainId][erc20TokenAddress];
+	const paddedPriceFeedId = bytesToHex(hexToBytes(priceFeedId, { size: 32 }));
+	const data = await readContract(config, {
+		abi: ierc2362Abi,
+		functionName: 'valueFor',
+		address: priceFeedAddress as `0x${string}`,
+		chainId,
+		args: [paddedPriceFeedId],
+	});
+	return {
+		data: data[0],
+		decimals: PRICEFEED_DECIMALS,
+	};
+}
+export async function getUSDPrice({
+	erc20TokenAddress,
+	price,
+	chainId,
+}: Pick<Listing, 'erc20TokenAddress' | 'price'> & {
+	chainId: ChainIdParameter<typeof config>['chainId'];
+}) {
+	if (chainId === undefined) {
+		chainId = sepolia.id;
+	}
+	const { data, decimals } = await getCurrencyRate({
+		erc20TokenAddress,
+		chainId,
+	});
+	const currencyDecimals = await getCurrencyDecimals(
+		erc20TokenAddress as `0x${string}`,
+		chainId,
+	);
+	if (data !== 0n) {
+		return parseFloat(
+			formatUnits(price * data, currencyDecimals + decimals),
+		);
+	} else {
+		return parseFloat(formatUnits(price, currencyDecimals));
+	}
+}
+
+export async function maxOrMinListingInUSD(
+	listings: (Pick<
+		Listing,
+		'erc20TokenAddress' | 'price' | 'erc20TokenName'
+	> & {
+		chainId: ChainIdParameter<typeof config>['chainId'];
+	})[],
+	max: boolean = true,
+) {
+	if (listings.length === 0) {
+		return null;
+	}
+	const ret = await Promise.all(
+		listings.map((listing) => {
+			return getUSDPrice({
+				erc20TokenAddress: listing.erc20TokenAddress,
+				chainId: listing.chainId,
+				price: listing.price,
+			});
+		}),
+	).then((usdPrices) => {
+		let targetIdx = 0;
+		usdPrices.forEach((usdPrice, index) => {
+			if (max) {
+				if (usdPrice > usdPrices[targetIdx]) {
+					targetIdx = index;
+				}
+			} else {
+				if (usdPrice < usdPrices[targetIdx]) {
+					targetIdx = index;
+				}
+			}
+		});
+		return listings[targetIdx];
+	});
+	return ret;
+}
+
+export async function maxListingInUSD(
+	listings: (Pick<
+		Listing,
+		'erc20TokenAddress' | 'price' | 'erc20TokenName'
+	> & {
+		chainId: ChainIdParameter<typeof config>['chainId'];
+	})[],
+) {
+	return maxOrMinListingInUSD(listings);
+}
+
+export async function minListingInUSD(
+	listings: (Pick<
+		Listing,
+		'erc20TokenAddress' | 'price' | 'erc20TokenName'
+	> & {
+		chainId: ChainIdParameter<typeof config>['chainId'];
+	})[],
+) {
+	return maxOrMinListingInUSD(listings, false);
+}
+export async function getTotalValueInUSD(
+	listings: (Pick<
+		Listing,
+		'erc20TokenAddress' | 'price' | 'erc20TokenName'
+	> & {
+		chainId: ChainIdParameter<typeof config>['chainId'];
+	})[],
+) {
+	const ret = await Promise.all(
+		listings.map((listing) => {
+			return getUSDPrice({
+				erc20TokenAddress: listing.erc20TokenAddress,
+				chainId: listing.chainId,
+				price: listing.price,
+			});
+		}),
+	).then((usdPrices) => {
+		return usdPrices.reduce((prev, cur) => {
+			return prev + cur;
+		}, 0);
+	});
+	return ret;
 }

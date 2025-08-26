@@ -25,6 +25,7 @@ import ExpandableBannerHeader, {
 	ExpandableBannerHeaderContentRight,
 } from '../expandable-banner-header';
 import AddressBadge from '../address-badge';
+import { useNFTsTotalValueInUSD } from '@/lib/hooks/use-nfts-sale-info';
 
 export default function ProfileHeader({
 	data,
@@ -36,10 +37,22 @@ export default function ProfileHeader({
 	const { t, i18n } = useTranslation('common');
 	const [messageApi, contextHolder] = useMessage();
 	const { address: myAddress } = useAccount();
+	const { data: portfolioValueUSD, loading: portfolioValueUSDLoading } =
+		useNFTsTotalValueInUSD({
+			nfts:
+				data?.findFirstUserProfile?.importedNFTs.map((nft) => {
+					return {
+						contractAddress: nft.contractAddress as `0x${string}`,
+						tokenId: nft.tokenId,
+						chainId: nft.collection.chainId,
+					};
+				}) ?? [],
+		});
 	return (
 		<div className="w-full">
 			{contextHolder}
 			<ExpandableBannerHeader
+				loading={portfolioValueUSDLoading}
 				banner={
 					data?.findFirstUserProfile?.banner ? (
 						<Image
@@ -157,7 +170,7 @@ export default function ProfileHeader({
 										{t('PORTFOLIO VALUE')}
 									</h5>
 									<p className="text-foreground font-mono text-sm md:text-base">
-										0.04 ETH
+										{portfolioValueUSD.toFixed(2)} USD
 									</p>
 								</div>
 								{toggle}

@@ -45,6 +45,7 @@ const findNFTs = graphql(`
 			tokenId
 			collection {
 				description
+				chainId
 			}
 			activeItem {
 				id
@@ -79,6 +80,41 @@ const findNFTs = graphql(`
 					createdAt
 					id
 				}
+			}
+			itemListed {
+				createdAt
+				chainId
+				listing {
+					erc20TokenAddress
+					erc20TokenName
+					price
+				}
+				seller
+				nft {
+					activeItem {
+						id
+					}
+				}
+			}
+			itemCanceled {
+				createdAt
+				seller
+				listingId
+			}
+			itemBought {
+				buyer
+				createdAt
+				chainId
+				listing {
+					erc20TokenAddress
+					erc20TokenName
+					price
+				}
+			}
+			itemTransfered {
+				createdAt
+				sender
+				receiver
 			}
 		}
 	}
