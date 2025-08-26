@@ -112,6 +112,7 @@ router.get("/check-ownership/:chainId/:address/:tokenId", async (req, res) => {
         nftAddress: address,
         tokenId,
         chainId,
+        nftId: nftInDb?.id,
       },
     });
     await prisma.nFT.update({

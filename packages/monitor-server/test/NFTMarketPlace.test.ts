@@ -767,6 +767,7 @@ describe("NFTMarketPlace Monitor Server", () => {
           }
         );
       });
+      await sleep(5000);
       await market.acceptOffer(offerId);
       await sleep(5000);
       const { data } = await client.query({

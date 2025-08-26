@@ -19,8 +19,10 @@ export default function listenForItemCanceled(
         },
         include: {
           listing: true,
+          nft: true,
         },
       });
+      const existingNft = existingActiveItem?.nft;
       if (!existingActiveItem) {
         throw new PrismaClientKnownRequestError(
           "active item should have existed before canceling",
@@ -36,7 +38,7 @@ export default function listenForItemCanceled(
           id: existingActiveItem.id,
         },
       });
-      await prisma.nftMarketplace__ItemCanceled.create({
+      const canceledEvent = await prisma.nftMarketplace__ItemCanceled.create({
         data: {
           seller,
           nftAddress,
@@ -49,6 +51,18 @@ export default function listenForItemCanceled(
           },
         },
       });
+      if (existingNft) {
+        console.log("updating canceled event to connect with existing nft...");
+        await prisma.nftMarketplace__ItemCanceled.update({
+          where: {
+            id: canceledEvent.id,
+          },
+          data: {
+            nftId: existingNft.id,
+          },
+        });
+        console.log("connecting event with nft successful");
+      }
     })
   );
 }

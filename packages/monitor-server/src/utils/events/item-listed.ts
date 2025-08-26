@@ -23,7 +23,7 @@ export default function listenForItemListed(
         },
         chainId: chainId,
       };
-      await prisma.nftMarketplace__ItemListed.create({
+      const listedEvent = await prisma.nftMarketplace__ItemListed.create({
         data,
       });
       const existingActiveItem = await prisma.activeItem.findFirst({
@@ -74,7 +74,17 @@ export default function listenForItemListed(
             },
           },
         });
-        console.log("existing nft updated");
+        console.log("active item updated");
+        console.log("updating listed event to connect with existing nft...");
+        await prisma.nftMarketplace__ItemListed.update({
+          where: {
+            id: listedEvent.id,
+          },
+          data: {
+            nftId: existingNFT.id,
+          },
+        });
+        console.log("connecting event with nft successful");
       }
     })
   );

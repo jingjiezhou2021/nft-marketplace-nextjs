@@ -61,6 +61,11 @@ model NftMarketplace__ItemListed {
   tokenId    BigInt
   chainId    BigInt @default(31337)
 
+  createdAt  DateTime @default(now())
+
+  nft   NFT?    @relation(fields: [nftId], references: [id])
+  nftId String?
+
   listingId String  @unique
   listing   Listing @relation(fields: [listingId], references: [id])
 }
@@ -71,6 +76,10 @@ model NftMarketplace__ItemTransfered {
   receiver   String
   chainId    BigInt   @default(31337)
   nftAddress String
+
+  nft   NFT?    @relation(fields: [nftId], references: [id])
+  nftId String?
+
   tokenId    BigInt
   createdAt  DateTime @default(now())
 }
@@ -82,6 +91,10 @@ model NftMarketplace__ItemCanceled {
   tokenId    BigInt
   chainId    BigInt @default(31337)
 
+  nft   NFT?    @relation(fields: [nftId], references: [id])
+  nftId String?
+  createdAt  DateTime @default(now())
+
   listingId String  @unique
   listing   Listing @relation(fields: [listingId], references: [id])
 }
@@ -92,6 +105,11 @@ model NftMarketplace__ItemBought {
   nftAddress String
   tokenId    BigInt
   chainId    BigInt @default(31337)
+
+
+  nft   NFT?    @relation(fields: [nftId], references: [id])
+  nftId String?
+  createdAt  DateTime @default(now())
 
   listingId String  @unique
   listing   Listing @relation(fields: [listingId], references: [id])
@@ -165,6 +183,10 @@ model NFT {
   activeItem ActiveItem?
 
   offers Offer[]
+  itemListed NftMarketplace__ItemListed[]
+  itemTransfered NftMarketplace__ItemTransfered[]
+  itemCanceled NftMarketplace__ItemCanceled[]
+  itemBought NftMarketplace__ItemBought[]
 
   @@unique([contractAddress, tokenId, collectionId])
 }

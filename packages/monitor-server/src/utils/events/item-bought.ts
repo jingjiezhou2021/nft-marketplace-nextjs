@@ -26,7 +26,7 @@ export default function listenForItemBought(
       } else {
         console.warn("item bought without listing");
       }
-      await prisma.nftMarketplace__ItemBought.create({
+      const boughtEvent = await prisma.nftMarketplace__ItemBought.create({
         data: {
           buyer,
           nftAddress,
@@ -75,7 +75,7 @@ export default function listenForItemBought(
             user: {
               connectOrCreate: {
                 where: {
-                  id: newOwner?.id??"-1",
+                  id: newOwner?.id ?? "-1",
                 },
                 create: {
                   address: buyer,
@@ -84,6 +84,17 @@ export default function listenForItemBought(
             },
           },
         });
+        console.log("changing ownership successful");
+        console.log("updating bought event to connect with existing nft...");
+        await prisma.nftMarketplace__ItemBought.update({
+          where: {
+            id: boughtEvent.id,
+          },
+          data: {
+            nftId: existingNft.id,
+          },
+        });
+        console.log("connecting event with nft successful");
       }
     })
   );
