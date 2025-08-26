@@ -317,7 +317,9 @@ const Page: NextPageWithLayout = (
 					<p className="text-sm text-muted-foreground">
 						{collectionName}
 					</p>
-					<h1 className="text-xl font-semibold">{metadata?.name}</h1>
+					<h1 className="text-xl font-semibold">
+						{metadata?.name ?? `# ${tokenId}`}
+					</h1>
 				</div>
 			</div>
 
