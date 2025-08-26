@@ -53,6 +53,9 @@ export default function MakeOfferDialog({
 		address: currencyAddress,
 		chainId: nft.chainId,
 		args: [address ?? '0x'],
+		query: {
+			refetchInterval: 500,
+		},
 	});
 	const [currentStep, setCurrentStep] = useState(0);
 	const { data: decimals, isPending: decimalsLoading } = useCurrencyDecimals(
@@ -163,7 +166,7 @@ export default function MakeOfferDialog({
 				}
 			}
 		}
-	}, [balanceLoading, decimalsLoading, balance, depositConfirmed]);
+	}, [balanceLoading, decimalsLoading, balance]);
 	useEffect(() => {
 		if (erc20ApproveConfirmed) {
 			setCurrentStep((cur) => cur + 1);
