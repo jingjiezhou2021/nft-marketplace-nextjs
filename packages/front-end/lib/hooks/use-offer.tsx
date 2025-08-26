@@ -28,6 +28,7 @@ export default function useOffer(offerId: bigint, chainId: number) {
 				},
 			},
 		},
+		pollInterval: 3000,
 	});
 	const { data: balance } = useReadIerc20BalanceOf({
 		address: offerData?.findFirstOffer?.listing
