@@ -6,7 +6,7 @@ import useCurrencyDecimals from './use-currency-decimals';
 import { ChainIdParameter } from '@wagmi/core/internal';
 import { config } from '@/components/providers/RainbowKitAllProvider';
 import { sepolia } from 'viem/chains';
-const DECIMALS = 6;
+import useCurrencyRate from './use-currency-rate';
 export default function useUSDPrice({
 	erc20TokenAddress,
 	price,
@@ -17,13 +17,13 @@ export default function useUSDPrice({
 	if (chainId === undefined) {
 		chainId = sepolia.id;
 	}
-	const priceFeedAddress = CHAIN_PRICEFEED_ADDRESSES[chainId];
-	const priceFeedId = CHAIN_PRICEFEED_ID[chainId][erc20TokenAddress];
-	const paddedPriceFeedId = bytesToHex(hexToBytes(priceFeedId, { size: 32 }));
-	const { data, isLoading, error } = useReadIerc2362ValueFor({
-		address: priceFeedAddress as `0x${string}`,
+	const {
+		data,
+		loading,
+		decimals: DECIMALS,
+	} = useCurrencyRate({
+		erc20TokenAddress,
 		chainId,
-		args: [paddedPriceFeedId],
 	});
 	const { data: tokenDecimals, isPending: tokenDecimalsLoading } =
 		useCurrencyDecimals(erc20TokenAddress as `0x${string}`, chainId);
@@ -38,6 +38,6 @@ export default function useUSDPrice({
 	}
 	return {
 		data: priceInUSD,
-		loading: tokenDecimalsLoading || isLoading,
+		loading: tokenDecimalsLoading || loading,
 	};
 }
