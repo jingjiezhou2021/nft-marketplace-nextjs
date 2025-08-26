@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import CryptoDisplaySwitch from './crypto-display-switch';
 import CurrentETHRate from './current-eth-rate';
+import CurrentGasPrice from './current-gas-price';
 
 export default function StatusBar(props: React.ComponentProps<'div'>) {
 	const { t } = useTranslation('common');
@@ -68,15 +69,7 @@ export default function StatusBar(props: React.ComponentProps<'div'>) {
 					orientation="vertical"
 					className="mx-4 data-[orientation=vertical]:h-2/3"
 				/>
-				<div className="flex items-center gap-1 text-text-secondary">
-					<IconGasStation
-						size={12}
-						className="text-primary"
-					/>
-					<span className="leading-normal">
-						<span className="font-mono">0.02</span> GWEI
-					</span>
-				</div>
+				<CurrentGasPrice />
 				<Separator
 					orientation="vertical"
 					className="mx-4 data-[orientation=vertical]:h-2/3"
