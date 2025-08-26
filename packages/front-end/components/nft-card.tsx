@@ -8,10 +8,13 @@ import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { ValuesType } from 'utility-types';
-import { LoadingSpinner } from './loading';
+import { LoadingMask, LoadingSpinner } from './loading';
 import Link from 'next/link';
 import CryptoPrice from './crypto-price';
 import useNFTMetadata from '@/lib/hooks/use-nft-metadata';
+import useNFTsSaleInfo, {
+	useNFTsLastSale,
+} from '@/lib/hooks/use-nfts-sale-info';
 
 export type NFTCardData = {
 	imageUrl: string;
@@ -116,12 +119,32 @@ export default function NFTCard({
 		nft.tokenId,
 		nft.collection.chainId,
 	);
+	const {
+		lastSaleListing,
+		topOfferListing,
+		loading: saleInfoLoading,
+	} = useNFTsSaleInfo({
+		nfts: [
+			{
+				contractAddress: nft.contractAddress as `0x${string}`,
+				tokenId: nft.tokenId,
+				chainId: nft.collection.chainId,
+			},
+		],
+	});
 	const dispName = metadata?.name ?? `# ${nft.tokenId}`;
 	return (
 		<CardWrapper className={cn('min-h-32', className)}>
 			{loading || metadata === undefined ? (
 				<div className="size-full relative">
-					<LoadingSpinner className="absolute left-1/2 top-1/2 -translate-1/2" />
+					<LoadingMask
+						loading={
+							loading || saleInfoLoading || metadata === undefined
+						}
+						className="flex justify-center items-center"
+					>
+						<LoadingSpinner size={64} />
+					</LoadingMask>
 				</div>
 			) : (
 				<Link
@@ -129,7 +152,7 @@ export default function NFTCard({
 						nft.tokenId
 					}`}
 					locale={i18n.language}
-					className="w-full"
+					className="w-full h-full flex flex-col justify-between"
 				>
 					<CardContentWrapper>
 						<Image
@@ -139,10 +162,10 @@ export default function NFTCard({
 							fill
 						/>
 					</CardContentWrapper>
-					<CardFooterWrapper>
+					<CardFooterWrapper className="grow flex flex-col gap-1 items-start">
 						<h3
 							className={cn(
-								'font-bold text-sm pb-2 pt-3',
+								'w-full font-bold text-sm pb-2 pt-3 text-nowrap text-ellipsis overflow-x-hidden',
 								fontSmaller && 'text-xs',
 							)}
 						>
@@ -163,6 +186,30 @@ export default function NFTCard({
 								<p className="text-muted-foreground">
 									{t(`Not listed yet`)}
 								</p>
+							)}
+						</div>
+						<div className="grid grid-cols-[auto_1fr] text-xs gap-1">
+							{lastSaleListing && (
+								<>
+									<span className="text-muted-foreground text-nowrap">
+										{t('Last sale:')}
+									</span>
+									<CryptoPrice
+										{...lastSaleListing}
+										className="origin-left scale-80"
+									/>
+								</>
+							)}
+							{topOfferListing && (
+								<>
+									<span className="text-muted-foreground text-nowrap">
+										{t('Top offer:')}
+									</span>
+									<CryptoPrice
+										{...topOfferListing}
+										className="origin-left scale-80"
+									/>
+								</>
 							)}
 						</div>
 					</CardFooterWrapper>
