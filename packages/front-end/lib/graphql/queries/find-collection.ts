@@ -75,6 +75,36 @@ const findCollections = graphql(`
 				collection {
 					chainId
 				}
+				itemTransfered {
+					id
+					createdAt
+				}
+				itemBought {
+					id
+					createdAt
+				}
+				itemCanceled {
+					id
+					createdAt
+				}
+				itemListed {
+					id
+					createdAt
+				}
+				offers {
+					itemOfferAccepted {
+						id
+						createdAt
+					}
+					itemOfferCanceled {
+						id
+						createdAt
+					}
+					itemOfferMade {
+						id
+						createdAt
+					}
+				}
 			}
 		}
 	}

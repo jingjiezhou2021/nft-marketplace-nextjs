@@ -13,10 +13,14 @@ import { SSRConfig } from 'next-i18next';
 import CollectionCarouselBanner from '@/components/carousels/wrapper/collection-carousel-banner';
 import { NFTDetailProps } from '@/components/nft/detail';
 import { CollectionDetailProps } from '@/components/nft/collection';
+import { CollectionsQuery } from '@/apollo/gql/graphql';
+import { ValuesType } from 'utility-types';
+import CarouselCollections from '@/components/carousels/carousel-featured-collection';
 export const getServerSideProps: GetServerSideProps<
 	SSRConfig & {
 		data: {
 			top5CollectionsInTotalVolume: CollectionDetailProps[];
+			top7MostActiveCollections: CollectionDetailProps[];
 		};
 	}
 > = async ({ locale }) => {
@@ -42,11 +46,61 @@ export const getServerSideProps: GetServerSideProps<
 			});
 		}) ?? [],
 	);
-	collectionsInfoAndData.sort((ca, cb) => {
-		return cb.info.totalVolumeInUSD - ca.info.totalVolumeInUSD;
-	});
-	const top5CollectionsInTotalVolume = collectionsInfoAndData
+	const top5CollectionsInTotalVolume = [...collectionsInfoAndData]
+		.sort((ca, cb) => {
+			return cb.info.totalVolumeInUSD - ca.info.totalVolumeInUSD;
+		})
 		.slice(0, 5)
+		.map((c) => {
+			return {
+				address: c.data.address as `0x${string}`,
+				chainId: c.data.chainId,
+			};
+		});
+	const top7MostActiveCollections = [...collectionsInfoAndData]
+		.sort((ca, cb) => {
+			function getEventCount(
+				nfts: ValuesType<
+					CollectionsQuery['collections']
+				>['importedNfts'],
+			) {
+				return nfts.reduce((prev, cur) => {
+					const eventCount = [
+						...cur.itemBought,
+						...cur.itemCanceled,
+						...cur.itemListed,
+						...cur.itemTransfered,
+						...cur.offers.reduce(
+							(prev, cur) => {
+								const tmp: { createdAt: any }[] = [];
+								if (cur.itemOfferMade) {
+									tmp.push(cur.itemOfferMade);
+								}
+								if (cur.itemOfferAccepted) {
+									tmp.push(cur.itemOfferAccepted);
+								}
+								if (cur.itemOfferCanceled) {
+									tmp.push(cur.itemOfferCanceled);
+								}
+								return [...prev, ...tmp];
+							},
+							[] as { createdAt: any }[],
+						),
+					].filter((e) => {
+						const now = new Date();
+						const past7Days = new Date();
+						past7Days.setDate(now.getDate() - 7);
+						return new Date(e.createdAt) >= past7Days;
+					}).length;
+					return prev + eventCount;
+				}, 0);
+			}
+			return (
+				getEventCount(cb.data.importedNfts) -
+				getEventCount(ca.data.importedNfts)
+			);
+		})
+		.slice(0, 7)
 		.map((c) => {
 			return {
 				address: c.data.address as `0x${string}`,
@@ -59,6 +113,7 @@ export const getServerSideProps: GetServerSideProps<
 			...(await serverSideTranslations(locale ?? 'en', ['common'])),
 			data: {
 				top5CollectionsInTotalVolume,
+				top7MostActiveCollections,
 			},
 			// data,
 			// Will be passed to the page component as props
@@ -78,7 +133,9 @@ export default function Page(
 				title="Featured Collections"
 				subtitle="The week's curated collections"
 			>
-				<CarouselFeaturedCollection />
+				<CarouselCollections
+					collections={_props.data.top7MostActiveCollections}
+				/>
 			</TitleWrapper>
 			<TitleWrapper title="Highest Weekly Sales">
 				<HighlyWeekSales
