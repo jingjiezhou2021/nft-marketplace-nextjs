@@ -1,77 +1,78 @@
-import { InferGetStaticPropsType } from 'next';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import NavInfo from '@/components/nav-info';
-import CarouselBanner from '@/components/carousels/carousel-banner';
 import CarouselNFT101 from '@/components/carousels/carousel-nft-101';
 import CarouselFeaturedCollection from '@/components/carousels/carousel-featured-collection';
 import TitleWrapper from '@/components/title-wrapper';
 import HighlyWeekSales from '@/components/highly-week-sales';
 import CarouselTrendingCollection from '@/components/carousels/carousel-trending-collection';
-export const getStaticProps = async ({ locale }) => {
-	// const client = createApolloClient();
-	// const exampleQuery = graphql(`
-	// 	query ExampleQuery {
-	// 		activeItems {
-	// 			seller
-	// 			nftAddress
-	// 			tokenId
-	// 			listing {
-	// 				price
-	// 				erc20TokenAddress
-	// 				erc20TokenName
-	// 			}
-	// 		}
-	// 	}
-	// `);
-	// const { data } = await client.query({
-	// 	query: exampleQuery,
-	// });
+import createApolloClient from '@/apollo';
+import { findCollections } from '@/lib/graphql/queries/find-collection';
+import { getNFTsSaleInfo } from '@/lib/hooks/use-nfts-sale-info';
+import { SSRConfig } from 'next-i18next';
+import CollectionCarouselBanner from '@/components/carousels/wrapper/collection-carousel-banner';
+import { NFTDetailProps } from '@/components/nft/detail';
+import { CollectionDetailProps } from '@/components/nft/collection';
+export const getServerSideProps: GetServerSideProps<
+	SSRConfig & {
+		data: {
+			top5CollectionsInTotalVolume: CollectionDetailProps[];
+		};
+	}
+> = async ({ locale }) => {
+	const client = createApolloClient();
+	const { data: allCollections } = await client.query({
+		query: findCollections,
+	});
+	const collectionsInfoAndData = await Promise.all(
+		allCollections?.collections.map((c) => {
+			return getNFTsSaleInfo({
+				nfts: c.importedNfts.map((nft) => {
+					return {
+						contractAddress: nft.contractAddress as `0x${string}`,
+						tokenId: nft.tokenId,
+						chainId: nft.collection.chainId,
+					};
+				}),
+			}).then((info) => {
+				return {
+					data: c,
+					info,
+				};
+			});
+		}) ?? [],
+	);
+	collectionsInfoAndData.sort((ca, cb) => {
+		return cb.info.totalVolumeInUSD - ca.info.totalVolumeInUSD;
+	});
+	const top5CollectionsInTotalVolume = collectionsInfoAndData
+		.slice(0, 5)
+		.map((c) => {
+			return {
+				address: c.data.address as `0x${string}`,
+				chainId: c.data.chainId,
+			};
+		});
+
 	return {
 		props: {
-			...(await serverSideTranslations(locale, ['common'])),
+			...(await serverSideTranslations(locale ?? 'en', ['common'])),
+			data: {
+				top5CollectionsInTotalVolume,
+			},
 			// data,
 			// Will be passed to the page component as props
 		},
-		revalidate: 60,
 	};
 };
 export default function Page(
-	_props: InferGetStaticPropsType<typeof getStaticProps>,
+	_props: InferGetServerSidePropsType<typeof getServerSideProps>,
 ) {
 	return (
 		<div className="h-full">
 			<NavInfo />
-			<CarouselBanner
-				nftBanners={[
-					{
-						banner: '/example1.avif',
-						name: 'Creatures',
-						author: 'CreatureWorld',
-						nftExamples: [
-							'/example1-1.avif',
-							'/example1-2.avif',
-							'/example1-3.avif',
-						],
-						floorPrice: '0.0213 ETH',
-						amount: 9999n,
-						totalVolume: '36.5K ETH',
-						listedPercentage: 1,
-					},
-					{
-						banner: '/example1.avif',
-						name: 'Creatures',
-						author: 'CreatureWorld',
-						nftExamples: [
-							'/example1-1.avif',
-							'/example1-2.avif',
-							'/example1-3.avif',
-						],
-						floorPrice: '0.0213 ETH',
-						amount: 9999n,
-						totalVolume: '36.5K ETH',
-						listedPercentage: 1,
-					},
-				]}
+			<CollectionCarouselBanner
+				collections={_props.data.top5CollectionsInTotalVolume}
 			/>
 			<TitleWrapper
 				title="Featured Collections"

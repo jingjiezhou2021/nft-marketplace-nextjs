@@ -8,15 +8,56 @@ import {
 import { Card, CardContent } from '../ui/card';
 import Autoplay from 'embla-carousel-autoplay';
 import { type CarouselApi } from '@/components/ui/carousel';
-import { ReactNode, useCallback, useEffect, useState } from 'react';
+import {
+	ReactElement,
+	ReactNode,
+	useCallback,
+	useEffect,
+	useState,
+} from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { WheelGesturesPlugin } from 'embla-carousel-wheel-gestures';
+import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 
-interface PropsType {
-	contents: ReactNode[];
+export function CarouselMainItem({
+	children,
+	className,
+	link,
+	...props
+}: { children: ReactNode; link: string } & React.ComponentProps<
+	typeof CarouselItem
+>) {
+	const { i18n } = useTranslation('common');
+	return (
+		<CarouselItem
+			className={cn('pl-0', className)}
+			{...props}
+		>
+			<Card className="h-full p-0 border-0">
+				<CardContent className="p-0 h-full">
+					<Link
+						href={link}
+						locale={i18n.language}
+						className="flex items-center relative justify-center h-full"
+					>
+						{children}
+						<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)0%,rgba(0,0,0,0.35)25%,rgba(0,0,0,0.65)65%,rgba(0,0,0,0.8)100%)]"></div>
+					</Link>
+				</CardContent>
+			</Card>
+		</CarouselItem>
+	);
 }
-export default function CarouselMain(props: PropsType) {
+
+export default function CarouselMain({
+	children,
+	count,
+}: {
+	children: ReactNode;
+	count: number;
+}) {
 	const [api, setApi] = useState<CarouselApi>();
 	const scrollTo = useCallback(
 		(index: number) => {
@@ -28,12 +69,10 @@ export default function CarouselMain(props: PropsType) {
 		[api],
 	);
 	const [current, setCurrent] = useState(0);
-	const [count, setCount] = useState(0);
 	useEffect(() => {
 		if (!api) {
 			return;
 		}
-		setCount(api.scrollSnapList().length);
 		setCurrent(api.selectedScrollSnap());
 
 		api.on('select', () => {
@@ -57,19 +96,7 @@ export default function CarouselMain(props: PropsType) {
 				]}
 			>
 				<CarouselContent className="aspect-6/7 sm:aspect-4/3 md:aspect-16/9 xl:h-[400px] w-full relative ml-0">
-					{props.contents.map((item, index) => (
-						<CarouselItem
-							key={index}
-							className="pl-0"
-						>
-							<Card className="h-full p-0 border-0">
-								<CardContent className="flex items-center justify-center h-full p-0 relative">
-									{item}
-									<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)0%,rgba(0,0,0,0.35)25%,rgba(0,0,0,0.65)65%,rgba(0,0,0,0.8)100%)]"></div>
-								</CardContent>
-							</Card>
-						</CarouselItem>
-					))}
+					{children}
 				</CarouselContent>
 				<div
 					onClick={() => {
@@ -93,7 +120,7 @@ export default function CarouselMain(props: PropsType) {
 				</div>
 			</Carousel>
 			<div className="flex gap-2 justify-center w-auto pt-4">
-				{props.contents.map((item, index) => {
+				{new Array(count).fill(0).map((item, index) => {
 					return (
 						<div
 							className={cn(
