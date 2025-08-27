@@ -358,7 +358,6 @@ export function useNFTsTotalValueInUSD({ nfts }: { nfts: NFTDetailProps[] }) {
 			)
 				.then((nftMaxListings) => {
 					const filtered = nftMaxListings.filter((l) => l !== null);
-					debugger;
 					return getTotalValueInUSD(filtered);
 				})
 				.then((ans) => {

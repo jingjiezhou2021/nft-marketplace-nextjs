@@ -22,7 +22,7 @@ import {
 	HoverCardContent,
 	HoverCardTrigger,
 } from '@/components/ui/hover-card';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import OfferDetailDialog from '../dialog/offer-detail';
 type OfferTableData = {
 	priceListing: Pick<
@@ -40,12 +40,15 @@ export default function NFTDetailOffers({
 	chainId,
 }: NFTDetailProps) {
 	const { t, i18n } = useTranslation('common');
+	const nftsMemo = useMemo(() => {
+		return [{ contractAddress, tokenId, chainId }];
+	}, [contractAddress, tokenId, chainId]);
 	const {
 		filteredOffers,
 		loading,
 		unableToPayButYourOffers,
 		refetch: refetchOffers,
-	} = useNFTOffers([{ contractAddress, tokenId, chainId }]);
+	} = useNFTOffers(nftsMemo);
 	const columns: ColumnDef<OfferTableData>[] = [
 		{
 			accessorKey: 'priceListing',

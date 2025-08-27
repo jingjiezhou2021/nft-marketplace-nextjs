@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import EmojiAvatar from '../emojo-avatar';
 import ProfileAvatar from './avatar';
@@ -37,16 +37,20 @@ export default function ProfileHeader({
 	const { t, i18n } = useTranslation('common');
 	const [messageApi, contextHolder] = useMessage();
 	const { address: myAddress } = useAccount();
+	const nfts = useMemo(() => {
+		return (
+			data?.findFirstUserProfile?.importedNFTs.map((nft) => {
+				return {
+					contractAddress: nft.contractAddress as `0x${string}`,
+					tokenId: nft.tokenId,
+					chainId: nft.collection.chainId,
+				};
+			}) ?? []
+		);
+	}, [data]);
 	const { data: portfolioValueUSD, loading: portfolioValueUSDLoading } =
 		useNFTsTotalValueInUSD({
-			nfts:
-				data?.findFirstUserProfile?.importedNFTs.map((nft) => {
-					return {
-						contractAddress: nft.contractAddress as `0x${string}`,
-						tokenId: nft.tokenId,
-						chainId: nft.collection.chainId,
-					};
-				}) ?? [],
+			nfts,
 		});
 	return (
 		<div className="w-full">

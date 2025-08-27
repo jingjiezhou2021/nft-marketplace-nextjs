@@ -8,10 +8,13 @@ import { erc20Abi } from 'smart-contract/wagmi/generated';
 import { useAccount, useConfig } from 'wagmi';
 import { readContract } from '@wagmi/core';
 import MARKETPLACE_ADDRESS from '../market';
+import createApolloClient from '@/apollo';
+import { config } from '@/components/providers/RainbowKitAllProvider';
 type OfferDetail = ValuesType<ValuesType<NftsQuery['nFTS']>['offers']>;
-export default function useNFTOffers(nfts: NFTDetailProps[]) {
-	const { address } = useAccount();
-	const { data, loading, refetch } = useQuery(findNFTs, {
+export async function getNFTOffers(nfts: NFTDetailProps[]) {
+	const client = createApolloClient();
+	const { data, error } = await client.query({
+		query: findNFTs,
 		variables: {
 			where: {
 				OR: nfts.map((nft) => {
@@ -34,80 +37,90 @@ export default function useNFTOffers(nfts: NFTDetailProps[]) {
 				}),
 			},
 		},
-		fetchPolicy: 'network-only',
-		nextFetchPolicy: 'cache-first',
 	});
-	const unfilteredOffers = useMemo<OfferDetail[]>(() => {
-		const ret: OfferDetail[] = [];
-		data?.nFTS.forEach((nft) => {
-			nft.offers.forEach((offer) => {
-				ret.push(offer);
-			});
+	if (error) {
+		console.error(error);
+		throw new Error(error.cause?.message);
+	}
+	const unfilteredOffers: OfferDetail[] = [];
+	data.nFTS.forEach((nft) => {
+		nft.offers.forEach((offer) => {
+			unfilteredOffers.push(offer);
 		});
-		return ret;
-	}, [data]);
-	const config = useConfig();
+	});
+	const uncanceledOffers: OfferDetail[] = unfilteredOffers.filter(
+		(offer) =>
+			offer.itemOfferMade &&
+			!offer.itemOfferCanceled &&
+			!offer.itemOfferAccepted,
+	);
+	const filteredOffers = await Promise.all(
+		uncanceledOffers.map((offer) => {
+			return readContract(config, {
+				abi: erc20Abi,
+				functionName: 'balanceOf',
+				address: offer.listing.erc20TokenAddress as `0x${string}`,
+				chainId: offer.chainId,
+				args: [offer.buyer as `0x${string}`],
+			})
+				.then((buyerBalance) => {
+					return buyerBalance >= offer.listing.price;
+				})
+				.then((buyerBalanceEnough) => {
+					return buyerBalanceEnough ? offer : null;
+				});
+		}),
+	)
+		.then((uncanceledAndBalanceEnoughOffers) => {
+			return Promise.all(
+				uncanceledAndBalanceEnoughOffers
+					.filter((offer) => offer !== null)
+					.map((offer) => {
+						return readContract(config, {
+							abi: erc20Abi,
+							functionName: 'allowance',
+							address: offer.listing
+								.erc20TokenAddress as `0x${string}`,
+							chainId: offer.chainId,
+							args: [
+								offer.buyer as `0x${string}`,
+								MARKETPLACE_ADDRESS[offer.chainId],
+							],
+						})
+							.then((allowance) => {
+								return allowance >= offer.listing.price;
+							})
+							.then((allowanceEnough) => {
+								return allowanceEnough ? offer : null;
+							});
+					}),
+			);
+		})
+		.then((uncanceledAndBalanceEnoughAndAllowanceEnoughOffers) => {
+			return uncanceledAndBalanceEnoughAndAllowanceEnoughOffers.filter(
+				(offer) => offer !== null,
+			);
+		});
+	return {
+		filteredOffers,
+		unfilteredOffers,
+	};
+}
+
+export default function useNFTOffers(nfts: NFTDetailProps[]) {
+	const { address } = useAccount();
+	const [unfilteredOffers, setUnfilteredOffers] = useState<OfferDetail[]>([]);
 	const [filteredOffers, setFilteredOffers] = useState<OfferDetail[]>([]);
 	const [filtering, setFiltering] = useState(true);
+	const [refetchFlag, setRefetchFlag] = useState(false);
 	useEffect(() => {
 		setFiltering(true);
-		const uncanceledOffers: OfferDetail[] = unfilteredOffers.filter(
-			(offer) =>
-				offer.itemOfferMade &&
-				!offer.itemOfferCanceled &&
-				!offer.itemOfferAccepted,
-		);
-		Promise.all(
-			uncanceledOffers.map((offer) => {
-				return readContract(config, {
-					abi: erc20Abi,
-					functionName: 'balanceOf',
-					address: offer.listing.erc20TokenAddress as `0x${string}`,
-					chainId: offer.chainId,
-					args: [offer.buyer as `0x${string}`],
-				})
-					.then((buyerBalance) => {
-						return buyerBalance >= offer.listing.price;
-					})
-					.then((buyerBalanceEnough) => {
-						return buyerBalanceEnough ? offer : null;
-					});
-			}),
-		)
-			.then((uncanceledAndBalanceEnoughOffers) => {
-				return Promise.all(
-					uncanceledAndBalanceEnoughOffers
-						.filter((offer) => offer !== null)
-						.map((offer) => {
-							return readContract(config, {
-								abi: erc20Abi,
-								functionName: 'allowance',
-								address: offer.listing
-									.erc20TokenAddress as `0x${string}`,
-								chainId: offer.chainId,
-								args: [
-									offer.buyer as `0x${string}`,
-									MARKETPLACE_ADDRESS[offer.chainId],
-								],
-							})
-								.then((allowance) => {
-									return allowance >= offer.listing.price;
-								})
-								.then((allowanceEnough) => {
-									return allowanceEnough ? offer : null;
-								});
-						}),
-				);
-			})
-			.then((uncanceledAndBalanceEnoughAndAllowanceEnoughOffers) => {
-				setFilteredOffers(
-					uncanceledAndBalanceEnoughAndAllowanceEnoughOffers.filter(
-						(offer) => offer !== null,
-					),
-				);
-				setFiltering(false);
-			});
-	}, [unfilteredOffers, config]);
+		getNFTOffers(nfts).then(({ filteredOffers, unfilteredOffers }) => {
+			setFilteredOffers(filteredOffers);
+			setUnfilteredOffers(unfilteredOffers);
+			setFiltering(false);
+		});
+	}, [nfts, refetchFlag]);
 	const unableToPayButYourOffers = useMemo<OfferDetail[]>(() => {
 		const ret: OfferDetail[] = [];
 		unfilteredOffers.forEach((offer) => {
@@ -123,11 +136,15 @@ export default function useNFTOffers(nfts: NFTDetailProps[]) {
 		});
 		return ret;
 	}, [unfilteredOffers, filteredOffers, address]);
+	const refetch = () => {
+		console.log('refetching orders');
+		setRefetchFlag((flag) => !flag);
+	};
 	return {
 		filteredOffers,
 		unfilteredOffers,
 		unableToPayButYourOffers,
-		loading: loading || filtering,
+		loading: filtering,
 		refetch,
 	};
 }

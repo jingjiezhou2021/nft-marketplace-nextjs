@@ -4,6 +4,7 @@ import { ChainIdParameter } from '@wagmi/core/internal';
 import findCollection from '../graphql/queries/find-collection';
 import { QueryMode } from '@/apollo/gql/graphql';
 import useNFTsSaleInfo from './use-nfts-sale-info';
+import { useMemo } from 'react';
 
 export default function useCollectionSaleInfo(
 	address: `0x${string}`,
@@ -22,20 +23,24 @@ export default function useCollectionSaleInfo(
 			},
 		},
 	});
-	const {
-		topOfferListing,
-		floorSaleListing,
-		totalVolumeInUSD,
-		loading: saleInfoLoading,
-	} = useNFTsSaleInfo({
-		nfts:
+	const nftsMemo = useMemo(() => {
+		return (
 			data?.findFirstCollection?.importedNfts.map((nft) => {
 				return {
 					contractAddress: nft.contractAddress as `0x${string}`,
 					tokenId: nft.tokenId,
 					chainId,
 				};
-			}) ?? [],
+			}) ?? []
+		);
+	}, [data]);
+	const {
+		topOfferListing,
+		floorSaleListing,
+		totalVolumeInUSD,
+		loading: saleInfoLoading,
+	} = useNFTsSaleInfo({
+		nfts: nftsMemo,
 	});
 	return {
 		topOfferListing,

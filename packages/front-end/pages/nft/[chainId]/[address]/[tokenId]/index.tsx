@@ -31,7 +31,7 @@ import checkOwnerShip from '@/lib/nft/check-ownership';
 import { useWriteNftMarketplaceCancelListing } from 'smart-contract/wagmi/generated';
 import MARKETPLACE_ADDRESS from '@/lib/market';
 import { LoadingMask, LoadingSpinner } from '@/components/loading';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import useMessage from 'antd/es/message/useMessage';
 import TransferNFTDialog from '@/components/nft/dialog/transfer';
 import UpdateListingDialog from '@/components/nft/dialog/update-listing';
@@ -171,12 +171,15 @@ export default function NFTDetailPage(
 			console.error(cancelListingError);
 		}
 	}, [cancelListingConfirmed, cancelListingErrorEncountered]);
+	const nftsMemo = useMemo(() => {
+		return [{ contractAddress: address, tokenId, chainId }];
+	}, [address, tokenId, chainId]);
 	const {
 		topOfferListing,
 		lastSaleListing,
 		loading: saleInfoLoading,
 	} = useNFTsSaleInfo({
-		nfts: [{ contractAddress: address, tokenId, chainId }],
+		nfts: nftsMemo,
 	});
 	const {
 		floorSaleListing: collectionFloorSaleListing,

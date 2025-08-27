@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { IconLoader2 } from '@tabler/icons-react';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ValuesType } from 'utility-types';
 import { LoadingMask, LoadingSpinner } from './loading';
 import Link from 'next/link';
@@ -119,18 +119,21 @@ export default function NFTCard({
 		nft.tokenId,
 		nft.collection.chainId,
 	);
-	const {
-		lastSaleListing,
-		topOfferListing,
-		loading: saleInfoLoading,
-	} = useNFTsSaleInfo({
-		nfts: [
+	const nftsMemo = useMemo(() => {
+		return [
 			{
 				contractAddress: nft.contractAddress as `0x${string}`,
 				tokenId: nft.tokenId,
 				chainId: nft.collection.chainId,
 			},
-		],
+		];
+	}, [nft]);
+	const {
+		lastSaleListing,
+		topOfferListing,
+		loading: saleInfoLoading,
+	} = useNFTsSaleInfo({
+		nfts: nftsMemo,
 	});
 	const dispName = metadata?.name ?? `# ${nft.tokenId}`;
 	return (
