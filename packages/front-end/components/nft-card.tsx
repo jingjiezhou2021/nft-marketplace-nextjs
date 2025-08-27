@@ -195,7 +195,7 @@ export default function NFTCard({
 							{lastSaleListing && (
 								<>
 									<span className="text-muted-foreground text-nowrap">
-										{t('Last sale:')}
+										{t('Last sale')}:
 									</span>
 									<CryptoPrice
 										{...lastSaleListing}
@@ -206,7 +206,7 @@ export default function NFTCard({
 							{topOfferListing && (
 								<>
 									<span className="text-muted-foreground text-nowrap">
-										{t('Top offer:')}
+										{t('Top offer')}:
 									</span>
 									<CryptoPrice
 										{...topOfferListing}

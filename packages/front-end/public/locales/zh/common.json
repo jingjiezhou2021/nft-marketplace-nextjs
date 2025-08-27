@@ -1,4 +1,5 @@
 {
+  "7d sales": "周销量",
   "A collection by": "系列创建者",
   "About": "关于",
   "Accept": "接受",
@@ -77,6 +78,7 @@
   "Failed to retrieve decimals for currency": "获取货币小数点失败",
   "Floor": "最低价",
   "Floor difference": "和最低价相差",
+  "Floor price": "最低价",
   "FLOOR PRICE": "最低价",
   "FROM": "从",
   "Gaming": "游戏",
@@ -101,6 +103,7 @@
   "Items": "藏品",
   "ITEMS": "数量",
   "Language": "语言",
+  "Last sale": "最近成交价格",
   "Last Sale": "最近成交价格",
   "List Item": "上架",
   "LISTED": "已上架",

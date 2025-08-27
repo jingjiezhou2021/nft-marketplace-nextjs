@@ -1,4 +1,5 @@
 {
+  "7d sales": "7d sales",
   "A collection by": "A collection by",
   "About": "About",
   "Accept": "Accept",
@@ -77,6 +78,7 @@
   "Failed to retrieve decimals for currency": "Failed to retrieve decimals for currency",
   "Floor": "Floor",
   "Floor difference": "Floor difference",
+  "Floor price": "Floor price",
   "FLOOR PRICE": "FLOOR PRICE",
   "FROM": "FROM",
   "Gaming": "Gaming",
@@ -101,6 +103,7 @@
   "Items": "Items",
   "ITEMS": "ITEMS",
   "Language": "Language",
+  "Last sale": "Last sale",
   "Last Sale": "Last Sale",
   "List Item": "List Item",
   "LISTED": "LISTED",

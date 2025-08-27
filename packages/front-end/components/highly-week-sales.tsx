@@ -111,14 +111,20 @@ export default function HighlyWeekSales({
 					<div className="text-xs font-extralight">
 						<div className="leading-[1.7] line-clamp-7 md:line-clamp-4">
 							{data?.findFirstCollection?.description
-								?.split('\\n')
+								?.replace('\\n', '\n')
+								?.split('\n')
 								.map((paragraph) => {
-									return (
-										<>
-											<p key={paragraph}>{paragraph}</p>
-											<br />
-										</>
-									);
+									if (paragraph !== '') {
+										return (
+											<>
+												<p key={paragraph}>
+													{paragraph}
+												</p>
+											</>
+										);
+									} else {
+										return null;
+									}
 								})}
 						</div>
 					</div>
