@@ -25,7 +25,6 @@ export function CarouselImageScrollerItem({
 	loading?: boolean;
 	link?: string;
 }) {
-	debugger;
 	const { i18n } = useTranslation('common');
 	return (
 		<CarouselItem

@@ -34,6 +34,10 @@ const findCollection = graphql(`
 				collection {
 					chainId
 				}
+				itemBought {
+					id
+					createdAt
+				}
 			}
 		}
 	}

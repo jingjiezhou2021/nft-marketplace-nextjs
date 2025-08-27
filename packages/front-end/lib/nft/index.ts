@@ -65,9 +65,11 @@ export async function getNFTMetadata(
 		args: [BigInt(tokenId)],
 	});
 	const metadata: NFTMetadata = await (await fetch(normalizeURI(url))).json();
+	const dispName = metadata.name ?? `# ${tokenId}`;
 	return {
 		...metadata,
 		image: normalizeURI(metadata.image ?? ''),
+		dispName,
 	};
 }
 export interface NFTMetadata {
