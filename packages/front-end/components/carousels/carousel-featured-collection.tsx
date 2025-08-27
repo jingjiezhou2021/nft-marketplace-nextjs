@@ -1,9 +1,9 @@
-import CarouselImageScroller from './carousel-image-scroller';
+import { CarouselImageScrollerItem } from './carousel-image-scroller';
+import CarouselScroller from './carousel-scroller';
 
 export default function CarouselFeaturedCollection() {
 	return (
-		<CarouselImageScroller
-			shadow
+		<CarouselScroller
 			loop
 			contents={[
 				{
@@ -36,7 +36,19 @@ export default function CarouselFeaturedCollection() {
 					title: 'NFT Title',
 					subtitle: 'Floor Price:0.14 ETH',
 				},
-			]}
+			].map((item) => {
+				return {
+					render(inZone) {
+						return (
+							<CarouselImageScrollerItem
+								content={{ ...item }}
+								inZone={inZone}
+								shadow
+							/>
+						);
+					},
+				};
+			})}
 		/>
 	);
 }

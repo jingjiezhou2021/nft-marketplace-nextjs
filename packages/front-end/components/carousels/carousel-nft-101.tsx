@@ -1,10 +1,11 @@
 import { useTranslation } from 'next-i18next';
-import CarouselImageScroller from './carousel-image-scroller';
+import { CarouselImageScrollerItem } from './carousel-image-scroller';
+import CarouselScroller from './carousel-scroller';
 
 export default function CarouselNFT101() {
 	const { t } = useTranslation('common');
 	return (
-		<CarouselImageScroller
+		<CarouselScroller
 			contents={[
 				{
 					image: '/nft101/what-is-nft.png',
@@ -34,7 +35,18 @@ export default function CarouselNFT101() {
 					image: '/nft101/what-is-crypto-wallet.png',
 					caption: t('What is a crypto wallet?'),
 				},
-			]}
+			].map((item) => {
+				return {
+					render(inZone) {
+						return (
+							<CarouselImageScrollerItem
+								content={{ ...item }}
+								inZone={inZone}
+							/>
+						);
+					},
+				};
+			})}
 		/>
 	);
 }
