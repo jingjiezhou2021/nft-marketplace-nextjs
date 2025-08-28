@@ -146,6 +146,9 @@ export function FilterTags() {
 	return (
 		<div className="flex gap-2 flex-wrap mb-2">
 			{Array.from(searchParams.entries()).map((e) => {
+				if (e[0] === 'watchlist') {
+					return null;
+				}
 				if (e[1] === ALL) {
 					return null;
 				}

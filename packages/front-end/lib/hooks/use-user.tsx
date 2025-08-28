@@ -5,6 +5,12 @@ import findUserProfile from '@/lib/graphql/queries/find-user-profile';
 import { useQuery } from '@apollo/client';
 import { useEffect, useMemo, useState } from 'react';
 export async function getUser(address: string | undefined) {
+	if (address === undefined) {
+		return {
+			user: null,
+			dispName: '',
+		};
+	}
 	const client = createApolloClient();
 	const { data, error } = await client.query({
 		query: findUserProfile,
@@ -60,6 +66,7 @@ export default function useUser(address: string | undefined) {
 	const [user, setUser] =
 		useState<FindFirstUserProfileQuery['findFirstUserProfile']>();
 	const [loading, setLoading] = useState(true);
+	const [refetchFlag, setRefetchFlag] = useState(false);
 	let dispName = user?.username;
 	if (!dispName) {
 		dispName = getAddressAbbreviation(address);
@@ -70,10 +77,14 @@ export default function useUser(address: string | undefined) {
 			setUser(data.user);
 			setLoading(false);
 		});
-	}, [address]);
+	}, [address, refetchFlag]);
+	const refetch = () => {
+		setRefetchFlag((flag) => !flag);
+	};
 	return {
 		user,
 		dispName,
 		loading,
+		refetch,
 	};
 }

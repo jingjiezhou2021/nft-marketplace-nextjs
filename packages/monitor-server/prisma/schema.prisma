@@ -165,6 +165,9 @@ model UserProfile {
   avatar       String?
   banner       String?
   importedNFTs NFT[] // One-to-many relation
+
+   // 👀 Watched collections
+  watchedCollections Collection[] @relation("UserWatchedCollections")
 }
 
 model NFT {
@@ -203,6 +206,9 @@ model Collection {
   banner       String?
   url          String?
   importedNfts NFT[] // One-to-many relation
+
+  // 👀 Users watching this collection
+  watchers UserProfile[] @relation("UserWatchedCollections")
 
   @@unique([address, chainId])
 }

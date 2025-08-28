@@ -47,8 +47,9 @@ export default function GetNFTColumns(
 			cell({ row }) {
 				return (
 					<div
-						className="pl-2"
-						onClick={() => {
+						className="pl-2 relative z-20"
+						onClick={(e) => {
+							e.stopPropagation();
 							onWatch(row);
 						}}
 					>

@@ -24,6 +24,11 @@ const findUserProfile = graphql(`
 					}
 				}
 			}
+			watchedCollections {
+				chainId
+				address
+				id
+			}
 		}
 	}
 `);
