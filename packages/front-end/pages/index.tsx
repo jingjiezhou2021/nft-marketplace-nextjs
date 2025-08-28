@@ -9,7 +9,7 @@ import CarouselTrendingCollection from '@/components/carousels/carousel-trending
 import createApolloClient from '@/apollo';
 import { findCollections } from '@/lib/graphql/queries/find-collection';
 import { getNFTsSaleInfo } from '@/lib/hooks/use-nfts-sale-info';
-import { SSRConfig } from 'next-i18next';
+import { SSRConfig, useTranslation } from 'next-i18next';
 import CollectionCarouselBanner from '@/components/carousels/wrapper/collection-carousel-banner';
 import { NFTDetailProps } from '@/components/nft/detail';
 import { CollectionDetailProps } from '@/components/nft/collection';
@@ -17,6 +17,7 @@ import { CollectionsQuery } from '@/apollo/gql/graphql';
 import { ValuesType } from 'utility-types';
 import CarouselCollections from '@/components/carousels/carousel-featured-collection';
 import CarouselTrendingCollections from '@/components/carousels/carousel-trending-collection';
+import { cn } from '@/lib/utils';
 export const getServerSideProps: GetServerSideProps<
 	SSRConfig & {
 		data: {
@@ -174,6 +175,7 @@ export const getServerSideProps: GetServerSideProps<
 export default function Page(
 	_props: InferGetServerSidePropsType<typeof getServerSideProps>,
 ) {
+	const { t } = useTranslation('common');
 	return (
 		<div className="h-full">
 			<NavInfo />
@@ -181,30 +183,30 @@ export default function Page(
 				collections={_props.data.top5CollectionsInTotalVolume}
 			/>
 			<TitleWrapper
-				title="Featured Collections"
-				subtitle="The week's curated collections"
+				title={t('Featured Collections')}
+				subtitle={t("The week's curated collections")}
 			>
 				<CarouselCollections
 					collections={_props.data.top7MostActiveCollections}
 				/>
 			</TitleWrapper>
-			<TitleWrapper title="Highest Weekly Sales">
+			<TitleWrapper title={t('Highest Weekly Sales')}>
 				<HighlyWeekSales
 					className="mt-4 mb-8"
 					{..._props.data.highestWeeklySaleCollection}
 				/>
 			</TitleWrapper>
 			<TitleWrapper
-				title="Trending Collections"
-				subtitle="Highest sales in the past hours"
+				title={t('Trending Collections')}
+				subtitle={t('Highest sales in the past hours')}
 			>
 				<CarouselTrendingCollections
 					collections={_props.data.top10WeeklySaleCollections}
 				/>
 			</TitleWrapper>
 			<TitleWrapper
-				title="NFT 101"
-				subtitle="Learn about NFTs, Web3, and more."
+				title={t('NFT 101')}
+				subtitle={t('Learn about NFTs, Web3, and more')}
 			>
 				<CarouselNFT101 />
 			</TitleWrapper>
