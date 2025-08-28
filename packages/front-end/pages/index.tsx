@@ -16,12 +16,14 @@ import { CollectionDetailProps } from '@/components/nft/collection';
 import { CollectionsQuery } from '@/apollo/gql/graphql';
 import { ValuesType } from 'utility-types';
 import CarouselCollections from '@/components/carousels/carousel-featured-collection';
+import CarouselTrendingCollections from '@/components/carousels/carousel-trending-collection';
 export const getServerSideProps: GetServerSideProps<
 	SSRConfig & {
 		data: {
 			top5CollectionsInTotalVolume: CollectionDetailProps[];
 			top7MostActiveCollections: CollectionDetailProps[];
 			highestWeeklySaleCollection: CollectionDetailProps;
+			top10WeeklySaleCollections: CollectionDetailProps[];
 		};
 	}
 > = async ({ locale }) => {
@@ -116,8 +118,8 @@ export const getServerSideProps: GetServerSideProps<
 				chainId: c.data.chainId,
 			};
 		});
-	const highestWeeklySaleCollectionTmp = [...collectionsInfoAndData]
-		.sort((ca, cb) => {
+	const collectionsSortedInWeeklySale = [...collectionsInfoAndData].sort(
+		(ca, cb) => {
 			return (
 				getAllEventsOfNfts(cb.data.importedNfts)
 					.filter((e) => {
@@ -140,11 +142,20 @@ export const getServerSideProps: GetServerSideProps<
 						return new Date(e.createdAt) >= past7Days;
 					}).length
 			);
-		})
-		.at(0);
+		},
+	);
+	const top10WeeklySaleCollections = collectionsSortedInWeeklySale
+		.slice(0, 10)
+		.map((c) => {
+			return {
+				address: c.data.address as `0x${string}`,
+				chainId: c.data.chainId,
+			};
+		});
 	const highestWeeklySaleCollection = {
-		address: highestWeeklySaleCollectionTmp!.data.address as `0x${string}`,
-		chainId: highestWeeklySaleCollectionTmp!.data.chainId,
+		address: collectionsSortedInWeeklySale.at(0)!.data
+			.address as `0x${string}`,
+		chainId: collectionsSortedInWeeklySale.at(0)!.data.chainId,
 	};
 	return {
 		props: {
@@ -153,6 +164,7 @@ export const getServerSideProps: GetServerSideProps<
 				top5CollectionsInTotalVolume,
 				top7MostActiveCollections,
 				highestWeeklySaleCollection,
+				top10WeeklySaleCollections,
 			},
 			// data,
 			// Will be passed to the page component as props
@@ -186,7 +198,9 @@ export default function Page(
 				title="Trending Collections"
 				subtitle="Highest sales in the past hours"
 			>
-				<CarouselTrendingCollection />
+				<CarouselTrendingCollections
+					collections={_props.data.top10WeeklySaleCollections}
+				/>
 			</TitleWrapper>
 			<TitleWrapper
 				title="NFT 101"
