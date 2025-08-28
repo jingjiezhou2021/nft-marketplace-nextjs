@@ -8,7 +8,8 @@ import { updateNFTsOfUserProfile } from '../graphql/mutations/update-user-profil
 import UpdateNFT from '../graphql/mutations/update-nft';
 import 'json-bigint-patch';
 import findUserProfile from '../graphql/queries/find-user-profile';
-import { QueryMode } from '@/apollo/gql/graphql';
+import { CollectionsQuery, QueryMode } from '@/apollo/gql/graphql';
+import { ValuesType } from 'utility-types';
 function normalizeURI(
 	uri: string,
 	gateway: string = 'https://ipfs.io/ipfs/',
@@ -195,4 +196,49 @@ export async function importNFT(
 			throw new Error(ALREADY_IMPORTED);
 		}
 	}
+}
+export function getAllEventsOfNfts(
+	nfts: ValuesType<CollectionsQuery['collections']>['importedNfts'],
+) {
+	return nfts.reduce(
+		(prev, cur) => {
+			return prev.concat([
+				...cur.itemBought,
+				...cur.itemCanceled,
+				...cur.itemListed,
+				...cur.itemTransfered,
+				...cur.offers.reduce(
+					(prev, cur) => {
+						const tmp: {
+							createdAt: any;
+							_typename?: string;
+						}[] = [];
+						if (cur.itemOfferMade) {
+							tmp.push(cur.itemOfferMade);
+						}
+						if (cur.itemOfferAccepted) {
+							tmp.push(cur.itemOfferAccepted);
+						}
+						if (cur.itemOfferCanceled) {
+							tmp.push(cur.itemOfferCanceled);
+						}
+						return [...prev, ...tmp];
+					},
+					[] as { createdAt: any; __typename?: string }[],
+				),
+			]);
+		},
+		[] as { createdAt: any; __typename?: string }[],
+	);
+}
+export function getOwnersOfNfts(
+	nfts: ValuesType<CollectionsQuery['collections']>['importedNfts'],
+) {
+	return Array.from(
+		new Set(
+			nfts.reduce((prev, cur) => {
+				return prev.concat(cur.user.address);
+			}, [] as string[]),
+		),
+	);
 }

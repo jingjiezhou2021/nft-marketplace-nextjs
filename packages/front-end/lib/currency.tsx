@@ -193,7 +193,7 @@ export async function maxOrMinListingInUSD(
 				}
 			}
 		});
-		return listings[targetIdx];
+		return { ...listings[targetIdx], usdPrice: usdPrices[targetIdx] };
 	});
 	return ret;
 }

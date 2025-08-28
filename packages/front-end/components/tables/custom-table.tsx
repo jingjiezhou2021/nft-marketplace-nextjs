@@ -61,6 +61,7 @@ export default function CustomTable<TData extends RowData>(props: {
 	rowCursor: boolean;
 	rowCNFn?: (row: Row<TData>) => clsx.ClassValue;
 	onRowClick?: (row: Row<TData>) => void;
+	className?: string;
 }) {
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] =
@@ -91,7 +92,7 @@ export default function CustomTable<TData extends RowData>(props: {
 	});
 
 	return (
-		<div className="w-full">
+		<div className={cn('w-full', props.className)}>
 			<div className="rounded-md border">
 				<Table>
 					<TableHeader>
@@ -104,7 +105,7 @@ export default function CustomTable<TData extends RowData>(props: {
 											className={cn(
 												header.column.getIsPinned() ===
 													'left' &&
-													'sticky left-0 bg-background md:bg-transparent md:static',
+													'sticky z-10 left-0 bg-background md:bg-transparent md:static',
 												header.column.getIsPinned() ===
 													'right' &&
 													'sticky right-0 bg-background md:bg-transparent md:static',
@@ -143,7 +144,7 @@ export default function CustomTable<TData extends RowData>(props: {
 											className={cn(
 												cell.column.getIsPinned() ===
 													'left' &&
-													'sticky left-0 bg-background md:bg-transparent md:static',
+													'sticky z-10 left-0 bg-background md:bg-transparent md:static',
 												cell.column.getIsPinned() ===
 													'right' &&
 													'sticky right-0 bg-background md:bg-transparent md:static',

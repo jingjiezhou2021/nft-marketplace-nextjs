@@ -24,7 +24,7 @@ export default function Page(
 	_props: InferGetStaticPropsType<typeof getStaticProps>,
 ) {
 	return (
-		<div className="relative">
+		<div className="relative h-full">
 			<NFTTable />
 		</div>
 	);

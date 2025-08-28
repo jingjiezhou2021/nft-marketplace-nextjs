@@ -5,17 +5,35 @@ import Image from 'next/image';
 import { CustomTableHeaderFilterButton } from '../custom-table';
 import { PriceCell } from '../PriceCell';
 import { useTranslation } from 'next-i18next';
+import { ReactElement } from 'react';
+import { Listing } from '@/apollo/gql/graphql';
+import { config } from '@/components/providers/RainbowKitAllProvider';
+import { ChainIdParameter } from '@wagmi/core/internal';
+import CryptoPrice from '@/components/crypto-price';
+import { getIconOfChain } from '@/lib/chain';
 export interface NFT {
-	cover: string;
-	id: bigint;
+	id: number;
+	cover: string | ReactElement;
 	name: string;
-	floorPrice: number;
-	topOffer: number;
+	floorPrice:
+		| (Pick<Listing, 'erc20TokenAddress' | 'price' | 'erc20TokenName'> & {
+				chainId: ChainIdParameter<typeof config>['chainId'];
+				usdPrice: number;
+		  })
+		| null;
+	topOffer:
+		| (Pick<Listing, 'erc20TokenAddress' | 'price' | 'erc20TokenName'> & {
+				chainId: ChainIdParameter<typeof config>['chainId'];
+				usdPrice: number;
+		  })
+		| null;
+	chainId: ChainIdParameter<typeof config>['chainId'];
 	volume: number;
 	sales: number;
 	owners: number;
 	supply: number;
 	watched: boolean;
+	address: string;
 }
 
 export default function GetNFTColumns(
@@ -60,18 +78,27 @@ export default function GetNFTColumns(
 					<div className="font-light flex gap-2 items-center">
 						<div
 							className={cn(
-								'size-[32px] rounded-md overflow-hidden md:size-[64px]',
+								'size-[32px] rounded-md overflow-hidden md:size-[64px] relative',
 								compact && 'size-[32px]!',
 							)}
 						>
-							<Image
-								width={64}
-								height={64}
-								src={row.original.cover}
-								alt="nft cover"
-							/>
+							{!compact && (
+								<div className="absolute right-0 bottom-0">
+									{getIconOfChain(row.original.chainId)}
+								</div>
+							)}
+							{typeof row.original.cover === 'string' ? (
+								<Image
+									width={64}
+									height={64}
+									src={row.original.cover}
+									alt="nft cover"
+								/>
+							) : (
+								row.original.cover
+							)}
 						</div>
-						{row.getValue('name')}
+						{row.original.name}
 					</div>
 				);
 			},
@@ -86,7 +113,17 @@ export default function GetNFTColumns(
 				);
 			},
 			cell({ row }) {
-				return <PriceCell n={row.getValue<number>('floorPrice')} />;
+				return row.original.floorPrice ? (
+					<CryptoPrice {...row.original.floorPrice} />
+				) : (
+					<div>-</div>
+				);
+			},
+			sortingFn(d1, d2) {
+				return (
+					(d1.original.floorPrice?.usdPrice ?? 0) -
+					(d2.original.floorPrice?.usdPrice ?? 0)
+				);
 			},
 		},
 		{
@@ -99,7 +136,17 @@ export default function GetNFTColumns(
 				);
 			},
 			cell({ row }) {
-				return <PriceCell n={row.getValue<number>('topOffer')} />;
+				return row.original.topOffer ? (
+					<CryptoPrice {...row.original.topOffer} />
+				) : (
+					<div>-</div>
+				);
+			},
+			sortingFn(d1, d2) {
+				return (
+					(d1.original.topOffer?.usdPrice ?? 0) -
+					(d2.original.topOffer?.usdPrice ?? 0)
+				);
 			},
 		},
 		{
@@ -112,7 +159,7 @@ export default function GetNFTColumns(
 				);
 			},
 			cell({ row }) {
-				return <PriceCell n={row.getValue<number>('volume')} />;
+				return <PriceCell n={row.original.volume} />;
 			},
 		},
 		{
@@ -127,7 +174,7 @@ export default function GetNFTColumns(
 			cell({ row }) {
 				return (
 					<div className="font-light tracking-wider">
-						{row.getValue<number>('sales').toLocaleString()}
+						{row.original.sales.toLocaleString()}
 					</div>
 				);
 			},
@@ -144,7 +191,7 @@ export default function GetNFTColumns(
 			cell({ row }) {
 				return (
 					<div className="font-light tracking-wider">
-						{row.getValue<number>('owners').toLocaleString()}
+						{row.original.owners.toLocaleString()}
 					</div>
 				);
 			},
@@ -161,7 +208,7 @@ export default function GetNFTColumns(
 			cell({ row }) {
 				return (
 					<div className="font-light tracking-wider">
-						{row.getValue<number>('supply').toLocaleString()}
+						{row.original.supply.toLocaleString()}
 					</div>
 				);
 			},

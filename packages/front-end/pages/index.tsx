@@ -22,40 +22,7 @@ import { useQuery } from '@apollo/client';
 import { useCollectionsSaleInfo } from '@/lib/hooks/use-collection-sale-info';
 import { useEffect, useState } from 'react';
 import { LoadingMask, LoadingSpinner } from '@/components/loading';
-function getAllEventsOfNfts(
-	nfts: ValuesType<CollectionsQuery['collections']>['importedNfts'],
-) {
-	return nfts.reduce(
-		(prev, cur) => {
-			return prev.concat([
-				...cur.itemBought,
-				...cur.itemCanceled,
-				...cur.itemListed,
-				...cur.itemTransfered,
-				...cur.offers.reduce(
-					(prev, cur) => {
-						const tmp: {
-							createdAt: any;
-							_typename?: string;
-						}[] = [];
-						if (cur.itemOfferMade) {
-							tmp.push(cur.itemOfferMade);
-						}
-						if (cur.itemOfferAccepted) {
-							tmp.push(cur.itemOfferAccepted);
-						}
-						if (cur.itemOfferCanceled) {
-							tmp.push(cur.itemOfferCanceled);
-						}
-						return [...prev, ...tmp];
-					},
-					[] as { createdAt: any; __typename?: string }[],
-				),
-			]);
-		},
-		[] as { createdAt: any; __typename?: string }[],
-	);
-}
+import { getAllEventsOfNfts } from '@/lib/nft';
 export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
 	locale,
 }) => {
