@@ -35,6 +35,7 @@ export function useCollectionsSaleInfo(
 		Awaited<ReturnType<typeof getNFTsSaleInfo>>[]
 	>([]);
 	const [calculating, setCalculating] = useState(true);
+	const [refetchFlag, setRefetchFlag] = useState(false);
 	useEffect(() => {
 		setCalculating(true);
 		const promiseArr =
@@ -50,11 +51,15 @@ export function useCollectionsSaleInfo(
 					}),
 				});
 			}) ?? [];
-		Promise.all(promiseArr).then((collectionsInfo) => {
-			setCalculating(false);
-			setCollectionsInfo(collectionsInfo);
-		});
-	}, [data]);
+		Promise.all(promiseArr)
+			.then((collectionsInfo) => {
+				setCalculating(false);
+				setCollectionsInfo(collectionsInfo);
+			})
+			.catch(() => {
+				setRefetchFlag((flag) => !flag);
+			});
+	}, [data, refetchFlag]);
 	return {
 		data: collectionsInfo,
 		loading: collectionsLoading || calculating,

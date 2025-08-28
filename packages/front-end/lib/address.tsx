@@ -6,7 +6,7 @@ export function getAddressAbbreviation(
 		return '';
 	}
 	if (!/^0x[a-fA-F0-9]{40}$/.test(address)) {
-		throw new Error('Invalid EVM address');
+		console.warn('Invalid EVM address');
 	}
 	return `${address.slice(0, 2 + chars)}...${address.slice(-chars)}`;
 }

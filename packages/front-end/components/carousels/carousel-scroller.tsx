@@ -54,7 +54,10 @@ export default function CarouselScroller(props: PropsType) {
 		};
 	}, [refCarousel]);
 	useEffect(() => {
-		if (refCarousel.current !== null) {
+		if (
+			refCarousel.current !== null &&
+			refCarousel.current.children.length !== 0
+		) {
 			let gap = 0;
 			if (refCarousel.current.children.length > 1) {
 				const [first, second] = [
@@ -95,7 +98,7 @@ export default function CarouselScroller(props: PropsType) {
 			);
 			setInZone(newInzone);
 		}
-	}, [widthCarousel, scrolledDistance]);
+	}, [widthCarousel, scrolledDistance, props.contents]);
 	return (
 		<div>
 			<Carousel

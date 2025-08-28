@@ -18,155 +18,50 @@ import { ValuesType } from 'utility-types';
 import CarouselCollections from '@/components/carousels/carousel-featured-collection';
 import CarouselTrendingCollections from '@/components/carousels/carousel-trending-collection';
 import { cn } from '@/lib/utils';
-export const getServerSideProps: GetServerSideProps<
-	SSRConfig & {
-		data: {
-			top5CollectionsInTotalVolume: CollectionDetailProps[];
-			top7MostActiveCollections: CollectionDetailProps[];
-			highestWeeklySaleCollection: CollectionDetailProps;
-			top10WeeklySaleCollections: CollectionDetailProps[];
-		};
-	}
-> = async ({ locale }) => {
-	function getAllEventsOfNfts(
-		nfts: ValuesType<CollectionsQuery['collections']>['importedNfts'],
-	) {
-		return nfts.reduce(
-			(prev, cur) => {
-				return prev.concat([
-					...cur.itemBought,
-					...cur.itemCanceled,
-					...cur.itemListed,
-					...cur.itemTransfered,
-					...cur.offers.reduce(
-						(prev, cur) => {
-							const tmp: {
-								createdAt: any;
-								_typename?: string;
-							}[] = [];
-							if (cur.itemOfferMade) {
-								tmp.push(cur.itemOfferMade);
-							}
-							if (cur.itemOfferAccepted) {
-								tmp.push(cur.itemOfferAccepted);
-							}
-							if (cur.itemOfferCanceled) {
-								tmp.push(cur.itemOfferCanceled);
-							}
-							return [...prev, ...tmp];
-						},
-						[] as { createdAt: any; __typename?: string }[],
-					),
-				]);
-			},
-			[] as { createdAt: any; __typename?: string }[],
-		);
-	}
-	const client = createApolloClient();
-	const { data: allCollections } = await client.query({
-		query: findCollections,
-	});
-	const collectionsInfoAndData = await Promise.all(
-		allCollections?.collections.map((c) => {
-			return getNFTsSaleInfo({
-				nfts: c.importedNfts.map((nft) => {
-					return {
-						contractAddress: nft.contractAddress as `0x${string}`,
-						tokenId: nft.tokenId,
-						chainId: nft.collection.chainId,
-					};
-				}),
-			}).then((info) => {
-				return {
-					data: c,
-					info,
-				};
-			});
-		}) ?? [],
-	);
-	const top5CollectionsInTotalVolume = [...collectionsInfoAndData]
-		.sort((ca, cb) => {
-			return cb.info.totalVolumeInUSD - ca.info.totalVolumeInUSD;
-		})
-		.slice(0, 5)
-		.map((c) => {
-			return {
-				address: c.data.address as `0x${string}`,
-				chainId: c.data.chainId,
-			};
-		});
-	const top7MostActiveCollections = [...collectionsInfoAndData]
-		.sort((ca, cb) => {
-			return (
-				getAllEventsOfNfts(cb.data.importedNfts).filter((e) => {
-					const now = new Date();
-					const past7Days = new Date();
-					past7Days.setDate(now.getDate() - 7);
-					return new Date(e.createdAt) >= past7Days;
-				}).length -
-				getAllEventsOfNfts(ca.data.importedNfts).filter((e) => {
-					const now = new Date();
-					const past7Days = new Date();
-					past7Days.setDate(now.getDate() - 7);
-					return new Date(e.createdAt) >= past7Days;
-				}).length
-			);
-		})
-		.slice(0, 7)
-		.map((c) => {
-			return {
-				address: c.data.address as `0x${string}`,
-				chainId: c.data.chainId,
-			};
-		});
-	const collectionsSortedInWeeklySale = [...collectionsInfoAndData].sort(
-		(ca, cb) => {
-			return (
-				getAllEventsOfNfts(cb.data.importedNfts)
-					.filter((e) => {
-						return e.__typename === 'NftMarketplace__ItemBought';
-					})
-					.filter((e) => {
-						const now = new Date();
-						const past7Days = new Date();
-						past7Days.setDate(now.getDate() - 7);
-						return new Date(e.createdAt) >= past7Days;
-					}).length -
-				getAllEventsOfNfts(ca.data.importedNfts)
-					.filter((e) => {
-						return e.__typename === 'NftMarketplace__ItemBought';
-					})
-					.filter((e) => {
-						const now = new Date();
-						const past7Days = new Date();
-						past7Days.setDate(now.getDate() - 7);
-						return new Date(e.createdAt) >= past7Days;
-					}).length
-			);
+import { useQuery } from '@apollo/client';
+import { useCollectionsSaleInfo } from '@/lib/hooks/use-collection-sale-info';
+import { useEffect, useState } from 'react';
+import { LoadingMask, LoadingSpinner } from '@/components/loading';
+function getAllEventsOfNfts(
+	nfts: ValuesType<CollectionsQuery['collections']>['importedNfts'],
+) {
+	return nfts.reduce(
+		(prev, cur) => {
+			return prev.concat([
+				...cur.itemBought,
+				...cur.itemCanceled,
+				...cur.itemListed,
+				...cur.itemTransfered,
+				...cur.offers.reduce(
+					(prev, cur) => {
+						const tmp: {
+							createdAt: any;
+							_typename?: string;
+						}[] = [];
+						if (cur.itemOfferMade) {
+							tmp.push(cur.itemOfferMade);
+						}
+						if (cur.itemOfferAccepted) {
+							tmp.push(cur.itemOfferAccepted);
+						}
+						if (cur.itemOfferCanceled) {
+							tmp.push(cur.itemOfferCanceled);
+						}
+						return [...prev, ...tmp];
+					},
+					[] as { createdAt: any; __typename?: string }[],
+				),
+			]);
 		},
+		[] as { createdAt: any; __typename?: string }[],
 	);
-	const top10WeeklySaleCollections = collectionsSortedInWeeklySale
-		.slice(0, 10)
-		.map((c) => {
-			return {
-				address: c.data.address as `0x${string}`,
-				chainId: c.data.chainId,
-			};
-		});
-	const highestWeeklySaleCollection = {
-		address: collectionsSortedInWeeklySale.at(0)!.data
-			.address as `0x${string}`,
-		chainId: collectionsSortedInWeeklySale.at(0)!.data.chainId,
-	};
+}
+export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
+	locale,
+}) => {
 	return {
 		props: {
 			...(await serverSideTranslations(locale ?? 'en', ['common'])),
-			data: {
-				top5CollectionsInTotalVolume,
-				top7MostActiveCollections,
-				highestWeeklySaleCollection,
-				top10WeeklySaleCollections,
-			},
 			// data,
 			// Will be passed to the page component as props
 		},
@@ -176,24 +71,179 @@ export default function Page(
 	_props: InferGetServerSidePropsType<typeof getServerSideProps>,
 ) {
 	const { t } = useTranslation('common');
+	const { data: allCollections, loading: allCollectionsLoading } =
+		useQuery(findCollections);
+	const [refetchFlag, setRefetchFlag] = useState(false);
+	const [data, setData] = useState<{
+		top5CollectionsInTotalVolume: CollectionDetailProps[];
+		top7MostActiveCollections: CollectionDetailProps[];
+		highestWeeklySaleCollection: CollectionDetailProps;
+		top10WeeklySaleCollections: CollectionDetailProps[];
+	}>();
+	const [calculating, setCalculating] = useState(true);
+	useEffect(() => {
+		if (allCollections) {
+			setCalculating(true);
+			Promise.all(
+				allCollections?.collections.map((c) => {
+					return getNFTsSaleInfo({
+						nfts: c.importedNfts.map((nft) => {
+							return {
+								contractAddress:
+									nft.contractAddress as `0x${string}`,
+								tokenId: nft.tokenId,
+								chainId: nft.collection.chainId,
+							};
+						}),
+					}).then((info) => {
+						return {
+							data: c,
+							info,
+						};
+					});
+				}) ?? [],
+			)
+				.then((collectionsInfoAndData) => {
+					const top5CollectionsInTotalVolume = [
+						...collectionsInfoAndData,
+					]
+						.sort((ca, cb) => {
+							return (
+								cb.info.totalVolumeInUSD -
+								ca.info.totalVolumeInUSD
+							);
+						})
+						.slice(0, 5)
+						.map((c) => {
+							return {
+								address: c.data.address as `0x${string}`,
+								chainId: c.data.chainId,
+							};
+						});
+					const top7MostActiveCollections = [
+						...collectionsInfoAndData,
+					]
+						.sort((ca, cb) => {
+							return (
+								getAllEventsOfNfts(cb.data.importedNfts).filter(
+									(e) => {
+										const now = new Date();
+										const past7Days = new Date();
+										past7Days.setDate(now.getDate() - 7);
+										return (
+											new Date(e.createdAt) >= past7Days
+										);
+									},
+								).length -
+								getAllEventsOfNfts(ca.data.importedNfts).filter(
+									(e) => {
+										const now = new Date();
+										const past7Days = new Date();
+										past7Days.setDate(now.getDate() - 7);
+										return (
+											new Date(e.createdAt) >= past7Days
+										);
+									},
+								).length
+							);
+						})
+						.slice(0, 7)
+						.map((c) => {
+							return {
+								address: c.data.address as `0x${string}`,
+								chainId: c.data.chainId,
+							};
+						});
+					const collectionsSortedInWeeklySale = [
+						...collectionsInfoAndData,
+					].sort((ca, cb) => {
+						return (
+							getAllEventsOfNfts(cb.data.importedNfts)
+								.filter((e) => {
+									return (
+										e.__typename ===
+										'NftMarketplace__ItemBought'
+									);
+								})
+								.filter((e) => {
+									const now = new Date();
+									const past7Days = new Date();
+									past7Days.setDate(now.getDate() - 7);
+									return new Date(e.createdAt) >= past7Days;
+								}).length -
+							getAllEventsOfNfts(ca.data.importedNfts)
+								.filter((e) => {
+									return (
+										e.__typename ===
+										'NftMarketplace__ItemBought'
+									);
+								})
+								.filter((e) => {
+									const now = new Date();
+									const past7Days = new Date();
+									past7Days.setDate(now.getDate() - 7);
+									return new Date(e.createdAt) >= past7Days;
+								}).length
+						);
+					});
+					const top10WeeklySaleCollections =
+						collectionsSortedInWeeklySale.slice(0, 10).map((c) => {
+							return {
+								address: c.data.address as `0x${string}`,
+								chainId: c.data.chainId,
+							};
+						});
+					const highestWeeklySaleCollection = {
+						address: collectionsSortedInWeeklySale.at(0)!.data
+							.address as `0x${string}`,
+						chainId:
+							collectionsSortedInWeeklySale.at(0)!.data.chainId,
+					};
+					setData({
+						top5CollectionsInTotalVolume,
+						top10WeeklySaleCollections,
+						top7MostActiveCollections,
+						highestWeeklySaleCollection,
+					});
+					setCalculating(false);
+				})
+				.catch(() => {
+					setTimeout(() => {
+						setRefetchFlag((flag) => !flag);
+					}, 5000);
+				});
+		}
+	}, [allCollections, refetchFlag]);
 	return (
-		<div className="h-full">
+		<div className="relative">
+			<LoadingMask
+				loading={calculating || allCollectionsLoading}
+				className="z-30 top-0 flex justify-center"
+			>
+				<LoadingSpinner
+					size={48}
+					className="mt-[30svh]"
+				/>
+			</LoadingMask>
 			<NavInfo />
 			<CollectionCarouselBanner
-				collections={_props.data.top5CollectionsInTotalVolume}
+				collections={data?.top5CollectionsInTotalVolume ?? []}
 			/>
 			<TitleWrapper
 				title={t('Featured Collections')}
 				subtitle={t("The week's curated collections")}
 			>
 				<CarouselCollections
-					collections={_props.data.top7MostActiveCollections}
+					collections={data?.top7MostActiveCollections ?? []}
 				/>
 			</TitleWrapper>
 			<TitleWrapper title={t('Highest Weekly Sales')}>
 				<HighlyWeekSales
 					className="mt-4 mb-8"
-					{..._props.data.highestWeeklySaleCollection}
+					{...(data?.highestWeeklySaleCollection ?? {
+						address: '0x000000000',
+						chainId: 11155111,
+					})}
 				/>
 			</TitleWrapper>
 			<TitleWrapper
@@ -201,7 +251,7 @@ export default function Page(
 				subtitle={t('Highest sales in the past hours')}
 			>
 				<CarouselTrendingCollections
-					collections={_props.data.top10WeeklySaleCollections}
+					collections={data?.top10WeeklySaleCollections ?? []}
 				/>
 			</TitleWrapper>
 			<TitleWrapper
