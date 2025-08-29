@@ -141,6 +141,7 @@ export function CollectionCarouselBannerItemUI({
 								height={80}
 								alt="nft-banner-example"
 								className="rounded-lg"
+								unoptimized
 							/>
 						);
 					})}
@@ -200,7 +201,7 @@ export function CollectionCarouselBannerItem({
 				name: collectionName,
 				author: collectionCreatorName,
 				floorPrice: floorSaleListing,
-				totalVolume: `${totalVolumeInUSD} USD`,
+				totalVolume: `${totalVolumeInUSD.toFixed(2)} USD`,
 				amount: data?.findFirstCollection?.importedNfts.length ?? 0,
 				banner: data?.findFirstCollection?.banner ?? (
 					<EmojiAvatar
