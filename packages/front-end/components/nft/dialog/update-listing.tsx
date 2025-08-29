@@ -7,7 +7,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import { NFTDetailProps } from '../detail';
 import { Label } from '@/components/ui/label';
@@ -35,6 +35,7 @@ import { LoadingMask, LoadingSpinner } from '@/components/loading';
 import { cn } from '@/lib/utils';
 import MARKETPLACE_ADDRESS from '@/lib/market';
 import useLockedChain from '@/lib/hooks/use-locked-chain';
+import { QueryMode } from '@/apollo/gql/graphql';
 export default function UpdateListingDialog({
 	children,
 	nft,
@@ -53,6 +54,7 @@ export default function UpdateListingDialog({
 			where: {
 				contractAddress: {
 					equals: nft.contractAddress,
+					mode: QueryMode.Insensitive,
 				},
 				tokenId: {
 					equals: nft.tokenId,
@@ -69,12 +71,15 @@ export default function UpdateListingDialog({
 	});
 	const { writeContractAsync: writeUpdateListing } =
 		useWriteNftMarketplaceUpdateListing();
-	const formik = useFormik<{ currencyAddress?: string; price?: bigint }>({
-		initialValues: {
+	const initialValues = useMemo(() => {
+		return {
 			currencyAddress:
 				data?.findFirstNFT?.activeItem?.listing.erc20TokenAddress,
 			price: data?.findFirstNFT?.activeItem?.listing.price,
-		},
+		};
+	}, [data]);
+	const formik = useFormik<{ currencyAddress?: string; price?: bigint }>({
+		initialValues,
 		validationSchema: Yup.object({
 			currencyAddress: Yup.string()
 				.required(t('Please select currency'))
@@ -135,11 +140,16 @@ export default function UpdateListingDialog({
 		nft.chainId,
 	);
 	useEffect(() => {
-		formik.resetForm();
+		formik.resetForm({
+			values: initialValues,
+		});
+		console.log(data?.findFirstNFT?.activeItem?.listing);
 	}, [data]);
 	useEffect(() => {
 		if (!open) {
-			formik.resetForm();
+			formik.resetForm({
+				values: initialValues,
+			});
 		}
 	}, [open]);
 	return (
