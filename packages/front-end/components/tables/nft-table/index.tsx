@@ -93,48 +93,86 @@ export default function NFTTable() {
 					}) ?? [],
 			)
 				.then((collectionsInfoAndData) => {
+					const categoryFilterContent =
+						router.query.category &&
+						typeof router.query.category === 'string'
+							? router.query.category.split(',')
+							: null;
+					const chainFilterContent =
+						router.query.chain &&
+						typeof router.query.chain === 'string'
+							? router.query.chain.split(',')
+							: null;
 					setCalculating(false);
 					setData(
-						collectionsInfoAndData.map((item, index) => {
-							return {
-								id: index,
-								address: item.data.address,
-								cover: item.data.avatar ? (
-									new URL(
-										item.data.avatar,
-										process.env.NEXT_PUBLIC_SERVER_ENDPOINT,
-									).toString()
-								) : (
-									<EmojiAvatar
-										address={item.data.address}
-										className="size-full"
-									/>
-								),
-								name: item.collectionName,
-								floorPrice: item.info.floorSaleListing,
-								topOffer: item.info.topOfferListing,
-								volume: item.info.totalVolumeInUSD,
-								sales: getAllEventsOfNfts(
-									item.data.importedNfts,
-								).filter((e) => {
+						collectionsInfoAndData
+							.map((item, index) => {
+								return {
+									id: index,
+									address: item.data.address,
+									category: item.data.category,
+									cover: item.data.avatar ? (
+										new URL(
+											item.data.avatar,
+											process.env.NEXT_PUBLIC_SERVER_ENDPOINT,
+										).toString()
+									) : (
+										<EmojiAvatar
+											address={item.data.address}
+											className="size-full"
+										/>
+									),
+									name: item.collectionName,
+									floorPrice: item.info.floorSaleListing,
+									topOffer: item.info.topOfferListing,
+									volume: item.info.totalVolumeInUSD,
+									sales: getAllEventsOfNfts(
+										item.data.importedNfts,
+									).filter((e) => {
+										return (
+											e.__typename ===
+											'NftMarketplace__ItemBought'
+										);
+									}).length,
+									owners: getOwnersOfNfts(
+										item.data.importedNfts,
+									).length,
+									supply: item.data.importedNfts.length,
+									watched:
+										!!user &&
+										user.watchedCollections.filter(
+											(c) =>
+												c.address ===
+													item.data.address &&
+												c.chainId === item.data.chainId,
+										).length !== 0,
+									chainId: item.data.chainId,
+								};
+							})
+							.filter((item) => {
+								if (categoryFilterContent) {
 									return (
-										e.__typename ===
-										'NftMarketplace__ItemBought'
+										categoryFilterContent.includes('all') ||
+										categoryFilterContent?.includes(
+											item.category,
+										)
 									);
-								}).length,
-								owners: getOwnersOfNfts(item.data.importedNfts)
-									.length,
-								supply: item.data.importedNfts.length,
-								watched:
-									!!user &&
-									user.watchedCollections.filter(
-										(c) =>
-											c.address === item.data.address &&
-											c.chainId === item.data.chainId,
-									).length !== 0,
-								chainId: item.data.chainId,
-							};
-						}),
+								} else {
+									return true;
+								}
+							})
+							.filter((item) => {
+								if (chainFilterContent) {
+									return (
+										chainFilterContent.includes('all') ||
+										chainFilterContent.includes(
+											item.chainId.toString(),
+										)
+									);
+								} else {
+									return true;
+								}
+							}),
 					);
 				})
 				.catch(() => {
@@ -143,7 +181,7 @@ export default function NFTTable() {
 					}, 5000);
 				});
 		}
-	}, [refetchFlag, collectionsData, user, router.query.watchlist]);
+	}, [refetchFlag, collectionsData, user, router.query]);
 	const { t } = useTranslation('common');
 	const [data, setData] = useState<NFT[]>([]);
 	const [compact, setCompact] = useState<boolean>(false);

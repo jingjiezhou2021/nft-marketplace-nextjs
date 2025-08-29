@@ -6,7 +6,7 @@ import { CustomTableHeaderFilterButton } from '../custom-table';
 import { PriceCell } from '../PriceCell';
 import { useTranslation } from 'next-i18next';
 import { ReactElement } from 'react';
-import { Listing } from '@/apollo/gql/graphql';
+import { Category, Listing } from '@/apollo/gql/graphql';
 import { config } from '@/components/providers/RainbowKitAllProvider';
 import { ChainIdParameter } from '@wagmi/core/internal';
 import CryptoPrice from '@/components/crypto-price';
@@ -15,6 +15,7 @@ export interface NFT {
 	id: number;
 	cover: string | ReactElement;
 	name: string;
+	category: Category;
 	floorPrice:
 		| (Pick<Listing, 'erc20TokenAddress' | 'price' | 'erc20TokenName'> & {
 				chainId: ChainIdParameter<typeof config>['chainId'];
