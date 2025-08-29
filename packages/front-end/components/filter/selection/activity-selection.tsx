@@ -52,6 +52,10 @@ export function ActivitySelection() {
 					value: EventToString(Event.Offer, false),
 					label: EventToString(Event.Offer),
 				},
+				{
+					value: EventToString(Event.ListingCanceled, false),
+					label: EventToString(Event.ListingCanceled),
+				},
 			]}
 		/>
 	);
