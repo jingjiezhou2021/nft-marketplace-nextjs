@@ -32,3 +32,17 @@ export default function useRange<
 	};
 	return [range, setRange, handleChange];
 }
+
+export function getRangeInUsd(
+	range: Range<{ currency: string }>,
+	ethRate: number,
+) {
+	let min: number, max: number;
+	max = range.data.max ?? Infinity;
+	min = range.data.min ?? -1;
+	if (range?.meta?.currency !== 'USD') {
+		max *= ethRate;
+		min *= ethRate;
+	}
+	return { min, max };
+}

@@ -6,7 +6,7 @@ import {
 	IconStar,
 } from '@tabler/icons-react';
 import { produce } from 'immer';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button } from '../../ui/button';
 import GetNFTColumns, { NFT } from './columns';
 import NFTTableFilterContent from './filter';
@@ -28,6 +28,11 @@ import useMessage from 'antd/es/message/useMessage';
 import Link from 'next/link';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import WalletNotConnected from '@/components/wallet-not-connected';
+import useCurrencyRate from '@/lib/hooks/use-currency-rate';
+import { SEPOLIA_AAVE_WETH } from '@/lib/currency';
+import { sepolia } from 'viem/chains';
+import { getRangeInUsd, Range } from '@/lib/hooks/use-range';
+import { formatUnits } from 'viem';
 
 export default function NFTTable() {
 	const { data: collectionsData, loading: collectionsDataLoading } =
@@ -40,6 +45,13 @@ export default function NFTTable() {
 	const [calculating, setCalculating] = useState(true);
 	const [refetchFlag, setRefetchFlag] = useState(false);
 	const router = useRouter();
+	const { data: ethRateData, decimals: ethRateDecimals } = useCurrencyRate({
+		erc20TokenAddress: SEPOLIA_AAVE_WETH,
+		chainId: sepolia.id,
+	});
+	const ethRate = useMemo(() => {
+		return parseFloat(formatUnits(ethRateData?.[0] ?? 0n, ethRateDecimals));
+	}, [ethRateData, ethRateDecimals]);
 	useEffect(() => {
 		if (collectionsData) {
 			setCalculating(true);
@@ -93,13 +105,23 @@ export default function NFTTable() {
 					}) ?? [],
 			)
 				.then((collectionsInfoAndData) => {
+					const floorPirceFilterContent =
+						typeof router.query['floor-price'] === 'string'
+							? (JSON.parse(
+									router.query['floor-price'],
+								) as Range<{ currency: string }>)
+							: null;
+					const topOfferFilterContent =
+						typeof router.query['top-offer'] === 'string'
+							? (JSON.parse(router.query['top-offer']) as Range<{
+									currency: string;
+								}>)
+							: null;
 					const categoryFilterContent =
-						router.query.category &&
 						typeof router.query.category === 'string'
 							? router.query.category.split(',')
 							: null;
 					const chainFilterContent =
-						router.query.chain &&
 						typeof router.query.chain === 'string'
 							? router.query.chain.split(',')
 							: null;
@@ -172,6 +194,42 @@ export default function NFTTable() {
 								} else {
 									return true;
 								}
+							})
+							.filter((item) => {
+								if (floorPirceFilterContent) {
+									if (item.floorPrice) {
+										const { min, max } = getRangeInUsd(
+											floorPirceFilterContent,
+											ethRate,
+										);
+										return (
+											item.floorPrice.usdPrice < max &&
+											item.floorPrice.usdPrice > min
+										);
+									} else {
+										return false;
+									}
+								} else {
+									return true;
+								}
+							})
+							.filter((item) => {
+								if (topOfferFilterContent) {
+									if (item.topOffer) {
+										const { min, max } = getRangeInUsd(
+											topOfferFilterContent,
+											ethRate,
+										);
+										return (
+											item.topOffer.usdPrice < max &&
+											item.topOffer.usdPrice > min
+										);
+									} else {
+										return false;
+									}
+								} else {
+									return true;
+								}
 							}),
 					);
 				})
@@ -181,7 +239,7 @@ export default function NFTTable() {
 					}, 5000);
 				});
 		}
-	}, [refetchFlag, collectionsData, user, router.query]);
+	}, [refetchFlag, collectionsData, user, router.query, ethRate]);
 	const { t } = useTranslation('common');
 	const [data, setData] = useState<NFT[]>([]);
 	const [compact, setCompact] = useState<boolean>(false);
