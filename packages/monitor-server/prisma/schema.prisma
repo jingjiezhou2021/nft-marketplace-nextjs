@@ -102,6 +102,7 @@ model NftMarketplace__ItemCanceled {
 model NftMarketplace__ItemBought {
   id         String @id @default(uuid())
   buyer      String
+  seller     String?
   nftAddress String
   tokenId    BigInt
   chainId    BigInt @default(31337)
@@ -132,6 +133,7 @@ model ActiveItem {
 model NftMarketplace__ItemOfferMade {
   id      String @id @default(uuid())
   offerId String @unique
+  seller  String?
   chainId BigInt @default(31337)
   createdAt  DateTime @default(now())
 

@@ -11,7 +11,7 @@ export const getStaticProps = async ({ locale }) => {
 };
 export default function Page() {
 	return (
-		<div className="relative">
+		<div className="relative h-full">
 			<ActivityTable />
 		</div>
 	);

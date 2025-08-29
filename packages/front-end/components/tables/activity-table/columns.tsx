@@ -7,23 +7,40 @@ import getDateFnsLocale from '@/lib/getDateFnsLocale';
 import { PriceCell } from '../PriceCell';
 import { useTranslation } from 'next-i18next';
 import { EventToString } from '@/components/filter/selection/activity-selection';
+import { Listing } from '@/apollo/gql/graphql';
+import { config } from '@/components/providers/RainbowKitAllProvider';
+import { ChainIdParameter } from '@wagmi/core/internal';
+import CryptoPrice from '@/components/crypto-price';
+import { getAddressAbbreviation } from '@/lib/address';
+import { CustomTableHeaderFilterButton } from '../custom-table';
+import { ProfileCard } from '@/components/profile/profile-card';
+import Link from 'next/link';
+import { getIconOfChain } from '@/lib/chain';
 export enum Event {
-	Listing,
-	Transfer,
-	Sale,
-	Offer,
+	Listing = 'NftMarketplace__ItemListed',
+	ListingCanceled = 'NftMarketplace__ItemCanceled',
+	Transfer = 'NftMarketplace__ItemTransfered',
+	Sale = 'NftMarketplace__ItemBought',
+	Offer = 'NftMarketplace__ItemOfferMade',
 }
 export interface Activity {
 	event: Event;
+	chainId: ChainIdParameter<typeof config>['chainId'];
+	nftAddress: `0x${string}`;
+	tokenId: number;
 	item: {
 		name: string;
 		collectionName: string;
 		cover: string;
 	};
-	price: number;
-	quantity: number;
-	from: string;
-	to: string;
+	price:
+		| (Pick<Listing, 'erc20TokenAddress' | 'erc20TokenName' | 'price'> & {
+				chainId: ChainIdParameter<typeof config>['chainId'];
+				usdPrice: number;
+		  })
+		| null;
+	from?: string | null;
+	to?: string | null;
 	time: Date;
 }
 
@@ -62,31 +79,47 @@ export default function GetActivityColumns(
 			cell({ row }) {
 				return (
 					<div className="flex gap-2 items-center">
-						<div
+						<Link
 							className={cn(
-								'size-[32px] rounded-md overflow-hidden md:size-[64px]',
+								'size-[32px] rounded-md overflow-hidden md:size-[64px] relative',
 								compact && 'size-[32px]!',
 							)}
+							href={`/nft/${row.original.chainId}/${row.original.nftAddress}/${row.original.tokenId}`}
+							locale={i18n.language}
 						>
+							{!compact && (
+								<div className="absolute right-0 bottom-0">
+									{getIconOfChain(row.original.chainId)}
+								</div>
+							)}
 							<Image
 								width={64}
 								height={64}
 								src={row.original.item.cover}
+								unoptimized
 								alt="nft cover"
 							/>
-						</div>
+						</Link>
 						<div
 							className={cn(
-								'flex flex-col gap-2',
+								'flex flex-col gap-2 max-w-32',
 								compact && 'gap-0',
 							)}
 						>
-							<h3 className="font-bold">
+							<Link
+								className="font-bold overflow-x-hidden text-ellipsis whitespace-nowrap"
+								href={`/nft/${row.original.chainId}/${row.original.nftAddress}/${row.original.tokenId}`}
+								locale={i18n.language}
+							>
 								{row.original.item.name}
-							</h3>
-							<p className="text-muted-foreground">
+							</Link>
+							<Link
+								className="text-muted-foreground overflow-x-hidden text-ellipsis whitespace-nowrap"
+								href={`/nft/${row.original.chainId}/${row.original.nftAddress}`}
+								locale={i18n.language}
+							>
 								{row.original.item.collectionName}
-							</p>
+							</Link>
 						</div>
 					</div>
 				);
@@ -94,29 +127,24 @@ export default function GetActivityColumns(
 		},
 		{
 			accessorKey: 'price',
-			header: () => {
+			header: ({ column }) => {
 				return (
-					<div className="text-muted-foreground text-xs">
+					<CustomTableHeaderFilterButton column={column}>
 						{t('PRICE')}
-					</div>
+					</CustomTableHeaderFilterButton>
 				);
 			},
 			cell({ row }) {
-				return <PriceCell n={row.original.price} />;
-			},
-		},
-		{
-			accessorKey: 'quantity',
-			header: () => {
-				return (
-					<div className="text-muted-foreground text-xs">
-						{t('QUANTITY')}
-					</div>
+				return row.original.price ? (
+					<CryptoPrice {...row.original.price} />
+				) : (
+					'-'
 				);
 			},
-			cell({ row }) {
+			sortingFn(d1, d2) {
 				return (
-					<div className="font-light">{row.original.quantity}</div>
+					(d1.original.price?.usdPrice ?? 0) -
+					(d2.original.price?.usdPrice ?? 0)
 				);
 			},
 		},
@@ -130,7 +158,21 @@ export default function GetActivityColumns(
 				);
 			},
 			cell({ row }) {
-				return <div className="font-light">{row.original.from}</div>;
+				return (
+					<div className="font-light">
+						{row.original.from ? (
+							<ProfileCard
+								address={row.original.from as `0x${string}`}
+							>
+								{(dispName, isYou) => (
+									<h4>{isYou ? t('You') : dispName}</h4>
+								)}
+							</ProfileCard>
+						) : (
+							'-'
+						)}
+					</div>
+				);
 			},
 		},
 		{
@@ -143,16 +185,30 @@ export default function GetActivityColumns(
 				);
 			},
 			cell({ row }) {
-				return <div className="font-light">{row.original.to}</div>;
+				return (
+					<div className="font-light">
+						{row.original.to ? (
+							<ProfileCard
+								address={row.original.to as `0x${string}`}
+							>
+								{(dispName, isYou) => (
+									<h4>{isYou ? t('You') : dispName}</h4>
+								)}
+							</ProfileCard>
+						) : (
+							'-'
+						)}
+					</div>
+				);
 			},
 		},
 		{
 			accessorKey: 'time',
-			header: () => {
+			header: ({ column }) => {
 				return (
-					<div className="text-muted-foreground text-xs">
+					<CustomTableHeaderFilterButton column={column}>
 						{t('TIME')}
-					</div>
+					</CustomTableHeaderFilterButton>
 				);
 			},
 			cell({ row }) {

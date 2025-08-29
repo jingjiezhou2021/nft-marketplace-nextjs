@@ -2,6 +2,18 @@ import { useTranslation } from 'next-i18next';
 import ChoiceSelection from '.';
 import { Event } from '../../tables/activity-table/columns';
 const NAME = 'activity-status';
+export function EventTypenameToEvent(typename: string): Event | null {
+	const key = Object.entries(Event)
+		.filter((en) => {
+			return en[1] === typename;
+		})
+		.at(0)?.[0];
+	if (key) {
+		return Event[key];
+	} else {
+		return null;
+	}
+}
 export function EventToString(e: Event, translate: boolean = true) {
 	const { t } = useTranslation('filter');
 	switch (e) {
@@ -13,6 +25,8 @@ export function EventToString(e: Event, translate: boolean = true) {
 			return translate ? t('Item Offer') : 'Item Offer';
 		case Event.Sale:
 			return translate ? t('Sale') : 'Sale';
+		case Event.ListingCanceled:
+			return translate ? t('Listing Canceled') : 'Listing Canceled';
 	}
 }
 export function ActivitySelection() {

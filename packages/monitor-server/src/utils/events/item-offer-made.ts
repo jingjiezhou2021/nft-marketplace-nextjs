@@ -10,8 +10,28 @@ export default function listenForItemOfferMade(
   marketContract.on(
     marketContract.getEvent("NftMarketplace__ItemOfferMade"),
     logListener(async (offerId, offer) => {
+      const existingNft = await prisma.nFT.findFirst({
+        where: {
+          contractAddress: {
+            equals: offer[1],
+            mode: "insensitive",
+          },
+          tokenId: offer[2],
+          collection: {
+            is: {
+              chainId: {
+                equals: chainId,
+              },
+            },
+          },
+        },
+        include: {
+          user: true,
+        },
+      });
       await prisma.nftMarketplace__ItemOfferMade.create({
         data: {
+          seller: existingNft?.user.address,
           offer: {
             create: {
               offerId,
@@ -29,22 +49,6 @@ export default function listenForItemOfferMade(
             } satisfies Prisma.OfferCreateWithoutItemOfferMadeInput,
           },
           chainId: chainId,
-        },
-      });
-      const existingNft = await prisma.nFT.findFirst({
-        where: {
-          contractAddress: {
-            equals: offer[1],
-            mode: "insensitive",
-          },
-          tokenId: offer[2],
-          collection: {
-            is: {
-              chainId: {
-                equals: chainId,
-              },
-            },
-          },
         },
       });
       if (existingNft) {

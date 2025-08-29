@@ -1,5 +1,5 @@
 export function getAddressAbbreviation(
-	address: string | undefined,
+	address: string | undefined | null,
 	chars = 4,
 ): string {
 	if (!address) {

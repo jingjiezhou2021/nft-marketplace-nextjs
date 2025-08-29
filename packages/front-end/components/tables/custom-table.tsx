@@ -62,6 +62,7 @@ export default function CustomTable<TData extends RowData>(props: {
 	rowCNFn?: (row: Row<TData>) => clsx.ClassValue;
 	onRowClick?: (row: Row<TData>) => void;
 	className?: string;
+	pageSize?: number;
 }) {
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] =
@@ -85,6 +86,10 @@ export default function CustomTable<TData extends RowData>(props: {
 			columnFilters,
 			columnVisibility,
 			rowSelection,
+			pagination: {
+				pageSize: props.pageSize ?? 1e7,
+				pageIndex: 0,
+			},
 		},
 		initialState: {
 			columnPinning: props.columnPinningState,
@@ -126,38 +131,40 @@ export default function CustomTable<TData extends RowData>(props: {
 					</TableHeader>
 					<TableBody>
 						{table.getRowModel().rows?.length ? (
-							table.getRowModel().rows.map((row) => (
-								<TableRow
-									key={row.id}
-									data-state={
-										row.getIsSelected() && 'selected'
-									}
-									className={cn(
-										props.rowCursor && 'cursor-pointer',
-										props.rowCNFn?.(row),
-									)}
-									onClick={() => props.onRowClick?.(row)}
-								>
-									{row.getVisibleCells().map((cell) => (
-										<TableCell
-											key={cell.id}
-											className={cn(
-												cell.column.getIsPinned() ===
-													'left' &&
-													'sticky z-10 left-0 bg-background md:bg-transparent md:static',
-												cell.column.getIsPinned() ===
-													'right' &&
-													'sticky right-0 bg-background md:bg-transparent md:static',
-											)}
-										>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
-											)}
-										</TableCell>
-									))}
-								</TableRow>
-							))
+							table.getRowModel().rows.map((row) => {
+								return (
+									<TableRow
+										key={row.id}
+										data-state={
+											row.getIsSelected() && 'selected'
+										}
+										className={cn(
+											props.rowCursor && 'cursor-pointer',
+											props.rowCNFn?.(row),
+										)}
+										onClick={() => props.onRowClick?.(row)}
+									>
+										{row.getVisibleCells().map((cell) => (
+											<TableCell
+												key={cell.id}
+												className={cn(
+													cell.column.getIsPinned() ===
+														'left' &&
+														'sticky z-10 left-0 bg-background md:bg-transparent md:static',
+													cell.column.getIsPinned() ===
+														'right' &&
+														'sticky right-0 bg-background md:bg-transparent md:static',
+												)}
+											>
+												{flexRender(
+													cell.column.columnDef.cell,
+													cell.getContext(),
+												)}
+											</TableCell>
+										))}
+									</TableRow>
+								);
+							})
 						) : (
 							<TableRow>
 								<TableCell

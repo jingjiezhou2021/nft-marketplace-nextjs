@@ -26,21 +26,6 @@ export default function listenForItemBought(
       } else {
         console.warn("item bought without listing");
       }
-      const boughtEvent = await prisma.nftMarketplace__ItemBought.create({
-        data: {
-          buyer,
-          nftAddress,
-          tokenId,
-          listing: {
-            create: {
-              price: listing[0].toString(),
-              erc20TokenAddress: listing[1],
-              erc20TokenName: listing[2],
-            },
-          },
-          chainId: chainId,
-        },
-      });
       const existingNft = await prisma.nFT.findFirst({
         where: {
           contractAddress: {
@@ -55,6 +40,25 @@ export default function listenForItemBought(
               },
             },
           },
+        },
+        include: {
+          user: true,
+        },
+      });
+      const boughtEvent = await prisma.nftMarketplace__ItemBought.create({
+        data: {
+          buyer,
+          nftAddress,
+          seller: existingNft?.user.address,
+          tokenId,
+          listing: {
+            create: {
+              price: listing[0].toString(),
+              erc20TokenAddress: listing[1],
+              erc20TokenName: listing[2],
+            },
+          },
+          chainId: chainId,
         },
       });
       if (existingNft) {
