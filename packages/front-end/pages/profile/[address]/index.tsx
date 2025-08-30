@@ -1,64 +1,20 @@
 import { GetServerSideProps, InferGetStaticPropsType } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { useRouter } from 'next/router';
-import { useQuery } from '@apollo/client';
-import findUserProfile from '@/lib/graphql/queries/find-user-profile';
-import ProfileHeader from '@/components/profile/header';
-import ProfileNav from '@/components/profile/nav';
-import ProfileNFTGallery from '@/components/profile/nft-gallery';
-import { useEffect, useState } from 'react';
-import { getNFTMetadata, NFTMetadata } from '@/lib/nft';
-import { NFTCardData } from '@/components/nft-card';
 import { SSRConfig } from 'next-i18next';
-import { useAccount } from 'wagmi';
 export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
 	locale,
+	params,
 }) => {
+	const i18n = await serverSideTranslations(locale!, ['common']);
 	return {
-		props: {
-			...(await serverSideTranslations(locale!, ['common', 'filter'])),
-			// Will be passed to the page component as props
+		redirect: {
+			destination: `/${i18n!._nextI18Next!.initialLocale}/profile/${params?.address}/nfts`,
+			permanent: true,
 		},
 	};
 };
 export default function Page(
 	_props: InferGetStaticPropsType<typeof getServerSideProps>,
 ) {
-	const router = useRouter();
-	const { address: userAddress } = useAccount();
-	const address = router.query.address as string;
-	const { loading, data } = useQuery(findUserProfile, {
-		variables: {
-			where: {
-				address: {
-					equals: address,
-				},
-			},
-		},
-		fetchPolicy: 'network-only',
-		nextFetchPolicy: 'cache-first',
-	});
-	return (
-		<>
-			{!loading && (
-				<div className="flex flex-col relative min-h-0 w-full min-w-0">
-					<ProfileHeader
-						data={data}
-						address={address}
-					/>
-					<ProfileNav
-						address={address}
-						className="sticky top-0 z-10 w-full max-w-full"
-					/>
-					<ProfileNFTGallery
-						nfts={data?.findFirstUserProfile?.importedNFTs ?? []}
-						className="mt-1"
-						disableImport={
-							userAddress?.toLowerCase() !== address.toLowerCase()
-						}
-					/>
-				</div>
-			)}
-		</>
-	);
+	return <></>;
 }
