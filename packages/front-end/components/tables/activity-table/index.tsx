@@ -181,7 +181,10 @@ export default function ActivityTable() {
 									currency: string;
 								}>)
 							: null;
-						if (priceFilter) {
+						if (
+							priceFilter &&
+							(priceFilter.data.max || priceFilter?.data.min)
+						) {
 							if (a.price?.usdPrice) {
 								const { min, max } = getRangeInUsd(
 									priceFilter,
@@ -203,7 +206,7 @@ export default function ActivityTable() {
 				setCalculating(false);
 				setData(acts);
 			});
-	}, [events, searchParams]);
+	}, [events, searchParams, ethRate]);
 	const [compact, setCompact] = useState<boolean>(false);
 	const columns = GetActivityColumns(compact);
 	return (
