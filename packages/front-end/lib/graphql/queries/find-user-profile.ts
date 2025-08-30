@@ -15,6 +15,14 @@ const findUserProfile = graphql(`
 				importedAt
 				collection {
 					chainId
+					category
+				}
+				activeItem {
+					listing {
+						price
+						erc20TokenAddress
+						erc20TokenName
+					}
 				}
 				activeItem {
 					listing {
