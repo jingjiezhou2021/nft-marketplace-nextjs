@@ -16,6 +16,8 @@ import { getCollectionName } from './use-collection-name';
 import { getUSDPrice } from '../currency';
 import useItemListed from './use-item-listed';
 import findItemListeds from '../graphql/queries/find-item-listeds';
+import findItemOfferMades from '../graphql/queries/find-item-offers';
+import useItemOfferMades from './use-item-offers';
 export async function getUser(address: string | undefined) {
 	if (address === undefined) {
 		return {
@@ -122,5 +124,35 @@ export function useUserListings(address: string | undefined) {
 		data,
 		loading: itemListedsLoading || loading,
 		refetch,
+	};
+}
+
+export function useUserItemOfferMades(address: string | undefined) {
+	const { data: itemOfferMades, loading: itemOfferMadesLoading } = useQuery(
+		findItemOfferMades,
+		{
+			variables: {
+				where: {
+					offer: {
+						is: {
+							buyer: {
+								equals: address,
+								mode: QueryMode.Insensitive,
+							},
+						},
+					},
+				},
+			},
+		},
+	);
+	const { data, refetch, loading } = useItemOfferMades(
+		itemOfferMades?.nftMarketplace__ItemOfferMades.map(
+			(event) => event.id,
+		) ?? [],
+	);
+	return {
+		data,
+		refetch,
+		loading: loading || itemOfferMadesLoading,
 	};
 }
