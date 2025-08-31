@@ -23,6 +23,7 @@ import ProfileAvatar from '@/components/profile/avatar';
 import { Badge } from '@/components/ui/badge';
 import { CircleCheck, ShoppingBag } from 'lucide-react';
 import ProfileListing from '@/components/profile/listing';
+import ItemColumn from '@/components/tables/activity-table/item';
 
 export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
 	locale,
@@ -74,21 +75,15 @@ const Page: NextPageWithLayout = () => {
 						},
 						cell({ row }) {
 							return (
-								<div className="flex gap-2 items-center">
-									<ProfileAvatar
-										avatar={row.original.metadata.image}
-										address={
-											row.original.event.nft
-												?.contractAddress!
-										}
-									/>
-									<div>
-										<h3>{row.original.collectionName}</h3>
-										<p className="text-muted-foreground">
-											{row.original.metadata.dispName}
-										</p>
-									</div>
-								</div>
+								<ItemColumn
+									compact={compact}
+									chainId={row.original.event.chainId}
+									address={
+										row.original.event.nft
+											?.contractAddress! as `0x${string}`
+									}
+									tokenId={row.original.event.nft?.tokenId}
+								/>
 							);
 						},
 					},

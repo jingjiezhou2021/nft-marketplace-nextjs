@@ -16,6 +16,7 @@ import { CustomTableHeaderFilterButton } from '../custom-table';
 import { ProfileCard } from '@/components/profile/profile-card';
 import Link from 'next/link';
 import { getIconOfChain } from '@/lib/chain';
+import ItemColumn from './item';
 export enum Event {
 	Listing = 'NftMarketplace__ItemListed',
 	ListingCanceled = 'NftMarketplace__ItemCanceled',
@@ -79,50 +80,12 @@ export default function GetActivityColumns(
 			},
 			cell({ row }) {
 				return (
-					<div className="flex gap-2 items-center">
-						<Link
-							className={cn(
-								'size-[32px] rounded-md overflow-hidden md:size-[64px] relative',
-								compact && 'size-[32px]!',
-							)}
-							href={`/nft/${row.original.chainId}/${row.original.nftAddress}/${row.original.tokenId}`}
-							locale={i18n.language}
-						>
-							{!compact && (
-								<div className="absolute right-0 bottom-0">
-									{getIconOfChain(row.original.chainId)}
-								</div>
-							)}
-							<Image
-								width={64}
-								height={64}
-								src={row.original.item.cover}
-								unoptimized
-								alt="nft cover"
-							/>
-						</Link>
-						<div
-							className={cn(
-								'flex flex-col gap-2 max-w-32',
-								compact && 'gap-0',
-							)}
-						>
-							<Link
-								className="font-bold overflow-x-hidden text-ellipsis whitespace-nowrap"
-								href={`/nft/${row.original.chainId}/${row.original.nftAddress}/${row.original.tokenId}`}
-								locale={i18n.language}
-							>
-								{row.original.item.name}
-							</Link>
-							<Link
-								className="text-muted-foreground overflow-x-hidden text-ellipsis whitespace-nowrap"
-								href={`/nft/${row.original.chainId}/${row.original.nftAddress}`}
-								locale={i18n.language}
-							>
-								{row.original.item.collectionName}
-							</Link>
-						</div>
-					</div>
+					<ItemColumn
+						compact={compact}
+						chainId={row.original.chainId}
+						address={row.original.nftAddress}
+						tokenId={row.original.tokenId}
+					/>
 				);
 			},
 		},
