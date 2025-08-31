@@ -46,7 +46,7 @@ export default function ItemColumn({
 				locale={i18n.language}
 			>
 				{!compact && (
-					<div className="absolute right-0 bottom-0">
+					<div className="absolute right-0 bottom-0 z-10">
 						{getIconOfChain(chainId)}
 					</div>
 				)}
