@@ -25,6 +25,7 @@ import { CircleCheck, ShoppingBag } from 'lucide-react';
 import ProfileListing from '@/components/profile/listing';
 import ItemColumn from '@/components/tables/activity-table/item';
 import TimeDisplay from '@/components/time-display';
+import { useParams } from 'next/navigation';
 
 export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
 	locale,
@@ -39,7 +40,7 @@ export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
 
 const Page: NextPageWithLayout = () => {
 	const [compact, setCompact] = useState<boolean>(false);
-	const { address } = useAccount();
+	const { address } = useParams<{ address: string }>();
 	const { data, loading } = useUserListings(address);
 	const { t, i18n } = useTranslation('common');
 	return (

@@ -14,6 +14,8 @@ import { ValuesType } from 'utility-types';
 import { getNFTMetadata } from '../nft';
 import { getCollectionName } from './use-collection-name';
 import { getUSDPrice } from '../currency';
+import useItemListed from './use-item-listed';
+import findItemListeds from '../graphql/queries/find-item-listeds';
 export async function getUser(address: string | undefined) {
 	if (address === undefined) {
 		return {
@@ -100,132 +102,25 @@ export default function useUser(address: string | undefined) {
 }
 
 export function useUserListings(address: string | undefined) {
-	const [data, setData] = useState<
+	const { data: itemListeds, loading: itemListedsLoading } = useQuery(
+		findItemListeds,
 		{
-			event: ValuesType<
-				ApolloQueryResult<NftMarketplace__ItemListedsQuery>['data']['nftMarketplace__ItemListeds']
-			>;
-			saleInfo: Awaited<ReturnType<typeof getNFTsSaleInfo>>;
-			metadata: Awaited<ReturnType<typeof getNFTMetadata>>;
-			usdPrice: number;
-			collectionName: string;
-		}[]
-	>();
-	const [calculating, setCalculating] = useState(true);
-	const [refetchFlag, setRefetchFlag] = useState(false);
-	useEffect(() => {
-		if (!address) return;
-		setCalculating(true);
-		const client = createApolloClient();
-		client
-			.query({
-				query: graphql(`
-					query NftMarketplace__ItemListeds(
-						$where: NftMarketplace__ItemListedWhereInput
-					) {
-						nftMarketplace__ItemListeds(where: $where) {
-							id
-							chainId
-							createdAt
-							itemBought {
-								id
-								createdAt
-							}
-							listing {
-								erc20TokenAddress
-								erc20TokenName
-								price
-							}
-							nft {
-								contractAddress
-								collection {
-									chainId
-								}
-								tokenId
-								activeItem {
-									itemListedId
-								}
-							}
-							seller
-						}
-					}
-				`),
-				variables: {
-					where: {
-						seller: {
-							equals: address,
-							mode: QueryMode.Insensitive,
-						},
+			variables: {
+				where: {
+					seller: {
+						equals: address,
+						mode: QueryMode.Insensitive,
 					},
 				},
-			})
-			.then((itemListeds) => {
-				const promiseArr =
-					itemListeds.data.nftMarketplace__ItemListeds.map(
-						async (il) => {
-							if (il.nft) {
-								const saleInfo = await getNFTsSaleInfo({
-									nfts: [
-										{
-											contractAddress: il.nft
-												?.contractAddress as `0x${string}`,
-											tokenId: il.nft?.tokenId,
-											chainId: il.chainId,
-										},
-									],
-								});
-								const metadata = await getNFTMetadata(
-									il.nft.contractAddress as `0x${string}`,
-									il.nft.tokenId,
-									il.chainId,
-								);
-								const collectionName = await getCollectionName(
-									il.nft.contractAddress as `0x${string}`,
-									il.chainId,
-								);
-								const usdPrice = await getUSDPrice({
-									...il.listing,
-									chainId: il.chainId,
-								});
-								return {
-									saleInfo,
-									event: il,
-									metadata,
-									usdPrice,
-									collectionName,
-								};
-							} else {
-								return null;
-							}
-						},
-					);
-				return Promise.all(promiseArr);
-			})
-			.then((itemListedsWithSaleInfo) =>
-				itemListedsWithSaleInfo
-					.filter((item) => item !== null)
-					.sort(
-						(i1, i2) =>
-							new Date(i2?.event.createdAt).getTime() -
-							new Date(i1?.event.createdAt).getTime(),
-					),
-			)
-			.then((itemListedsWithSaleInfo) => {
-				setData(itemListedsWithSaleInfo);
-				setCalculating(false);
-			})
-			.catch(() => {
-				setTimeout(() => {
-					setRefetchFlag((flag) => !flag);
-				}, 5000);
-			});
-	}, [refetchFlag, address]);
-	const refetch = () => {
-		setRefetchFlag((flag) => !flag);
-	};
+			},
+		},
+	);
+	const { data, refetch, loading } = useItemListed(
+		itemListeds?.nftMarketplace__ItemListeds.map((il) => il.id) ?? [],
+	);
 	return {
 		data,
-		loading: calculating,
+		loading: itemListedsLoading || loading,
 		refetch,
 	};
 }
