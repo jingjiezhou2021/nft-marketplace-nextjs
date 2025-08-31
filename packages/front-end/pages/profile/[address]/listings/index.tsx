@@ -1,4 +1,3 @@
-import ActivityTable from '@/components/tables/activity-table';
 import ProfileLayout from '@/components/profile/layout';
 import { Button } from '@/components/ui/button';
 import { NextPageWithLayout } from '@/pages/_app';

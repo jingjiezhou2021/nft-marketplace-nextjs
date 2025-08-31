@@ -23,8 +23,8 @@ export default function ProfileNav({
 			url: `/profile/${address}/offers`,
 		},
 		{
-			title: t('Activities'),
-			url: `/profile/${address}/activities`,
+			title: t('Activity'),
+			url: `/profile/${address}/activity`,
 		},
 	];
 	return (
