@@ -7,7 +7,7 @@ import { CircleCheck, CircleX, ShoppingBag } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { ReactElement } from 'react';
 
-export default function ProfileListing({
+export default function ProfileListingStatus({
 	listingId,
 	className,
 }: {
