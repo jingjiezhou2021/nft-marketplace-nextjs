@@ -4,6 +4,7 @@ const findOffer = graphql(`
 		findFirstOffer(where: $where) {
 			buyer
 			id
+			chainId
 			itemOfferAccepted {
 				createdAt
 				offerId

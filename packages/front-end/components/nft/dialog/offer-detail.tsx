@@ -302,10 +302,14 @@ export default function OfferDetailDialog({
 						<DescriptionItem
 							label={t('Status')}
 							content={
-								<OfferStatusBadge
-									className="-ml-[9px]"
-									offerStatus={offerStatus}
-								/>
+								offerId &&
+								nft.chainId && (
+									<OfferStatusBadge
+										className="-ml-[9px]"
+										offerId={offerId}
+										chainId={nft.chainId}
+									/>
+								)
 							}
 						/>
 					</Description>

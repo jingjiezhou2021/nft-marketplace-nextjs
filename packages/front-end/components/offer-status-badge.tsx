@@ -1,15 +1,18 @@
-import { OfferStatus } from '@/lib/hooks/use-offer';
+import useOffer, { OfferStatus } from '@/lib/hooks/use-offer';
 import { useTranslation } from 'next-i18next';
 import { Badge } from './ui/badge';
 import { ReactNode } from 'react';
 import { Ban, BanknoteX, CircleCheck, CircleDollarSign } from 'lucide-react';
 export default function OfferStatusBadge({
-	offerStatus,
+	offerId,
 	className,
+	chainId,
 }: {
-	offerStatus: OfferStatus;
+	offerId: bigint;
 	className?: string;
+	chainId: number;
 }) {
+	const { status: offerStatus } = useOffer(offerId, chainId);
 	let caption: string = '';
 	let icon: ReactNode = '';
 	const { t } = useTranslation('common');
