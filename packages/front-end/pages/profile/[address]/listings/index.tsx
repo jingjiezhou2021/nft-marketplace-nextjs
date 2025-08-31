@@ -24,6 +24,7 @@ import { Badge } from '@/components/ui/badge';
 import { CircleCheck, ShoppingBag } from 'lucide-react';
 import ProfileListing from '@/components/profile/listing';
 import ItemColumn from '@/components/tables/activity-table/item';
+import TimeDisplay from '@/components/time-display';
 
 export const getServerSideProps: GetServerSideProps<SSRConfig> = async ({
 	locale,
@@ -205,14 +206,9 @@ const Page: NextPageWithLayout = () => {
 						},
 						cell({ row }) {
 							return (
-								<div className="font-serif flex items-center cursor-pointer">
-									{getDateDiffStr(
-										new Date(),
-										row.original.event.createdAt,
-										getDateFnsLocale(i18n.language),
-									)}
-									<IconArrowUpRight className="text-muted-foreground" />
-								</div>
+								<TimeDisplay
+									time={row.original.event.createdAt}
+								/>
 							);
 						},
 						sortingFn(row1, row2) {

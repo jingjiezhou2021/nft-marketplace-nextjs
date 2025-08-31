@@ -1,4 +1,3 @@
-import { cn, getDateDiffStr } from '@/lib/utils';
 import { IconArrowUpRight, IconTag } from '@tabler/icons-react';
 import { ColumnDef } from '@tanstack/react-table';
 import Image from 'next/image';
@@ -17,6 +16,7 @@ import { ProfileCard } from '@/components/profile/profile-card';
 import Link from 'next/link';
 import { getIconOfChain } from '@/lib/chain';
 import ItemColumn from './item';
+import TimeDisplay from '@/components/time-display';
 export enum Event {
 	Listing = 'NftMarketplace__ItemListed',
 	ListingCanceled = 'NftMarketplace__ItemCanceled',
@@ -176,16 +176,7 @@ export default function GetActivityColumns(
 				);
 			},
 			cell({ row }) {
-				return (
-					<div className="font-serif flex items-center cursor-pointer">
-						{getDateDiffStr(
-							new Date(),
-							row.original.time,
-							getDateFnsLocale(i18n.language),
-						)}
-						<IconArrowUpRight className="text-muted-foreground" />
-					</div>
-				);
+				return <TimeDisplay time={row.original.time} />;
 			},
 		},
 		...(expandedColumns ?? []),

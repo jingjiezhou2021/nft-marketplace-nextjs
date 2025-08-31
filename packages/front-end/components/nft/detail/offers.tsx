@@ -15,7 +15,6 @@ import { ProfileCard } from '@/components/profile/profile-card';
 import { formatDistance } from 'date-fns';
 import getDateFnsLocale from '@/lib/getDateFnsLocale';
 import { IconArrowUpRight, IconTag } from '@tabler/icons-react';
-import { getDateDiffStr } from '@/lib/utils';
 import { CircleAlert } from 'lucide-react';
 import {
 	HoverCard,
@@ -24,6 +23,7 @@ import {
 } from '@/components/ui/hover-card';
 import { useEffect, useMemo, useState } from 'react';
 import OfferDetailDialog from '../dialog/offer-detail';
+import TimeDisplay from '@/components/time-display';
 type OfferTableData = {
 	priceListing: Pick<
 		Listing,
@@ -128,16 +128,7 @@ export default function NFTDetailOffers({
 				);
 			},
 			cell({ row }) {
-				return (
-					<div className="font-serif flex items-center cursor-pointer">
-						{getDateDiffStr(
-							new Date(),
-							row.original.time,
-							getDateFnsLocale(i18n.language),
-						)}
-						<IconArrowUpRight className="text-muted-foreground" />
-					</div>
-				);
+				return <TimeDisplay time={row.original.time}></TimeDisplay>;
 			},
 		},
 		{
