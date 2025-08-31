@@ -12,7 +12,7 @@ export default function ProfileNav({
 	const links: { title: string; url: string }[] = [
 		{
 			title: t('NFTs'),
-			url: `/profile/${address}`,
+			url: `/profile/${address}/nfts`,
 		},
 		{
 			title: t('Listings'),

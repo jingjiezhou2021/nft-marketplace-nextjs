@@ -36,7 +36,7 @@ export default function ProfileLayout({ children }: { children?: ReactNode }) {
 				/>
 				<ProfileNav
 					address={address}
-					className="sticky top-0 z-10 w-full max-w-full"
+					className="sticky top-0 z-20 w-full max-w-full"
 				/>
 				{children}
 			</div>

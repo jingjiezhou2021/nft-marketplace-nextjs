@@ -46,6 +46,7 @@ export interface Activity {
 
 export default function GetActivityColumns(
 	compact: boolean,
+	expandedColumns?: ColumnDef<Activity>[],
 ): ColumnDef<Activity>[] {
 	const { t, i18n } = useTranslation('common');
 	return [
@@ -224,5 +225,6 @@ export default function GetActivityColumns(
 				);
 			},
 		},
+		...(expandedColumns ?? []),
 	];
 }

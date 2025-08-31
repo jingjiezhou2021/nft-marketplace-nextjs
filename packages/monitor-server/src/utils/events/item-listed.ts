@@ -39,11 +39,25 @@ export default function listenForItemListed(
           where: {
             id: existingActiveItem.id,
           },
-          data,
+          data: {
+            ...data,
+            itemListed: {
+              connect: {
+                id: listedEvent.id,
+              },
+            },
+          },
         });
       } else {
         newActiveItem = await prisma.activeItem.create({
-          data,
+          data: {
+            ...data,
+            itemListed: {
+              connect: {
+                id: listedEvent.id,
+              },
+            },
+          },
         });
       }
       const existingNFT = await prisma.nFT.findFirst({

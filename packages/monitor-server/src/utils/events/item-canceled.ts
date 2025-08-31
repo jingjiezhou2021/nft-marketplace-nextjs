@@ -32,12 +32,8 @@ export default function listenForItemCanceled(
           }
         );
       }
+
       const { listing } = existingActiveItem;
-      await prisma.activeItem.delete({
-        where: {
-          id: existingActiveItem.id,
-        },
-      });
       const canceledEvent = await prisma.nftMarketplace__ItemCanceled.create({
         data: {
           seller,
@@ -49,6 +45,18 @@ export default function listenForItemCanceled(
               id: listing.id,
             },
           },
+          itemListed: {
+            connect: existingActiveItem.itemListedId
+              ? {
+                  id: existingActiveItem.itemListedId,
+                }
+              : undefined,
+          },
+        },
+      });
+      await prisma.activeItem.delete({
+        where: {
+          id: existingActiveItem.id,
         },
       });
       if (existingNft) {
