@@ -21,8 +21,8 @@ export default function useActivities(
 					return {
 						nftRelated: event.nft,
 						event: event,
-						from: event.nft?.contractAddress,
-						to: event.seller,
+						from: event.seller,
+						to: event.buyer,
 						price: event.listing,
 					};
 				}),
