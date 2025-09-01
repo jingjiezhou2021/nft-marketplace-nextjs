@@ -14,6 +14,7 @@ import { sepolia } from 'viem/chains';
 import { formatUnits } from 'viem';
 import { Event } from '@/components/tables/activity-table/columns';
 import { getRangeInUsd, Range } from '@/lib/hooks/use-range';
+import { cn } from '@/lib/utils';
 export default function ActivityTable({
 	compact,
 	data,
@@ -38,16 +39,18 @@ export function ActivityTableWrapper({
 	data,
 	loading,
 	slots,
+	className,
 }: {
 	data: Activity[];
 	loading?: boolean;
 	slots?: {
 		filter?: ReactElement;
 	};
+	className?: string;
 }) {
 	const [compact, setCompact] = useState<boolean>(false);
 	return (
-		<div className="relative flex flex-col h-full">
+		<div className={cn('relative flex flex-col h-full', className)}>
 			<LoadingMask
 				loading={!!loading}
 				className="flex justify-center items-center z-30"

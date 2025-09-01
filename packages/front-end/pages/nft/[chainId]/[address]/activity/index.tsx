@@ -57,6 +57,7 @@ const Page: NextPageWithLayout = (
 		<ActivityTableWrapper
 			data={data}
 			loading={loading}
+			className="h-auto"
 			slots={{
 				filter: (
 					<Filter>

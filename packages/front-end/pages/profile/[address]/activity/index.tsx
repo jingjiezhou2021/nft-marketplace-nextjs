@@ -41,6 +41,7 @@ const Page: NextPageWithLayout = () => {
 	const { data, loading } = useActivities(filterFns);
 	return (
 		<ActivityTableWrapper
+			className="h-auto"
 			data={data}
 			loading={loading}
 		/>
