@@ -32,6 +32,8 @@
     "include": [
         "src/**/*",
         "prisma/**/*",
+        "jest.setup.ts",
+        "test/**/*",
         "graphql/custom/**/*"
     ]
 }

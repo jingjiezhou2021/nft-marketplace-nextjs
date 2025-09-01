@@ -3,7 +3,7 @@ import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
   schema: `http://localhost:${process.env.port}/graphql`,
-  documents: ["test/**/*.ts"],
+  documents: ["test/**/*.ts","jest.setup.ts"],
   ignoreNoDocuments: true, // for better experience with the watcher
   generates: {
     "./graphql/types/": {
