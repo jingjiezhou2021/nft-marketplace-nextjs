@@ -71,19 +71,12 @@ export default function NFTDetailTraits({
 				}
 			});
 	return (
-		<div className="relative">
-			<CustomTable
-				columns={columns}
-				data={data}
-				rowCursor
-				columnPinningState={{ left: [], right: [] }}
-			/>
-			<LoadingMask
-				loading={loading}
-				className="flex justify-center items-center top-0"
-			>
-				<LoadingSpinner size={24}></LoadingSpinner>
-			</LoadingMask>
-		</div>
+		<CustomTable
+			columns={columns}
+			data={data}
+			rowCursor
+			loading={loading}
+			columnPinningState={{ left: [], right: [] }}
+		/>
 	);
 }

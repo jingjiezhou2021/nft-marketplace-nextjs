@@ -16,6 +16,7 @@ export default function OfferTable({
 	compact,
 	data,
 	expandColumnsFn,
+	loading,
 }: {
 	compact?: boolean;
 	data: ReturnType<typeof useItemOfferMades>['data'];
@@ -28,6 +29,7 @@ export default function OfferTable({
 	) => ColumnDef<
 		ValuesType<NonNullable<ReturnType<typeof useItemOfferMades>['data']>>
 	>[];
+	loading?: boolean;
 }) {
 	const { t } = useTranslation('common');
 	const initialColumns = [
@@ -186,7 +188,8 @@ export default function OfferTable({
 				left: ['item'],
 			}}
 			rowCursor={false}
-			className="grow min-h-0 overflow-y-auto pb-4"
+			className="pb-4"
+			loading={loading}
 		/>
 	);
 }
@@ -210,13 +213,7 @@ export function OfferTableWrapper({
 }) {
 	const [compact, setCompact] = useState<boolean>(false);
 	return (
-		<div className="h-full flex flex-col relative">
-			<LoadingMask
-				loading={!!loading}
-				className="flex justify-center items-center"
-			>
-				<LoadingSpinner size={48} />
-			</LoadingMask>
+		<div className="flex flex-col relative">
 			<nav className="flex items-center mb-4 justify-end">
 				<div>
 					<Button
@@ -234,6 +231,7 @@ export function OfferTableWrapper({
 				data={data}
 				compact={compact}
 				expandColumnsFn={expandColumnsFn}
+				loading={loading}
 			/>
 		</div>
 	);

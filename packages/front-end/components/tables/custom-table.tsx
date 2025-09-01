@@ -27,6 +27,7 @@ import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import clsx from 'clsx';
+import { LoadingMask, LoadingSpinner } from '../loading';
 export function CustomTableHeaderFilterButton<TData extends RowData>({
 	children,
 	column,
@@ -63,6 +64,7 @@ export default function CustomTable<TData extends RowData>(props: {
 	onRowClick?: (row: Row<TData>) => void;
 	className?: string;
 	pageSize?: number;
+	loading?: boolean;
 }) {
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] =
@@ -97,7 +99,13 @@ export default function CustomTable<TData extends RowData>(props: {
 	});
 
 	return (
-		<div className={cn('w-full', props.className)}>
+		<div className={cn('w-full relative', props.className)}>
+			<LoadingMask
+				className="flex justify-center items-center"
+				loading={!!props.loading}
+			>
+				<LoadingSpinner size={48} />
+			</LoadingMask>
 			<div className="rounded-md border">
 				<Table>
 					<TableHeader>

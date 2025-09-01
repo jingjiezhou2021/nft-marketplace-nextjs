@@ -43,13 +43,7 @@ const Page: NextPageWithLayout = () => {
 	const { data, loading } = useUserListings(address);
 	const { t, i18n } = useTranslation('common');
 	return (
-		<div className="h-full flex flex-col relative">
-			<LoadingMask
-				loading={loading}
-				className="flex justify-center items-center"
-			>
-				<LoadingSpinner size={48} />
-			</LoadingMask>
+		<div className="flex flex-col relative">
 			<nav className="flex items-center mb-4 justify-end">
 				<div>
 					<Button
@@ -229,6 +223,7 @@ const Page: NextPageWithLayout = () => {
 				}}
 				rowCursor={false}
 				className="grow min-h-0 overflow-y-auto pb-4"
+				loading={loading}
 			/>
 		</div>
 	);

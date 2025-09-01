@@ -189,6 +189,7 @@ export default function NFTDetailOffers({
 			<CustomTable
 				columns={columns}
 				data={data}
+				loading={loading}
 				rowCursor
 				rowCNFn={(row) => {
 					return row.original.unableToPayButYours && 'opacity-50';
@@ -200,12 +201,6 @@ export default function NFTDetailOffers({
 				}}
 				columnPinningState={{ left: [], right: [] }}
 			/>
-			<LoadingMask
-				loading={loading}
-				className="flex justify-center items-center top-0"
-			>
-				<LoadingSpinner size={24}></LoadingSpinner>
-			</LoadingMask>
 			<OfferDetailDialog
 				nft={{
 					contractAddress,

@@ -72,12 +72,6 @@ const Page: NextPageWithLayout = (
 	);
 	return (
 		<div className="relative flex flex-col h-auto">
-			<LoadingMask
-				loading={collectionDataLoading || ownerNftsLoading}
-				className="flex justify-center items-center z-30"
-			>
-				<LoadingSpinner size={64} />
-			</LoadingMask>
 			<nav className="flex items-center mb-4 justify-end">
 				<div>
 					<Button
@@ -233,6 +227,7 @@ const Page: NextPageWithLayout = (
 				}}
 				rowCursor={false}
 				className="pb-4"
+				loading={collectionDataLoading || ownerNftsLoading}
 			/>
 		</div>
 	);

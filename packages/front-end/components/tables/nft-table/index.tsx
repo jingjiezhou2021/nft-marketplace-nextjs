@@ -300,12 +300,6 @@ export default function NFTTable() {
 	return (
 		<div className="relative flex flex-col h-full">
 			{contextHolder}
-			<LoadingMask
-				loading={collectionsDataLoading || calculating}
-				className="flex justify-center items-center z-30"
-			>
-				<LoadingSpinner size={64} />
-			</LoadingMask>
 			<div>
 				<nav className="flex items-center mb-4 justify-between">
 					<div className="flex gap-2">
@@ -355,6 +349,7 @@ export default function NFTTable() {
 				<CustomTable
 					columns={columns}
 					data={data}
+					loading={collectionsDataLoading || calculating}
 					columnPinningState={{
 						left: ['watchlist', 'name'],
 					}}

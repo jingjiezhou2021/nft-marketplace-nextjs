@@ -18,9 +18,11 @@ import { cn } from '@/lib/utils';
 export default function ActivityTable({
 	compact,
 	data,
+	loading,
 }: {
 	compact: boolean;
 	data: Activity[];
+	loading?: boolean;
 }) {
 	const columns = GetActivityColumns(compact);
 	return (
@@ -32,6 +34,7 @@ export default function ActivityTable({
 			}}
 			rowCursor={false}
 			className="grow min-h-0 overflow-y-auto pb-4"
+			loading={loading}
 		/>
 	);
 }
@@ -50,13 +53,7 @@ export function ActivityTableWrapper({
 }) {
 	const [compact, setCompact] = useState<boolean>(false);
 	return (
-		<div className={cn('relative flex flex-col h-full', className)}>
-			<LoadingMask
-				loading={!!loading}
-				className="flex justify-center items-center z-30"
-			>
-				<LoadingSpinner size={64} />
-			</LoadingMask>
+		<div className={cn('flex flex-col h-full', className)}>
 			<div>
 				<nav className="flex items-center mb-4 justify-between">
 					{slots?.filter ?? (
@@ -81,6 +78,7 @@ export function ActivityTableWrapper({
 			<ActivityTable
 				data={data}
 				compact={compact}
+				loading={loading}
 			/>
 		</div>
 	);
