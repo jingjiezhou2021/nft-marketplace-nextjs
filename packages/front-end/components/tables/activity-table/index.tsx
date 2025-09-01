@@ -4,7 +4,7 @@ import GetActivityColumns, { Activity } from './columns';
 import { Filter } from '@/components/filter';
 import ActivityFilterContent from './filter';
 import { Button } from '@/components/ui/button';
-import { useMemo, useState } from 'react';
+import { ReactElement, useMemo, useState } from 'react';
 import { FilterTags } from '@/components/filter/tag';
 import { IconBaselineDensitySmall } from '@tabler/icons-react';
 import { useSearchParams } from 'next/navigation';
@@ -37,9 +37,13 @@ export default function ActivityTable({
 export function ActivityTableWrapper({
 	data,
 	loading,
+	slots,
 }: {
 	data: Activity[];
 	loading?: boolean;
+	slots?: {
+		filter?: ReactElement;
+	};
 }) {
 	const [compact, setCompact] = useState<boolean>(false);
 	return (
@@ -52,11 +56,11 @@ export function ActivityTableWrapper({
 			</LoadingMask>
 			<div>
 				<nav className="flex items-center mb-4 justify-between">
-					<div className="flex gap-2">
+					{slots?.filter ?? (
 						<Filter>
 							<ActivityFilterContent />
 						</Filter>
-					</div>
+					)}
 					<div>
 						<Button
 							variant={compact ? 'default' : 'outline'}
@@ -144,7 +148,7 @@ export function useActivityTableSearchParamsFilterFns() {
 					return true;
 				}
 			},
-		];
+		] as ((act: Activity) => boolean)[];
 	}, [searchParams, ethRate]);
 	return ret;
 }
