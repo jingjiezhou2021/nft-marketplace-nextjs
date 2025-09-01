@@ -136,7 +136,12 @@ export default function HighlyWeekSales({
 							.map((nft) => {
 								return (
 									<NFTCard
-										nft={nft}
+										nft={{
+											contractAddress:
+												nft.contractAddress as `0x${string}`,
+											tokenId: nft.tokenId,
+											chainId: nft.collection.chainId,
+										}}
 										key={nft.tokenId}
 									/>
 								);

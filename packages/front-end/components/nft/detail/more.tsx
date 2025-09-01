@@ -47,7 +47,12 @@ export default function NFTDetailMore({
 						return (
 							<NFTCard
 								key={n.tokenId}
-								nft={n}
+								nft={{
+									contractAddress:
+										n.contractAddress as `0x${string}`,
+									tokenId: n.tokenId,
+									chainId: n.collection.chainId,
+								}}
 								className="min-h-32"
 								fontSmaller
 							/>

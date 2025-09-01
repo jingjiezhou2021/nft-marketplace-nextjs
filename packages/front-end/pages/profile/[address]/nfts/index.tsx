@@ -30,67 +30,12 @@ const Page: NextPageWithLayout = (
 	const router = useRouter();
 	const { address: userAddress } = useAccount();
 	const address = router.query.address as string;
-	const searchParams = useSearchParams();
-	const { loading, data } = useQuery(findUserProfile, {
-		variables: {
-			where: {
-				address: {
-					equals: address,
-				},
-			},
-		},
-		fetchPolicy: 'network-only',
-		nextFetchPolicy: 'cache-first',
-	});
-	const filteredNfts = useMemo(() => {
-		const status = searchParams.get('nft-status');
-		const category = searchParams.get('category');
-		const chain = searchParams.get('chain');
-		return data?.findFirstUserProfile?.importedNFTs
-			.filter((nft) => {
-				if (status === 'all' || status === null) {
-					return true;
-				} else {
-					if (status === 'Listed') {
-						return nft.activeItem;
-					} else {
-						return !nft.activeItem;
-					}
-				}
-			})
-			.filter((nft) => {
-				if (category === 'all' || category === null) {
-					return true;
-				} else {
-					const categories = category.split(',');
-					return categories.includes(nft.collection.category);
-				}
-			})
-			.filter((nft) => {
-				if (chain === 'all' || chain === null) {
-					return true;
-				} else {
-					const chainIds = chain.split(',');
-					return chainIds.includes(nft.collection.chainId.toString());
-				}
-			});
-	}, [data, searchParams]);
 	return (
-		<div className="relative">
-			<LoadingMask
-				loading={loading}
-				className="flex justify-center items-center"
-			>
-				<LoadingSpinner size={64} />
-			</LoadingMask>
-			<ProfileNFTGallery
-				nfts={filteredNfts ?? []}
-				className="mt-1"
-				disableImport={
-					userAddress?.toLowerCase() !== address.toLowerCase()
-				}
-			/>
-		</div>
+		<ProfileNFTGallery
+			address={address as `0x${string}`}
+			className="mt-1"
+			disableImport={userAddress?.toLowerCase() !== address.toLowerCase()}
+		/>
 	);
 };
 

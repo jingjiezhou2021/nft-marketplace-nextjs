@@ -1,4 +1,9 @@
-import { FindFirstUserProfileQuery, Listing, Nft } from '@/apollo/gql/graphql';
+import {
+	FindFirstUserProfileQuery,
+	Listing,
+	Nft,
+	QueryMode,
+} from '@/apollo/gql/graphql';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { getCryptoIcon } from '@/lib/currency';
 import { getNFTMetadata } from '@/lib/nft';
@@ -15,6 +20,9 @@ import useNFTMetadata from '@/lib/hooks/use-nft-metadata';
 import useNFTsSaleInfo, {
 	useNFTsLastSale,
 } from '@/lib/hooks/use-nfts-sale-info';
+import { NFTDetailProps } from './nft/detail';
+import { useQuery } from '@apollo/client';
+import findNFT from '@/lib/graphql/queries/find-nft';
 
 export type NFTCardData = {
 	imageUrl: string;
@@ -105,26 +113,42 @@ export default function NFTCard({
 	className,
 	fontSmaller,
 }: {
-	nft: ValuesType<
-		NonNullable<
-			FindFirstUserProfileQuery['findFirstUserProfile']
-		>['importedNFTs']
-	>;
+	nft: NFTDetailProps;
 	className?: string;
 	fontSmaller?: boolean;
 }) {
 	const { t, i18n } = useTranslation('common');
+	const { data: nftData, loading: nftDataLoading } = useQuery(findNFT, {
+		variables: {
+			where: {
+				contractAddress: {
+					equals: nft.contractAddress,
+					mode: QueryMode.Insensitive,
+				},
+				tokenId: {
+					equals: nft.tokenId,
+				},
+				collection: {
+					is: {
+						chainId: {
+							equals: nft.chainId,
+						},
+					},
+				},
+			},
+		},
+	});
 	const { metadata, loading } = useNFTMetadata(
 		nft.contractAddress as `0x${string}`,
 		nft.tokenId,
-		nft.collection.chainId,
+		nft.chainId,
 	);
 	const nftsMemo = useMemo(() => {
 		return [
 			{
 				contractAddress: nft.contractAddress as `0x${string}`,
 				tokenId: nft.tokenId,
-				chainId: nft.collection.chainId,
+				chainId: nft.chainId,
 			},
 		];
 	}, [nft]);
@@ -135,7 +159,6 @@ export default function NFTCard({
 	} = useNFTsSaleInfo({
 		nfts: nftsMemo,
 	});
-	const dispName = metadata?.name ?? `# ${nft.tokenId}`;
 	return (
 		<CardWrapper className={cn('min-h-32', className)}>
 			{loading || metadata === undefined ? (
@@ -151,7 +174,7 @@ export default function NFTCard({
 				</div>
 			) : (
 				<Link
-					href={`/nft/${nft.collection.chainId}/${nft.contractAddress}/${
+					href={`/nft/${nft.chainId}/${nft.contractAddress}/${
 						nft.tokenId
 					}`}
 					locale={i18n.language}
@@ -172,7 +195,7 @@ export default function NFTCard({
 								fontSmaller && 'text-xs',
 							)}
 						>
-							{dispName}
+							{metadata.dispName}
 						</h3>
 						<div
 							className={cn(
@@ -180,10 +203,10 @@ export default function NFTCard({
 								fontSmaller && 'text-xs',
 							)}
 						>
-							{nft.activeItem?.listing ? (
+							{nftData?.findFirstNFT?.activeItem?.listing ? (
 								<CryptoPrice
-									{...nft.activeItem.listing}
-									chainId={nft.collection.chainId}
+									{...nftData.findFirstNFT.activeItem.listing}
+									chainId={nft.chainId}
 								/>
 							) : (
 								<p className="text-muted-foreground">

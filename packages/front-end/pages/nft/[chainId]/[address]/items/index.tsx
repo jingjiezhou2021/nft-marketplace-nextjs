@@ -29,28 +29,12 @@ const Page: NextPageWithLayout = (
 		typeof config
 	>['chainId'];
 	const address = params.address as `0x${string}`;
-	const { data: collection } = useQuery(findCollection, {
-		variables: {
-			where: {
-				chainId: {
-					equals: chainId,
-				},
-				address: {
-					equals: address,
-					mode: QueryMode.Insensitive,
-				},
-			},
-		},
-		fetchPolicy: 'network-only',
-		nextFetchPolicy: 'cache-first',
-	});
 	return (
-		<>
-			<CollectionNFTGallery
-				nfts={collection?.findFirstCollection?.importedNfts ?? []}
-				className="mt-4"
-			/>
-		</>
+		<CollectionNFTGallery
+			className="mt-4"
+			address={address}
+			chainId={chainId}
+		/>
 	);
 };
 Page.GetLayout = CollectionLayout;

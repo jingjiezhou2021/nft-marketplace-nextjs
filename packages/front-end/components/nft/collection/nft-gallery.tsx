@@ -1,4 +1,4 @@
-import { FindFirstUserProfileQuery } from '@/apollo/gql/graphql';
+import { FindFirstUserProfileQuery, QueryMode } from '@/apollo/gql/graphql';
 import { CollapsibleFilter, Filter, FilterContent } from '@/components/filter';
 import { SimpleRange } from '@/components/filter/range';
 import { PRICE, PriceRange } from '@/components/filter/range/price-range';
@@ -11,32 +11,60 @@ import getTraitValuesMap from '@/lib/nft/traits';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'next-i18next';
 import { useEffect, useState } from 'react';
+import { NFTDetailProps } from '../detail';
+import { ChainIdParameter } from '@wagmi/core/internal';
+import { config } from '@/components/providers/RainbowKitAllProvider';
+import { useQuery } from '@apollo/client';
+import findCollection from '@/lib/graphql/queries/find-collection';
 export default function CollectionNFTGallery({
-	nfts,
 	className,
+	chainId,
+	address,
 }: {
-	nfts: NonNullable<
-		FindFirstUserProfileQuery['findFirstUserProfile']
-	>['importedNFTs'];
 	className?: string;
+	chainId: ChainIdParameter<typeof config>['chainId'];
+	address: `0x${string}`;
 }) {
 	const { t } = useTranslation('common');
+	const { data: collection, loading: collectionLoading } = useQuery(
+		findCollection,
+		{
+			variables: {
+				where: {
+					chainId: {
+						equals: chainId,
+					},
+					address: {
+						equals: address,
+						mode: QueryMode.Insensitive,
+					},
+				},
+			},
+			fetchPolicy: 'network-only',
+			nextFetchPolicy: 'cache-first',
+		},
+	);
 	const [traitValuesMap, setTraitValuesMap] =
 		useState<Map<string, Map<string | number, number>>>();
+	const [calculating, setCalculating] = useState(true);
 	useEffect(() => {
-		Promise.all(
-			nfts.map((n) => {
-				return getNFTMetadata(
-					n.contractAddress as `0x${string}`,
-					n.tokenId,
-					n.collection.chainId,
-				);
-			}),
-		).then((arr: NFTMetadata[]) => {
-			const map = getTraitValuesMap(arr);
-			setTraitValuesMap(map);
-		});
-	}, [nfts]);
+		if (collection?.findFirstCollection?.importedNfts) {
+			setCalculating(true);
+			Promise.all(
+				collection.findFirstCollection.importedNfts.map((n) => {
+					return getNFTMetadata(
+						n.contractAddress as `0x${string}`,
+						n.tokenId,
+						n.collection.chainId,
+					);
+				}),
+			).then((arr: NFTMetadata[]) => {
+				const map = getTraitValuesMap(arr);
+				setTraitValuesMap(map);
+				setCalculating(false);
+			});
+		}
+	}, [collection?.findFirstCollection?.importedNfts]);
 	const traitsFilterContent = (
 		<>
 			{Array.from(traitValuesMap?.entries() ?? []).map((tvs) => {
@@ -101,8 +129,18 @@ export default function CollectionNFTGallery({
 			</div>
 			<FilterTags />
 			<NFTGalleryContent
-				nfts={nfts}
+				nfts={
+					collection?.findFirstCollection?.importedNfts.map((nft) => {
+						return {
+							contractAddress:
+								nft.contractAddress as `0x${string}`,
+							tokenId: nft.tokenId,
+							chainId: nft.collection.chainId,
+						};
+					}) ?? []
+				}
 				disableImport
+				loading={collectionLoading || calculating}
 			/>
 		</div>
 	);
