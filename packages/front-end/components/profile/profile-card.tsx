@@ -26,7 +26,11 @@ export function ProfileCard({
 	children,
 }: {
 	address: `0x${string}`;
-	children: (dispName: string, isYou: boolean) => ReactNode;
+	children: (
+		dispName: string,
+		isYou: boolean,
+		avatar?: string | null,
+	) => ReactNode;
 }) {
 	const { i18n } = useTranslation('common');
 	const { address: userAddress } = useAccount();
@@ -55,6 +59,7 @@ export function ProfileCard({
 					{children(
 						dispName,
 						userAddress?.toLowerCase() === address.toLowerCase(),
+						data?.findFirstUserProfile?.avatar,
 					)}
 				</Link>
 			</HoverCardTrigger>
