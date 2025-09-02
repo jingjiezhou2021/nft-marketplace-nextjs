@@ -101,7 +101,7 @@ export default function CustomTable<TData extends RowData>(props: {
 	return (
 		<div className={cn('w-full relative', props.className)}>
 			<LoadingMask
-				className="flex justify-center items-center"
+				className="flex justify-center items-center z-20"
 				loading={!!props.loading}
 			>
 				<LoadingSpinner size={48} />
