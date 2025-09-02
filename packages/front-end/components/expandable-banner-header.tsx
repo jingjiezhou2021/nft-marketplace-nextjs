@@ -47,7 +47,7 @@ export function ExpandableBannerHeaderContentRight({
 	return (
 		<div
 			className={cn(
-				'pt-2 flex justify-between gap-6 md:gap-8',
+				'pt-2 flex justify-between gap-6 md:gap-8 flex-wrap',
 				className,
 			)}
 		>
