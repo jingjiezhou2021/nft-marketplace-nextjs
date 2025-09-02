@@ -196,7 +196,7 @@ export function PriceFilterTags({
 			})
 			.join(' '),
 	);
-	const range: Range<{ currency: string }> = JSON.parse(value);
+	const range: Range = JSON.parse(value);
 	if (range.data.min || range.data.max) {
 		return (
 			<FilterTag
@@ -220,7 +220,7 @@ export function PriceFilterTags({
 					max={range.data.max}
 					label={label}
 				>
-					{range.meta!.currency}
+					{range.meta?.currency}
 				</RangeFilterTagInner>
 			</FilterTag>
 		);

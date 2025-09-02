@@ -146,6 +146,11 @@ export function FilterTags() {
 	return (
 		<div className="flex gap-2 flex-wrap mb-2">
 			{Array.from(searchParams.entries()).map((e) => {
+				let parseSuccessful = false;
+				try {
+					const parsed = JSON.parse(e[1]);
+					if (typeof parsed === 'object') parseSuccessful = true;
+				} catch (err) {}
 				if (e[0] === 'watchlist') {
 					return null;
 				}
@@ -155,7 +160,8 @@ export function FilterTags() {
 				if (
 					e[0] === FLOOR_PRICE ||
 					e[0] === TOP_OFFER ||
-					e[0] === PRICE
+					e[0] === PRICE ||
+					parseSuccessful
 				) {
 					return (
 						<PriceFilterTags
