@@ -89,14 +89,11 @@ export function FilterContent({
 	}, [searchParams, filterData]);
 	return (
 		<FilterProvider value={{ filterData, setFilterData }}>
-			<div
-				className={cn(
-					'p-6 flex flex-col gap-4 relative overflow-y-auto',
-					className,
-				)}
-			>
-				{children}
-				<div className="flex justify-between sticky bottom-0  bg-background">
+			<div className={cn('flex flex-col grow min-h-0 pb-6', className)}>
+				<div className="flex flex-col gap-4 overflow-y-auto grow min-h-0 px-6">
+					{children}
+				</div>
+				<div className="flex justify-between  bg-background px-6">
 					<DrawerClose asChild>
 						<Button
 							variant="outline"
