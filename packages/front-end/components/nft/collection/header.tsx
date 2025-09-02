@@ -211,7 +211,7 @@ export function CollectionHeader({
 										</Badge>
 									</div>
 								</ExpandableBannerHeaderContentLeft>
-								<ExpandableBannerHeaderContentRight>
+								<ExpandableBannerHeaderContentRight className="text-foreground">
 									<div>
 										<h5 className="text-xs text-muted-foreground">
 											{t('TOP OFFER')}
