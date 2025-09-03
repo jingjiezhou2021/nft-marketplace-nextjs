@@ -90,7 +90,7 @@ export function FilterContent({
 	return (
 		<FilterProvider value={{ filterData, setFilterData }}>
 			<div className={cn('flex flex-col grow min-h-0 pb-6', className)}>
-				<div className="flex flex-col gap-4 overflow-y-auto grow min-h-0 px-6">
+				<div className="flex flex-col gap-4 overflow-y-auto grow min-h-0 px-6 pb-6">
 					{children}
 				</div>
 				<div className="flex justify-between  bg-background px-6">
