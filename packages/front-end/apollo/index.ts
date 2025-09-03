@@ -23,7 +23,6 @@ const createApolloClient = () => {
 											useGrouping: false,
 										}),
 									);
-									console.log(data[key]);
 								}
 								dfs(data[key]);
 							}
