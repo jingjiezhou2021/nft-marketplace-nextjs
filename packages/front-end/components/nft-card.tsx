@@ -37,7 +37,7 @@ export function CardWrapper({
 		>
 			<LoadingMask
 				loading={!!loading}
-				className="flex justify-center items-center"
+				className="flex justify-center items-center z-30"
 			>
 				<LoadingSpinner size={64} />
 			</LoadingMask>
