@@ -16,10 +16,9 @@ import { CircleDollarSign } from 'lucide-react';
 export default function CryptoPrice({
 	chainId,
 	erc20TokenAddress,
-	erc20TokenName,
 	price,
 	className,
-}: Pick<Listing, 'erc20TokenAddress' | 'erc20TokenName' | 'price'> & {
+}: Pick<Listing, 'erc20TokenAddress' | 'price'> & {
 	id?: string;
 	className?: string;
 	chainId: ChainIdParameter<typeof config>['chainId'];

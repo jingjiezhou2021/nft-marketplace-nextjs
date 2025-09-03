@@ -6,6 +6,7 @@ import {
 	Store,
 	ChartBar,
 	CircleUser,
+	Banknote,
 } from 'lucide-react';
 import {
 	Sidebar,
@@ -57,6 +58,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			title: t('Profile'),
 			url: `/profile${address ? `/${address}` : ''}`,
 			icon: CircleUser,
+		},
+		{
+			title: t('Proceeds'),
+			url: `/proceeds`,
+			icon: Banknote,
 		},
 		{
 			title: t('Settings'),
