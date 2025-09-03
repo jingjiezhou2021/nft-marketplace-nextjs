@@ -1,25 +1,14 @@
-import {
-	FindFirstUserProfileQuery,
-	Listing,
-	Nft,
-	QueryMode,
-} from '@/apollo/gql/graphql';
+import { Listing, QueryMode } from '@/apollo/gql/graphql';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { getCryptoIcon } from '@/lib/currency';
-import { getNFTMetadata } from '@/lib/nft';
 import { cn } from '@/lib/utils';
-import { IconLoader2 } from '@tabler/icons-react';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
-import { ValuesType } from 'utility-types';
+import { useMemo } from 'react';
 import { LoadingMask, LoadingSpinner } from './loading';
 import Link from 'next/link';
 import CryptoPrice from './crypto-price';
 import useNFTMetadata from '@/lib/hooks/use-nft-metadata';
-import useNFTsSaleInfo, {
-	useNFTsLastSale,
-} from '@/lib/hooks/use-nfts-sale-info';
+import useNFTsSaleInfo from '@/lib/hooks/use-nfts-sale-info';
 import { NFTDetailProps } from './nft/detail';
 import { useQuery } from '@apollo/client';
 import findNFT from '@/lib/graphql/queries/find-nft';
@@ -30,46 +19,30 @@ export type NFTCardData = {
 	listing?: Listing;
 	chainId: number | bigint | string;
 };
-function Wrapper<T extends React.ComponentProps<'div'>>({
-	El,
-	className,
-}: {
-	El: React.FC<T>;
-	className: string;
-}) {
-	const WrappedFC = ({
-		className: classNameInner,
-		children,
-		...props
-	}: T) => {
-		return (
-			<El
-				className={cn(className, classNameInner)}
-				{...(props as T)}
-			>
-				{children}
-			</El>
-		);
-	};
-	return WrappedFC;
-}
 export function CardWrapper({
 	children,
 	className,
+	loading,
 	...props
-}: Parameters<typeof Card>[0]) {
-	const Wrapped = Wrapper({
-		El: Card,
-		className:
-			'w-full py-0 rounded-lg overflow-hidden pb-2 gap-3 cursor-pointer hover:-translate-y-0.5 hover:scale-[1.01] active:scale-[1.005] shadow-xs duration-200 ease-out-circ transition-transform relative',
-	});
+}: React.ComponentProps<typeof Card> & {
+	loading?: boolean;
+}) {
 	return (
-		<Wrapped
-			className={className}
+		<Card
+			className={cn(
+				'w-full py-0 rounded-lg overflow-hidden pb-2 gap-3 cursor-pointer hover:-translate-y-0.5 hover:scale-[1.01] active:scale-[1.005] shadow-xs duration-200 ease-out-circ transition-transform relative',
+				className,
+			)}
 			{...props}
 		>
+			<LoadingMask
+				loading={!!loading}
+				className="flex justify-center items-center"
+			>
+				<LoadingSpinner size={64} />
+			</LoadingMask>
 			{children}
-		</Wrapped>
+		</Card>
 	);
 }
 export function CardContentWrapper({
@@ -77,17 +50,13 @@ export function CardContentWrapper({
 	children,
 	...props
 }: Parameters<typeof CardContent>[0]) {
-	const Wrapped = Wrapper({
-		El: CardContent,
-		className: 'w-full aspect-square relative',
-	});
 	return (
-		<Wrapped
-			className={className}
+		<CardContent
+			className={cn('w-full aspect-square relative', className)}
 			{...props}
 		>
 			{children}
-		</Wrapped>
+		</CardContent>
 	);
 }
 export function CardFooterWrapper({
@@ -95,17 +64,13 @@ export function CardFooterWrapper({
 	children,
 	...props
 }: Parameters<typeof CardFooter>[0]) {
-	const Wrapped = Wrapper({
-		El: CardFooter,
-		className: 'px-3 block',
-	});
 	return (
-		<Wrapped
-			className={className}
+		<CardFooter
+			className={cn('px-3 block', className)}
 			{...props}
 		>
 			{children}
-		</Wrapped>
+		</CardFooter>
 	);
 }
 export default function NFTCard({
@@ -160,19 +125,16 @@ export default function NFTCard({
 		nfts: nftsMemo,
 	});
 	return (
-		<CardWrapper className={cn('min-h-32', className)}>
-			{loading || metadata === undefined ? (
-				<div className="size-full relative">
-					<LoadingMask
-						loading={
-							loading || saleInfoLoading || metadata === undefined
-						}
-						className="flex justify-center items-center"
-					>
-						<LoadingSpinner size={64} />
-					</LoadingMask>
-				</div>
-			) : (
+		<CardWrapper
+			className={cn('min-h-32', className)}
+			loading={
+				nftDataLoading ||
+				loading ||
+				saleInfoLoading ||
+				metadata === undefined
+			}
+		>
+			{metadata && (
 				<Link
 					href={`/nft/${nft.chainId}/${nft.contractAddress}/${
 						nft.tokenId
