@@ -10,6 +10,7 @@ import 'json-bigint-patch';
 import findUserProfile from '../graphql/queries/find-user-profile';
 import { CollectionsQuery, QueryMode } from '@/apollo/gql/graphql';
 import { ValuesType } from 'utility-types';
+import { getFromCache, saveToCache } from '../indexedDB/metadata';
 function normalizeURI(
 	uri: string,
 	gateway: string = 'https://ipfs.io/ipfs/',
@@ -58,6 +59,18 @@ export async function getNFTMetadata(
 	tokenId: number | bigint,
 	chainId: ChainIdParameter<typeof config>['chainId'],
 ) {
+	const cacheKey = `${address}-${tokenId}-${chainId}`;
+	const ttlMs = 10 * 60 * 1000; // 10 minutes
+
+	// Try cache first
+	const cached = await getFromCache(cacheKey);
+	if (cached) {
+		return {
+			...cached,
+			image: normalizeURI(cached.image ?? ''),
+			dispName: cached.name ?? `# ${tokenId}`,
+		};
+	}
 	const url = await readContract(config, {
 		address,
 		abi: erc721Abi,
@@ -66,6 +79,7 @@ export async function getNFTMetadata(
 		args: [BigInt(tokenId)],
 	});
 	const metadata: NFTMetadata = await (await fetch(normalizeURI(url))).json();
+	await saveToCache(cacheKey, metadata, ttlMs);
 	const dispName = metadata.name ?? `# ${tokenId}`;
 	return {
 		...metadata,
