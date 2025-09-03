@@ -25,7 +25,7 @@ export default function CollectionNav({ className }: { className?: string }) {
 		},
 		{
 			title: t('Traits'),
-			url: `/nft/${chainId}/${address}/Traits`,
+			url: `/nft/${chainId}/${address}/traits`,
 		},
 		{
 			title: t('Activity'),

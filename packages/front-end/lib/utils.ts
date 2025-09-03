@@ -26,3 +26,31 @@ export function chunkArray<T>(arr: T[], size: number): T[][] {
 	}
 	return result;
 }
+
+export function getRanges(
+	nums: number[],
+	numRanges: number,
+): [number, number][] {
+	if (nums.length === 0) return [];
+
+	// Get distinct numbers
+	const distinct = Array.from(new Set(nums)).sort((a, b) => a - b);
+
+	if (distinct.length <= numRanges) {
+		// Return as [n, n] ranges
+		return distinct.map((n) => [n, n]);
+	}
+
+	const min = distinct[0];
+	const max = distinct[distinct.length - 1];
+	const step = (max - min) / numRanges;
+
+	const ranges: [number, number][] = [];
+	for (let i = 0; i < numRanges; i++) {
+		const start = min + i * step;
+		const end = i === numRanges - 1 ? max : min + (i + 1) * step;
+		ranges.push([start, end]);
+	}
+
+	return ranges;
+}
