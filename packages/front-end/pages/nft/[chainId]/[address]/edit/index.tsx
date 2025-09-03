@@ -45,7 +45,7 @@ export const getServerSideProps: GetServerSideProps<
 > = async ({ locale, params }) => {
 	return {
 		props: {
-			...(await serverSideTranslations(locale!, ['common'])),
+			...(await serverSideTranslations(locale!, ['common', 'filter'])),
 			// Will be passed to the page component as props
 		},
 	};

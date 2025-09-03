@@ -1,4 +1,4 @@
-import { Aperture, Brush, CircleUser, Gamepad2 } from 'lucide-react';
+import { Aperture, Brush, Church, CircleUser, Gamepad2 } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { Button } from './ui/button';
 import {
@@ -21,6 +21,7 @@ export default function NavInfo() {
 		{ label: t('Art'), icon: <Brush /> },
 		{ label: t('PFPs'), icon: <CircleUser /> },
 		{ label: t('Photography'), icon: <Aperture /> },
+		{ label: t('Membership'), icon: <Church /> },
 	];
 	return (
 		<div className="h-auto flex justify-between flex-wrap">
