@@ -138,7 +138,7 @@ export default function TraitCard({
 					{floorSaleListing && (
 						<div className="flex flex-wrap gap-1">
 							<span className="text-muted-foreground text-nowrap">
-								{t('Floor sale')}:
+								{t('Floor price')}:
 							</span>
 							<CryptoPrice
 								{...floorSaleListing}

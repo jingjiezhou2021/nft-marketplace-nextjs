@@ -90,7 +90,7 @@ export default function ProceedsPage() {
 						{selectedChain && (
 							<SelectCrypto
 								className="w-full"
-								placeholder={t('Please select crypto')}
+								placeholder={t('Please select currency')}
 								chainId={
 									parseInt(selectedChain) as ChainIdParameter<
 										typeof config

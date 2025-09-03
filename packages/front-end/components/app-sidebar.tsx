@@ -79,7 +79,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 							<Link href="/">
 								<Store className="!size-5 text-primary" />
 								<span className="text-base font-semibold">
-									{t('NFT Marketplace Demo')}
+									{t('Open Harbour')}
 								</span>
 							</Link>
 						</SidebarMenuButton>
