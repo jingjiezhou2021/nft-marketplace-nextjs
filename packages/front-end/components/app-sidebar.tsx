@@ -27,12 +27,6 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useAccount } from 'wagmi';
 
-const user = {
-	name: 'shadcn',
-	email: 'm@example.com',
-	avatar: '/avatars/shadcn.jpg',
-};
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	const pathname = usePathname();
 	const { t } = useTranslation('common');
@@ -94,7 +88,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			</SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup>
-					<SidebarGroupLabel>Application</SidebarGroupLabel>
+					<SidebarGroupLabel>{t('Application')}</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
 							{items.map((item) => {
@@ -132,7 +126,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				</SidebarGroup>
 			</SidebarContent>
 			<SidebarFooter>
-				<NavUser user={user} />
+				<NavUser />
 			</SidebarFooter>
 		</Sidebar>
 	);
