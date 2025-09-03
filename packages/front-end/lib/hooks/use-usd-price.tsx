@@ -28,11 +28,8 @@ export default function useUSDPrice({
 	const { data: tokenDecimals, isPending: tokenDecimalsLoading } =
 		useCurrencyDecimals(erc20TokenAddress as `0x${string}`, chainId);
 	let priceInUSD: string;
-	if (data?.[0]) {
-		priceInUSD = formatUnits(
-			data[0] * price,
-			(tokenDecimals ?? 6) + DECIMALS,
-		);
+	if (data) {
+		priceInUSD = formatUnits(data * price, (tokenDecimals ?? 6) + DECIMALS);
 	} else {
 		priceInUSD = formatUnits(price, tokenDecimals ?? 6);
 	}

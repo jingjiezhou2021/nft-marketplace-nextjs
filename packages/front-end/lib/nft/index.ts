@@ -10,7 +10,7 @@ import 'json-bigint-patch';
 import findUserProfile from '../graphql/queries/find-user-profile';
 import { CollectionsQuery, QueryMode } from '@/apollo/gql/graphql';
 import { ValuesType } from 'utility-types';
-import { getFromCache, saveToCache } from '../indexedDB/metadata';
+import { withCache } from '../indexedDB';
 function normalizeURI(
 	uri: string,
 	gateway: string = 'https://ipfs.io/ipfs/',
@@ -62,30 +62,26 @@ export async function getNFTMetadata(
 	const cacheKey = `${address}-${tokenId}-${chainId}`;
 	const ttlMs = 10 * 60 * 1000; // 10 minutes
 
-	// Try cache first
-	const cached = await getFromCache(cacheKey);
-	if (cached) {
+	return withCache('metadata', cacheKey, ttlMs, async () => {
+		const url = await readContract(config, {
+			address,
+			abi: erc721Abi,
+			functionName: 'tokenURI',
+			chainId,
+			args: [BigInt(tokenId)],
+		});
+
+		const metadata: NFTMetadata = await (
+			await fetch(normalizeURI(url))
+		).json();
+		const dispName = metadata.name ?? `# ${tokenId}`;
+
 		return {
-			...cached,
-			image: normalizeURI(cached.image ?? ''),
-			dispName: cached.name ?? `# ${tokenId}`,
+			...metadata,
+			image: normalizeURI(metadata.image ?? ''),
+			dispName,
 		};
-	}
-	const url = await readContract(config, {
-		address,
-		abi: erc721Abi,
-		functionName: 'tokenURI',
-		chainId,
-		args: [BigInt(tokenId)],
 	});
-	const metadata: NFTMetadata = await (await fetch(normalizeURI(url))).json();
-	await saveToCache(cacheKey, metadata, ttlMs);
-	const dispName = metadata.name ?? `# ${tokenId}`;
-	return {
-		...metadata,
-		image: normalizeURI(metadata.image ?? ''),
-		dispName,
-	};
 }
 export interface NFTMetadata {
 	name?: string;

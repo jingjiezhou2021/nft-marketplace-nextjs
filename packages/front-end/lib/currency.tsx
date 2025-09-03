@@ -8,6 +8,7 @@ import { ierc2362Abi } from 'smart-contract/wagmi/generated';
 import { bytesToHex, erc20Abi, formatUnits, hexToBytes } from 'viem';
 import { baseSepolia, hardhat, sepolia } from 'viem/chains';
 import { PRICEFEED_DECIMALS } from './hooks/use-currency-rate';
+import { withCache } from './indexedDB';
 
 export enum Currency {
 	USD,
@@ -101,13 +102,20 @@ export async function getCurrencyDecimals(
 	address: `0x${string}`,
 	chainId: ChainIdParameter<typeof config>['chainId'],
 ) {
-	const res = await readContract(config, {
-		address,
-		chainId,
-		abi: erc20Abi,
-		functionName: 'decimals',
-	});
-	return res;
+	return await withCache(
+		'currencyDecimals',
+		`${chainId}-${address}`,
+		5 * 60 * 1000,
+		async () => {
+			const res = await readContract(config, {
+				address,
+				chainId,
+				abi: erc20Abi,
+				functionName: 'decimals',
+			});
+			return res;
+		},
+	);
 }
 export async function getCurrencyRate({
 	erc20TokenAddress,
@@ -118,20 +126,29 @@ export async function getCurrencyRate({
 	if (chainId === undefined) {
 		chainId = sepolia.id;
 	}
-	const priceFeedAddress = CHAIN_PRICEFEED_ADDRESSES[chainId];
-	const priceFeedId = CHAIN_PRICEFEED_ID[chainId][erc20TokenAddress];
-	const paddedPriceFeedId = bytesToHex(hexToBytes(priceFeedId, { size: 32 }));
-	const data = await readContract(config, {
-		abi: ierc2362Abi,
-		functionName: 'valueFor',
-		address: priceFeedAddress as `0x${string}`,
-		chainId,
-		args: [paddedPriceFeedId],
-	});
-	return {
-		data: data[0],
-		decimals: PRICEFEED_DECIMALS,
-	};
+	return await withCache(
+		'currencyRate',
+		`${chainId}-${erc20TokenAddress}`,
+		2 * 60 * 1000,
+		async () => {
+			const priceFeedAddress = CHAIN_PRICEFEED_ADDRESSES[chainId];
+			const priceFeedId = CHAIN_PRICEFEED_ID[chainId][erc20TokenAddress];
+			const paddedPriceFeedId = bytesToHex(
+				hexToBytes(priceFeedId, { size: 32 }),
+			);
+			const data = await readContract(config, {
+				abi: ierc2362Abi,
+				functionName: 'valueFor',
+				address: priceFeedAddress as `0x${string}`,
+				chainId,
+				args: [paddedPriceFeedId],
+			});
+			return {
+				data: data[0],
+				decimals: PRICEFEED_DECIMALS,
+			};
+		},
+	);
 }
 export async function getUSDPrice({
 	erc20TokenAddress,

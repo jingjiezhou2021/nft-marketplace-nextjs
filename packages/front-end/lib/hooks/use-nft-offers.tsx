@@ -10,6 +10,7 @@ import { readContract } from '@wagmi/core';
 import MARKETPLACE_ADDRESS from '../market';
 import createApolloClient from '@/apollo';
 import { config } from '@/components/providers/RainbowKitAllProvider';
+import { withCache } from '../indexedDB';
 type OfferDetail = ValuesType<ValuesType<NftsQuery['nFTS']>['offers']>;
 export async function getNFTOffers(nfts: NFTDetailProps[]) {
 	const client = createApolloClient();
@@ -56,13 +57,21 @@ export async function getNFTOffers(nfts: NFTDetailProps[]) {
 	);
 	const filteredOffers = await Promise.all(
 		uncanceledOffers.map((offer) => {
-			return readContract(config, {
-				abi: erc20Abi,
-				functionName: 'balanceOf',
-				address: offer.listing.erc20TokenAddress as `0x${string}`,
-				chainId: offer.chainId,
-				args: [offer.buyer as `0x${string}`],
-			})
+			return withCache(
+				'balanceOf',
+				`${offer.chainId}-${offer.listing.erc20TokenAddress}-${offer.buyer}`,
+				30 * 1000,
+				() => {
+					return readContract(config, {
+						abi: erc20Abi,
+						functionName: 'balanceOf',
+						address: offer.listing
+							.erc20TokenAddress as `0x${string}`,
+						chainId: offer.chainId,
+						args: [offer.buyer as `0x${string}`],
+					});
+				},
+			)
 				.then((buyerBalance) => {
 					return buyerBalance >= offer.listing.price;
 				})
@@ -76,17 +85,23 @@ export async function getNFTOffers(nfts: NFTDetailProps[]) {
 				uncanceledAndBalanceEnoughOffers
 					.filter((offer) => offer !== null)
 					.map((offer) => {
-						return readContract(config, {
-							abi: erc20Abi,
-							functionName: 'allowance',
-							address: offer.listing
-								.erc20TokenAddress as `0x${string}`,
-							chainId: offer.chainId,
-							args: [
-								offer.buyer as `0x${string}`,
-								MARKETPLACE_ADDRESS[offer.chainId],
-							],
-						})
+						return withCache(
+							'allowance',
+							`${offer.chainId}-${offer.listing.erc20TokenAddress}-${offer.buyer}-${MARKETPLACE_ADDRESS[offer.chainId]}`,
+							60 * 1000,
+							() =>
+								readContract(config, {
+									abi: erc20Abi,
+									functionName: 'allowance',
+									address: offer.listing
+										.erc20TokenAddress as `0x${string}`,
+									chainId: offer.chainId,
+									args: [
+										offer.buyer as `0x${string}`,
+										MARKETPLACE_ADDRESS[offer.chainId],
+									],
+								}),
+						)
 							.then((allowance) => {
 								return allowance >= offer.listing.price;
 							})

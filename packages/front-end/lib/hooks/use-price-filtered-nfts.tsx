@@ -35,12 +35,16 @@ export default function usePriceFilteredNfts(nfts: NFTDetailProps[]) {
 			},
 		},
 	});
-	const { data: ethRateData, decimals: ethRateDecimals } = useCurrencyRate({
+	const {
+		data: ethRateData,
+		decimals: ethRateDecimals,
+		loading: currencyRateLoading,
+	} = useCurrencyRate({
 		erc20TokenAddress: SEPOLIA_AAVE_WETH,
 		chainId: sepolia.id,
 	});
 	const ethRate = useMemo(() => {
-		return parseFloat(formatUnits(ethRateData?.[0] ?? 0n, ethRateDecimals));
+		return parseFloat(formatUnits(ethRateData, ethRateDecimals));
 	}, [ethRateData, ethRateDecimals]);
 	const searchParams = useSearchParams();
 	const [ret, setRet] = useState<NFTDetailProps[]>([]);
@@ -106,6 +110,6 @@ export default function usePriceFilteredNfts(nfts: NFTDetailProps[]) {
 	}, [nftsData, searchParams, ethRate]);
 	return {
 		data: ret,
-		loading: calculating || nftsDataLoading,
+		loading: calculating || nftsDataLoading || currencyRateLoading,
 	};
 }

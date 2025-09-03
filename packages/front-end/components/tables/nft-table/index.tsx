@@ -45,12 +45,16 @@ export default function NFTTable() {
 	const [calculating, setCalculating] = useState(true);
 	const [refetchFlag, setRefetchFlag] = useState(false);
 	const router = useRouter();
-	const { data: ethRateData, decimals: ethRateDecimals } = useCurrencyRate({
+	const {
+		data: ethRateData,
+		decimals: ethRateDecimals,
+		loading: currencyRateLoading,
+	} = useCurrencyRate({
 		erc20TokenAddress: SEPOLIA_AAVE_WETH,
 		chainId: sepolia.id,
 	});
 	const ethRate = useMemo(() => {
-		return parseFloat(formatUnits(ethRateData?.[0] ?? 0n, ethRateDecimals));
+		return parseFloat(formatUnits(ethRateData, ethRateDecimals));
 	}, [ethRateData, ethRateDecimals]);
 	useEffect(() => {
 		if (collectionsData) {
@@ -349,7 +353,11 @@ export default function NFTTable() {
 				<CustomTable
 					columns={columns}
 					data={data}
-					loading={collectionsDataLoading || calculating}
+					loading={
+						collectionsDataLoading ||
+						calculating ||
+						currencyRateLoading
+					}
 					columnPinningState={{
 						left: ['watchlist', 'name'],
 					}}

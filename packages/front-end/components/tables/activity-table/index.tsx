@@ -90,7 +90,7 @@ export function useActivityTableSearchParamsFilterFns() {
 		chainId: sepolia.id,
 	});
 	const ethRate = useMemo(() => {
-		return parseFloat(formatUnits(ethRateData?.[0] ?? 0n, ethRateDecimals));
+		return parseFloat(formatUnits(ethRateData, ethRateDecimals));
 	}, [ethRateData, ethRateDecimals]);
 	const ret = useMemo(() => {
 		return [
