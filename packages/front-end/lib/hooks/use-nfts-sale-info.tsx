@@ -117,6 +117,7 @@ export function useNFTsLastSale({ nfts }: { nfts: NFTDetailProps[] }) {
 	>();
 	const [calculating, setCalculating] = useState(true);
 	useEffect(() => {
+		setCalculating(true);
 		getNFTsLastSale({ nfts }).then((lastSale) => {
 			setLastSaleListing(lastSale);
 			setCalculating(false);
@@ -203,6 +204,7 @@ export function useNFTsFloorSale({ nfts }: { nfts: NFTDetailProps[] }) {
 	>();
 	const [calculating, setCalculating] = useState(true);
 	useEffect(() => {
+		setCalculating(true);
 		getNFTsFloorSale({ nfts }).then((minListing) => {
 			setFloorSaleListing(minListing);
 			setCalculating(false);
