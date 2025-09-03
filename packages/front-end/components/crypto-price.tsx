@@ -28,10 +28,8 @@ export default function CryptoPrice({
 	useEffect(() => {
 		console.log('crypto display method changed', method);
 	}, [method]);
-	const { data: decimals } = useCurrencyDecimals(
-		erc20TokenAddress as `0x${string}`,
-		chainId,
-	);
+	const { data: decimals, isPending: currencyDecimalsPending } =
+		useCurrencyDecimals(erc20TokenAddress as `0x${string}`, chainId);
 	const { data: priceInUSD, loading: priceInUsdLoading } = useUSDPrice({
 		erc20TokenAddress,
 		price,
@@ -51,7 +49,7 @@ export default function CryptoPrice({
 			)}
 		>
 			<LoadingMask
-				loading={priceInUsdLoading}
+				loading={priceInUsdLoading || currencyDecimalsPending}
 				className="flex justify-center items-center"
 			>
 				<LoadingSpinner size={12} />
@@ -92,7 +90,9 @@ export default function CryptoPrice({
 					size={method === CRYPTO_DISPLAY_TYPE.USD ? 14 : 12}
 					className="text-muted-foreground"
 				/>
-				<span>{parseFloat(priceInUSD).toFixed(2)}</span>
+				{!priceInUsdLoading && (
+					<span>{parseFloat(priceInUSD).toFixed(2)}</span>
+				)}
 				{method === CRYPTO_DISPLAY_TYPE.CRYPTO && ')'}
 			</div>
 		</div>
