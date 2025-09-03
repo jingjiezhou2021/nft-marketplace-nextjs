@@ -113,10 +113,10 @@ export default function FilterTag({
 						);
 					}}
 				>
+					<span>{label}</span>:&nbsp;
 					<RangeFilterTagInner
 						min={range.data.min}
 						max={range.data.max}
-						label={label}
 					/>
 				</FilterTag>
 			);

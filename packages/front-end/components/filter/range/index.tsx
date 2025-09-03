@@ -138,12 +138,10 @@ export function SimpleRange({
 export function RangeFilterTagInner({
 	min,
 	max,
-	label,
 	children,
 }: {
 	min: number | null;
 	max: number | null;
-	label: string;
 	children?: ReactNode;
 }) {
 	if (min || max) {
@@ -151,20 +149,19 @@ export function RangeFilterTagInner({
 		if (min && max) {
 			ret = (
 				<>
-					{label}:&nbsp;{min}-{max} {children}
+					{min}-{max} {children}
 				</>
 			);
 		} else if (min) {
 			ret = (
 				<>
-					{label}:&nbsp;{min} {children}
+					{min} {children}
 					<IconMathEqualGreater />
 				</>
 			);
 		} else {
 			ret = (
 				<>
-					{label}:&nbsp;
 					<IconMathEqualLower /> {max} {children}
 				</>
 			);
@@ -215,10 +212,10 @@ export function PriceFilterTags({
 					);
 				}}
 			>
+				<span>{label}</span>:&nbsp;
 				<RangeFilterTagInner
 					min={range.data.min}
 					max={range.data.max}
-					label={label}
 				>
 					{range.meta?.currency}
 				</RangeFilterTagInner>
