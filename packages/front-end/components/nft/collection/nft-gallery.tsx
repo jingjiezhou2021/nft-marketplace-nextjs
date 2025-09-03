@@ -37,6 +37,7 @@ export default function CollectionNFTGallery({
 	address: `0x${string}`;
 }) {
 	const { t } = useTranslation('common');
+	const searchParams = useSearchParams();
 	const { data: collection, loading: collectionLoading } = useQuery(
 		findCollection,
 		{
@@ -73,7 +74,7 @@ export default function CollectionNFTGallery({
 	const {
 		data: traitsValuesFilteredNfts,
 		loading: traitsValuesFilteredNftsLoading,
-	} = useTraitsValuesFilteredNfts(priceFilteredNfts);
+	} = useTraitsValuesFilteredNfts(priceFilteredNfts, searchParams);
 	const { data: traitValuesMap, loading: traitsValuesMapLoading } =
 		useNFTsMetadataMap(allNftDetailProps);
 	const traitsFilterContent = (

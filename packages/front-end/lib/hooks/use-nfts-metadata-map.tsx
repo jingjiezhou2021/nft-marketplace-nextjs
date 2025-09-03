@@ -2,7 +2,7 @@ import { NFTDetailProps } from '@/components/nft/detail';
 import { useEffect, useState } from 'react';
 import { getNFTMetadata, NFTMetadata } from '../nft';
 import getTraitValuesMap from '../nft/traits';
-import { useSearchParams } from 'next/navigation';
+import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation';
 import { Range } from './use-range';
 import { ALL } from '@/components/filter';
 type TraitsValuesMap = Map<string, Map<string | number, number>>;
@@ -29,9 +29,11 @@ export default function useNFTsMetadataMap(nfts: NFTDetailProps[]) {
 	}, [nfts]);
 	return { data: traitValuesMap, loading: calculating };
 }
-export function useTraitsValuesFilteredNfts(nfts: NFTDetailProps[]) {
+export function useTraitsValuesFilteredNfts(
+	nfts: NFTDetailProps[],
+	searchParams: ReadonlyURLSearchParams,
+) {
 	const [calculating, setCalculating] = useState(true);
-	const searchParams = useSearchParams();
 	const { data: traitsValuesMap, loading: traitsValuesMapLoading } =
 		useNFTsMetadataMap(nfts);
 	const [filteredNfts, setFilteredNfts] = useState<NFTDetailProps[]>([]);
